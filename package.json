@@ -2,13 +2,14 @@
   "name": "afr-tools",
   "version": "0.1.0",
   "private": true,
-  "main": "public/electron.js",
+  "main": "main/index.js",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "electron-is-dev": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^6.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
@@ -64,7 +65,6 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "src/icons/mac/icon.icns",
         "name": "AFR Tools"
       },
       "makers": [

@@ -2,6 +2,17 @@ const path = require('path')
 
 const { app, BrowserWindow } = require('electron')
 const isDev = require('electron-is-dev')
+const Store = require('electron-store')
+
+const store = new Store({
+  name: 'app-state',
+  defaults: {
+    windowSize: {
+      width: 800,
+      height: 600,
+    },
+  },
+})
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS // NEW!
@@ -19,11 +30,19 @@ if (require('electron-squirrel-startup')) {
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    ...store.get('windowSize'),
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
     },
+  })
+
+  win.on('resize', () => {
+    // The event doesn't pass us the window size, so we call the `getBounds` method which returns an object with
+    // the height, width, and x and y coordinates.
+    const { width, height } = win.getBounds()
+    // Now that we have them, save them using the `set` method.
+    store.set('windowSize', { width, height })
   })
 
   // and load the index.html of the app.
