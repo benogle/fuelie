@@ -1,12 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import styled from 'styled-components'
 
-function App() {
+import GlobalStyles from './style/global'
+
+const AppContainer = styled.div`
+  background: #b0b0b0;
+`
+
+function App () {
   return (
-    <div className="App">
+    <AppContainer>
+      <GlobalStyles />
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
@@ -19,8 +24,8 @@ function App() {
           Learn React
         </a>
       </header>
-    </div>
-  );
+    </AppContainer>
+  )
 }
 
-export default App;
+export default App
