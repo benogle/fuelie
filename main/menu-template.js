@@ -1,6 +1,8 @@
 const { app } = require('electron')
-
+const UserConfig = require('../common/user-config')
 const isMac = process.platform === 'darwin'
+
+const userConfig = new UserConfig()
 
 module.exports = [
   // { role: 'appMenu' }
@@ -9,7 +11,13 @@ module.exports = [
     submenu: [
       { role: 'about' },
       { type: 'separator' },
-      { role: 'services' },
+      {
+        label: 'Open Config File',
+        accelerator: 'CmdOrCtrl+,',
+        click () {
+          userConfig.openInEditor()
+        },
+      },
       { type: 'separator' },
       { role: 'hide' },
       { role: 'hideothers' },
