@@ -1,18 +1,11 @@
 const path = require('path')
 
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const isDev = require('electron-is-dev')
-const Store = require('electron-store')
+const menuTemplate = require('./menu-template')
+const AppStateConfig = require('../common/app-state-config')
 
-const store = new Store({
-  name: 'app-state',
-  defaults: {
-    windowSize: {
-      width: 800,
-      height: 600,
-    },
-  },
-})
+const appStateConfig = new AppStateConfig()
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS // NEW!
@@ -30,7 +23,7 @@ if (require('electron-squirrel-startup')) {
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    ...store.get('windowSize'),
+    ...appStateConfig.get('windowSize'),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -42,7 +35,7 @@ function createWindow () {
     // the height, width, and x and y coordinates.
     const { width, height } = win.getBounds()
     // Now that we have them, save them using the `set` method.
-    store.set('windowSize', { width, height })
+    appStateConfig.set('windowSize', { width, height })
   })
 
   // and load the index.html of the app.
@@ -57,6 +50,9 @@ function createWindow () {
   // if (isDev) {
   //   win.webContents.openDevTools({ mode: "detach" });
   // }
+
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
 }
 
 // This method will be called when Electron has finished
