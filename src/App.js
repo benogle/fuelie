@@ -2,28 +2,19 @@ import React from 'react'
 import styled from 'styled-components'
 
 import GlobalStyles from './style/global'
+import Main from './Main'
+import withConfig from './hoc/withConfig'
+
+const MainWithConfig = withConfig()(Main)
 
 const AppContainer = styled.div`
-  background: #b0b0b0;
 `
 
 function App () {
   return (
     <AppContainer>
       <GlobalStyles />
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <MainWithConfig />
     </AppContainer>
   )
 }
