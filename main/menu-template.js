@@ -1,5 +1,5 @@
 const { app } = require('electron')
-const UserConfig = require('../common/user-config')
+const UserConfig = require('../src/common/user-config')
 const isMac = process.platform === 'darwin'
 
 const userConfig = new UserConfig()

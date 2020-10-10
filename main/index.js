@@ -3,7 +3,7 @@ const path = require('path')
 const { app, BrowserWindow, Menu } = require('electron')
 const isDev = require('electron-is-dev')
 const menuTemplate = require('./menu-template')
-const AppStateConfig = require('../common/app-state-config')
+const AppStateConfig = require('../src/common/app-state-config')
 
 const appStateConfig = new AppStateConfig()
 
