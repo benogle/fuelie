@@ -1,6 +1,7 @@
 import csv from 'csv-parser'
+import req from 'common/req'
 
-const fs = window.require('fs')
+const fs = req('fs')
 
 export default class LogFile {
   constructor (filename, configProfile) {
