@@ -2890,6 +2890,13 @@ babel-plugin-named-asset-import@^0.3.6:
   resolved "https://registry.npmjs.org/babel-plugin-named-asset-import/-/babel-plugin-named-asset-import-0.3.6.tgz#c9750a1b38d85112c9e166bf3ef7c5dbc605f4be"
   integrity sha512-1aGDUfL1qOOIoqk9QKGIo2lANk+C7ko/fqH0uIyC71x3PEGz0uVP8ISgfEsFuG+FKmjHTvFK/nNM8dowpmUxLA==
 
+babel-plugin-root-import@^6.6.0:
+  version "6.6.0"
+  resolved "https://registry.npmjs.org/babel-plugin-root-import/-/babel-plugin-root-import-6.6.0.tgz#85940840f308a8c292f66ca0b5bdd314046273ed"
+  integrity sha512-SPzVOHd7nDh5loZwZBxtX/oOu1MXeKjTkz+1VnnzLWC0dk8sJIGC2IDQ2uWIBjE5mUtXlQ35MTHSqN0Xn7qHrg==
+  dependencies:
+    slash "^3.0.0"
+
 "babel-plugin-styled-components@>= 1":
   version "1.11.1"
   resolved "https://registry.npmjs.org/babel-plugin-styled-components/-/babel-plugin-styled-components-1.11.1.tgz#5296a9e557d736c3186be079fff27c6665d63d76"
@@ -4328,6 +4335,13 @@ csstype@^3.0.2:
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.0.3.tgz#2b410bbeba38ba9633353aff34b05d9755d065f8"
   integrity sha512-jPl+wbWPOWJ7SXsWyqGRk3lGecbar0Cb0OvZF/r/ZU011R4YqiRehgkQ9p4eQfo9DSDLqLL3wHwfxeJiuIsNag==
 
+csv-parser@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/csv-parser/-/csv-parser-3.0.0.tgz#b88a6256d79e090a97a1b56451f9327b01d710e7"
+  integrity sha512-s6OYSXAK3IdKqYO33y09jhypG/bSDHPuyCme/IdEHfWpLf/jKcpitVFyOC6UemgGk8v7Q5u2XE0vvwmanxhGlQ==
+  dependencies:
+    minimist "^1.2.0"
+
 cuint@^0.2.2:
   version "0.2.2"
   resolved "https://registry.npmjs.org/cuint/-/cuint-0.2.2.tgz#408086d409550c2631155619e9fa7bcadc3b991b"
@@ -4339,6 +4353,13 @@ currently-unhandled@^0.4.1:
   integrity sha1-mI3zP+qxke95mmE2nddsF635V+o=
   dependencies:
     array-find-index "^1.0.1"
+
+customize-cra@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/customize-cra/-/customize-cra-1.0.0.tgz#73286563631aa08127ad4d30a2e3c89cf4e93c8d"
+  integrity sha512-DbtaLuy59224U+xCiukkxSq8clq++MOtJ1Et7LED1fLszWe88EoblEYFBJ895sB1mC6B4uu3xPT/IjClELhMbA==
+  dependencies:
+    lodash.flow "^3.5.0"
 
 cyclist@^1.0.1:
   version "1.0.1"
@@ -5152,6 +5173,23 @@ eslint-config-standard@^14.1.1:
   version "14.1.1"
   resolved "https://registry.npmjs.org/eslint-config-standard/-/eslint-config-standard-14.1.1.tgz#830a8e44e7aef7de67464979ad06b406026c56ea"
   integrity sha512-Z9B+VR+JIXRxz21udPTL9HpFMyoMUEeX1G251EQ6e05WD9aPVtVBn09XUmZ259wCMlCDmYDSZG62Hhm+ZTJcUg==
+
+eslint-import-resolver-babel-plugin-root-import@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/eslint-import-resolver-babel-plugin-root-import/-/eslint-import-resolver-babel-plugin-root-import-1.1.1.tgz#b060f1177557918389f7ed476e5b36a43854a381"
+  integrity sha512-ZZxdV9AxzL2WFVggDxZ36xodPg2+BTrkhhMf/of+BxSVh/GKLGCs17EDq5b61wqC7/oQsA2h1RtH1fV7HOUV/w==
+  dependencies:
+    eslint-import-resolver-node "^0.2.1"
+    json5 "^0.5.0"
+
+eslint-import-resolver-node@^0.2.1:
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/eslint-import-resolver-node/-/eslint-import-resolver-node-0.2.3.tgz#5add8106e8c928db2cba232bcd9efa846e3da16c"
+  integrity sha1-Wt2BBujJKNssuiMrzZ76hG49oWw=
+  dependencies:
+    debug "^2.2.0"
+    object-assign "^4.0.1"
+    resolve "^1.1.6"
 
 eslint-import-resolver-node@^0.3.2, eslint-import-resolver-node@^0.3.4:
   version "0.3.4"
@@ -7888,6 +7926,11 @@ json3@^3.3.2:
   resolved "https://registry.npmjs.org/json3/-/json3-3.3.3.tgz#7fc10e375fc5ae42c4705a5cc0aa6f62be305b81"
   integrity sha512-c7/8mbUsKigAbLkD5B010BK4D9LZm7A1pNItkEwiUZRpIN66exu/e7YQWysGun+TRKaJp8MhemM+VkfWv42aCA==
 
+json5@^0.5.0:
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
+  integrity sha1-Hq3nrMASA0rYTiOWdn6tn6VJWCE=
+
 json5@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/json5/-/json5-1.0.1.tgz#779fb0018604fa854eacbf6252180d83543e3dbe"
@@ -8170,6 +8213,11 @@ lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
   integrity sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
+
+lodash.flow@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.npmjs.org/lodash.flow/-/lodash.flow-3.5.0.tgz#87bf40292b8cf83e4e8ce1a3ae4209e20071675a"
+  integrity sha1-h79AKSuM+D5OjOGjrkIJ4gBxZ1o=
 
 lodash.get@^4.0.0:
   version "4.4.2"
@@ -10642,6 +10690,13 @@ react-app-polyfill@^1.0.6:
     raf "^3.4.1"
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
+
+react-app-rewired@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.npmjs.org/react-app-rewired/-/react-app-rewired-2.1.8.tgz#e192f93b98daf96889418d33d3e86cf863812b56"
+  integrity sha512-wjXPdKPLscA7mn0I1de1NHrbfWdXz4S1ladaGgHVKdn1hTgKK5N6EdGIJM0KrS6bKnJBj7WuqJroDTsPKKr66Q==
+  dependencies:
+    semver "^5.6.0"
 
 react-dev-utils@^10.2.1:
   version "10.2.1"
