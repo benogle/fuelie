@@ -4,11 +4,13 @@ const { app, BrowserWindow, Menu } = require('electron')
 const isDev = require('electron-is-dev')
 const menuTemplate = require('./menu-template')
 const AppStateConfig = require('../src/common/app-state-config')
+const { getFilesFromUser } = require('./helpers')
 
 const appStateConfig = new AppStateConfig()
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS // NEW!
+let mainWindow = null
 
 if (isDev) {
   const devTools = require('electron-devtools-installer')
@@ -20,7 +22,7 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-function createWindow () {
+function createWindow (filename) {
   // Create the browser window.
   const win = new BrowserWindow({
     ...appStateConfig.get('windowSize'),
@@ -38,28 +40,33 @@ function createWindow () {
     appStateConfig.set('windowSize', { width, height })
   })
 
-  // and load the index.html of the app.
-  // win.loadFile("index.html");
+  const queryString = `?filename=${filename || ''}`
   win.loadURL(
     isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`,
+      ? `http://localhost:3000${queryString}`
+      : `file://${path.join(__dirname, `../build/index.html${queryString}`)}`,
   )
 
   // Open the DevTools.
-  // if (isDev) {
-  //   win.webContents.openDevTools({ mode: "detach" });
-  // }
+  if (isDev) {
+    win.webContents.openDevTools({ })
+  }
 
-  const menu = Menu.buildFromTemplate(menuTemplate)
-  Menu.setApplicationMenu(menu)
+  // HACK: This is probably no bueno
+  win.hasFilename = !!filename
+  return win
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  mainWindow = createWindow()
+
+  const menu = Menu.buildFromTemplate(menuTemplate({
+    onClickOpenFile: openFile,
+  }))
+  Menu.setApplicationMenu(menu)
 
   if (isDev) {
     installExtension(REACT_DEVELOPER_TOOLS)
@@ -87,3 +94,15 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+const openFile = exports.openFile = async () => {
+  const filenames = await getFilesFromUser()
+  if (!filenames) return
+  for (const newWindowFilename of filenames) {
+    createWindow(newWindowFilename)
+  }
+  if (mainWindow && !mainWindow.hasFilename) {
+    mainWindow.destroy()
+    mainWindow = null
+  }
+}

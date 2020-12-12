@@ -4,7 +4,9 @@ const isMac = process.platform === 'darwin'
 
 const userConfig = new UserConfig()
 
-module.exports = [
+module.exports = ({
+  onClickOpenFile,
+}) => [
   // { role: 'appMenu' }
   ...(isMac ? [{
     label: app.name,
@@ -30,6 +32,14 @@ module.exports = [
   {
     label: 'File',
     submenu: [
+      {
+        label: 'Open CSV File',
+        accelerator: 'CmdOrCtrl+o',
+        click () {
+          onClickOpenFile()
+        },
+      },
+      { type: 'separator' },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
   },
