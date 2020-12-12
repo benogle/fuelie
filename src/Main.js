@@ -1,13 +1,10 @@
 import qs from 'qs'
 import React from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
 
-import getMainProcess from './lib/getMainProcess'
-import WelcomePage from './components/WelcomePage'
-
-const Container = styled.div`
-`
+import getMainProcess from 'lib/getMainProcess'
+import WelcomePage from 'components/WelcomePage'
+import LogFilePage from 'components/LogFilePage'
 
 function getParams () {
   return qs.parse((global.location.search || '').slice(1))
@@ -38,14 +35,10 @@ class Main extends React.Component {
   renderFile () {
     const { config } = this.props
     return (
-      <Container>
-        <div>
-          fname: {this.state.filename}
-        </div>
-        <div>
-          {JSON.stringify(config)}
-        </div>
-      </Container>
+      <LogFilePage
+        filename={this.state.filename}
+        configProfile={config}
+      />
     )
   }
 
