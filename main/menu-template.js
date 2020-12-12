@@ -1,8 +1,8 @@
 const { app } = require('electron')
-const UserConfig = require('../src/common/user-config')
+const UserConfigStore = require('../src/common/UserConfigStore')
 const isMac = process.platform === 'darwin'
 
-const userConfig = new UserConfig()
+const userConfigStore = new UserConfigStore()
 
 module.exports = ({
   onClickOpenFile,
@@ -17,7 +17,7 @@ module.exports = ({
         label: 'Open Config File',
         accelerator: 'CmdOrCtrl+,',
         click () {
-          userConfig.openInEditor()
+          userConfigStore.openInEditor()
         },
       },
       { type: 'separator' },

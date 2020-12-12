@@ -1,4 +1,6 @@
 
+// The thing that reads and makes sense of the
+
 class UserConfig {
   static getDefaultConfig () {
     return defaultConfig

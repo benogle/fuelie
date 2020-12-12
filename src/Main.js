@@ -14,9 +14,7 @@ class Main extends React.Component {
   constructor (props) {
     super(props)
     const { filename } = getParams()
-    this.state = {
-      filename,
-    }
+    this.filename = filename
   }
 
   handleOpenFile = () => {
@@ -33,25 +31,24 @@ class Main extends React.Component {
   }
 
   renderFile () {
-    const { config } = this.props
+    const { userConfig } = this.props
     return (
       <LogFilePage
-        filename={this.state.filename}
-        configProfile={config}
+        filename={this.filename}
+        configProfile={userConfig.getConfigProfile()}
       />
     )
   }
 
   render () {
-    const { filename } = this.state
-    return filename
+    return this.filename
       ? this.renderFile()
       : this.renderWelcome()
   }
 }
 
 Main.propTypes = {
-  config: PropTypes.object.isRequired,
+  userConfig: PropTypes.object.isRequired,
 }
 
 export default Main

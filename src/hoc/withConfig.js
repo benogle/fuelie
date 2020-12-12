@@ -1,7 +1,7 @@
 import React from 'react'
-import UserConfig from '../common/user-config'
+import UserConfigStore from 'common/UserConfigStore'
 
-const userConfig = new UserConfig({ watch: true })
+const userConfigStore = new UserConfigStore({ watch: true })
 
 // Will inject the user config in as a `config` param. Watches for changes.
 //
@@ -13,19 +13,19 @@ const userConfig = new UserConfig({ watch: true })
 const withConfig = (options) => (Component) => {
   class WithConfig extends React.Component {
     state = {
-      config: userConfig.store,
+      userConfig: userConfigStore.getUserConfig(),
     }
 
     componentDidMount () {
-      this.configDisposable = userConfig.onDidAnyChange(this.updateConfig)
+      this.configDisposable = userConfigStore.onDidAnyChange(this.updateConfig)
     }
 
     componentWillUnmount (nextProps) {
       this.configDisposable()
     }
 
-    updateConfig = (newConfig) => {
-      this.setState({ config: newConfig })
+    updateConfig = () => {
+      this.setState({ userConfig: userConfigStore.getUserConfig() })
     }
 
     render () {

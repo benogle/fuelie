@@ -3,10 +3,10 @@ const path = require('path')
 const { app, BrowserWindow, Menu } = require('electron')
 const isDev = require('electron-is-dev')
 const menuTemplate = require('./menu-template')
-const AppStateConfig = require('../src/common/app-state-config')
+const AppStateConfigStore = require('../src/common/AppStateConfigStore')
 const { getFilesFromUser } = require('./helpers')
 
-const appStateConfig = new AppStateConfig()
+const appStateConfig = new AppStateConfigStore()
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS // NEW!
