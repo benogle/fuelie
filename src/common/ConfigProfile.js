@@ -18,12 +18,12 @@
 // }
 
 class ConfigProfile {
-  constructor (config) {
-    this.config = config
+  constructor (profile) {
+    this.profile = profile
   }
 
-  getConfigProfile () {
-    console.log('ok')
+  getLogHeaders () {
+    return this.profile.logHeaders
   }
 }
 

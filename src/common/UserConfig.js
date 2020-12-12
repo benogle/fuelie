@@ -1,5 +1,6 @@
+// The thing that reads and makes sense of the user's config
 
-// The thing that reads and makes sense of the
+const ConfigProfile = require('./ConfigProfile')
 
 class UserConfig {
   static getDefaultConfig () {
@@ -11,7 +12,15 @@ class UserConfig {
   }
 
   getConfigProfile () {
-    console.log('ok')
+    const { profiles, currentProfile } = this.config
+    const found = profiles.filter((p) => p.name === currentProfile)
+    if (!found && found.length) {
+      console.log(`Profile ${currentProfile} not found!`)
+    }
+    const profile = found && found.length
+      ? found[0]
+      : profiles[0]
+    return new ConfigProfile(profile)
   }
 }
 
