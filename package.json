@@ -20,13 +20,14 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "test:node": "mocha --config ./test/node/mocha.js",
     "eject": "react-scripts eject",
     "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
     "electron": "wait-on tcp:3000 && electron-forge start",
     "package": "react-app-rewired build && electron-forge package",
-    "make": "react-app-rewired build && electron-forge make"
+    "make": "react-app-rewired build && electron-forge make",
+    "test": "react-app-rewired test",
+    "test:node": "mocha --config ./test/node/mocha.js",
+    "test:node:watch": "nodemon --watch src --watch test/node -x 'yarn test:node'"
   },
   "browserslist": {
     "production": [
@@ -68,6 +69,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "esm": "^3.2.25",
     "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
     "react-app-rewired": "^2.1.8",
     "sinon": "^9.2.2",
     "sinon-chai": "^3.5.0",
