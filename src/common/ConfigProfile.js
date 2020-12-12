@@ -25,6 +25,14 @@ class ConfigProfile {
   getLogHeaders () {
     return this.profile.logHeaders
   }
+
+  getFuelMapRows () {
+    return this.profile.fuelMap.rows
+  }
+
+  getFuelMapColumns () {
+    return this.profile.fuelMap.columns
+  }
 }
 
 module.exports = ConfigProfile

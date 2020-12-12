@@ -2,7 +2,8 @@ import path from 'path'
 import ConfigProfile from 'common/ConfigProfile'
 import LogFile from 'src/lib/LogFile'
 
-const logfilePath = path.join(__dirname, '..', '..', 'fixtures', 'logfile.tsv')
+const logfilePathCSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.csv')
+const logfilePathTSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.tsv')
 
 describe('LogFile', function () {
   let configProfile
@@ -26,8 +27,43 @@ describe('LogFile', function () {
     })
   })
 
-  it('description', async function () {
-    const file = new LogFile(logfilePath, configProfile)
-    console.log('OK', file)
+  describe('parsing comma separated log files', function () {
+    let logFile
+    beforeEach(async function () {
+      logFile = new LogFile(logfilePathCSV, configProfile)
+    })
+
+    it('properly parses', async function () {
+      const data = await logFile.readFile()
+      expect(data.length).to.be.greaterThan(0)
+      expect(data[0]).to.eql({
+        t: 0,
+        rowV: -10.78696,
+        rowI: { index: 13, factor: 0.21304 },
+        colV: 911.32813,
+        colI: { index: 0, factor: 0.17734 },
+        m: 3.7152,
+      })
+    })
+  })
+
+  describe('parsing tab separated log files', function () {
+    let logFile
+    beforeEach(async function () {
+      logFile = new LogFile(logfilePathTSV, configProfile)
+    })
+
+    it('properly parses', async function () {
+      const data = await logFile.readFile()
+      expect(data.length).to.be.greaterThan(0)
+      expect(data[0]).to.eql({
+        t: 0,
+        rowV: -10.78696,
+        rowI: { index: 13, factor: 0.21304 },
+        colV: 911.32813,
+        colI: { index: 0, factor: 0.17734 },
+        m: 3.7152,
+      })
+    })
   })
 })
