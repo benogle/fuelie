@@ -3,8 +3,10 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 import LogFile from 'lib/LogFile'
-
 import DataGrid from 'components/DataGrid'
+
+import req from 'common/req'
+const path = req('path')
 
 const Container = styled.div`
   height: 100%;
@@ -34,6 +36,11 @@ class LogFilePage extends React.Component {
     this.logFile.readFile().then(() => {
       this.setState({ loaded: true })
     })
+  }
+
+  componentDidMount () {
+    const { filename } = this.props
+    document.title = path.basename(filename)
   }
 
   renderLoading () {
