@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import chroma from 'chroma-js'
 
 import ReactDataSheet from 'react-datasheet'
 import 'react-datasheet/lib/react-datasheet.css'
@@ -39,12 +40,29 @@ const CellContainer = styled.div`
 `
 
 class DataGrid extends React.Component {
+  getColorScaleFunc () {
+    const { colorScale } = this.props
+    const colors = []
+    const values = []
+    for (const colorStop of colorScale) {
+      colors.push(colorStop.color)
+      values.push(colorStop.value)
+    }
+    return chroma.scale(colors).domain(values)
+  }
+
   getRow (rowValues) {
     const { readOnly } = this.props
-    return rowValues.map((v) => ({
-      ...v,
-      readOnly,
-    }))
+    const getColor = this.getColorScaleFunc()
+    return rowValues.map((v) => {
+      const { value } = v
+      const background = value ? getColor(value) : null
+      return {
+        ...v,
+        background,
+        readOnly,
+      }
+    })
   }
 
   getTableData () {
@@ -86,7 +104,7 @@ class DataGrid extends React.Component {
     const Tag = cell.isHeader ? 'th' : 'td'
     return (
       <Tag {...rest} {...attributes}>
-        <CellContainer>
+        <CellContainer style={{ background: cell.background }}>
           {props.children}
         </CellContainer>
       </Tag>
@@ -120,6 +138,12 @@ class DataGrid extends React.Component {
 DataGrid.defaultProps = {
   rowSigFigs: 2,
   columnSigFigs: 0,
+  colorScale: [
+    { color: 'blue', value: 10 },
+    { color: 'green', value: 14.7 },
+    { color: 'yellow', value: 16 },
+    { color: 'red', value: 22 },
+  ],
 }
 
 DataGrid.propTypes = {
@@ -135,6 +159,10 @@ DataGrid.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.object),
   ).isRequired,
+  colorScale: PropTypes.arrayOf(PropTypes.shape({
+    color: PropTypes.string,
+    value: PropTypes.number,
+  })).isRequired,
 }
 
 export default DataGrid
