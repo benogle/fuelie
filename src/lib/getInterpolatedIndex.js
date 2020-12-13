@@ -4,12 +4,12 @@ import { round } from 'common/helpers'
 // the index and the next index it is.
 //
 // scaleArr = [100, 200, 300, 400]
-// value = 0 // => { index: 0, factor: 1 }
-// value = 100 // => { index: 0, factor: 1 }
-// value = 150 // => { index: 0, factor: .5 }
-// value = 180 // => { index: 0, factor: .2 }
-// value = 400 // => { index: 3, factor: 1 }
-// value = 500 // => { index: 3, factor: 1 }
+// value = 0 // => { index: 0, weight: 1 }
+// value = 100 // => { index: 0, weight: 1 }
+// value = 150 // => { index: 0, weight: .5 }
+// value = 180 // => { index: 0, weight: .2 }
+// value = 400 // => { index: 3, weight: 1 }
+// value = 500 // => { index: 3, weight: 1 }
 export default function getInterpolatedIndex (value, scaleArr) {
   const tableLen = scaleArr.length
   const lastIndex = tableLen - 1
@@ -18,20 +18,20 @@ export default function getInterpolatedIndex (value, scaleArr) {
   const smallIndex = isReverse ? lastIndex : 0
   const bigIndex = isReverse ? 0 : lastIndex
 
-  if (value <= scaleArr[smallIndex]) return { index: smallIndex, factor: 1 }
-  else if (value >= scaleArr[bigIndex]) return { index: bigIndex, factor: 1 }
+  if (value <= scaleArr[smallIndex]) return { index: smallIndex, weight: 1 }
+  else if (value >= scaleArr[bigIndex]) return { index: bigIndex, weight: 1 }
 
   for (let i = 0; i < lastIndex; i++) {
     const left = scaleArr[i]
     const right = scaleArr[i + 1]
-    let factor = null
+    let weight = null
     if (isReverse && value <= left && value > right) {
-      factor = 1 - getFactor(value, right, left)
+      weight = 1 - getFactor(value, right, left)
     } else if (!isReverse && value >= left && value < right) {
-      factor = getFactor(value, left, right)
+      weight = getFactor(value, left, right)
     }
-    if (factor != null) {
-      return { index: i, factor }
+    if (weight != null) {
+      return { index: i, weight }
     }
   }
   return null

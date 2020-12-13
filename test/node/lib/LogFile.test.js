@@ -39,9 +39,9 @@ describe('LogFile', function () {
       expect(data[0]).to.eql({
         t: 0,
         rowV: -10.78696,
-        rowI: { index: 13, factor: 0.21304 },
+        rowI: { index: 13, weight: 0.21304 },
         colV: 911.32813,
-        colI: { index: 0, factor: 0.17734 },
+        colI: { index: 0, weight: 0.17734 },
         m: 3.7152,
       })
     })
@@ -59,9 +59,9 @@ describe('LogFile', function () {
       expect(data[0]).to.eql({
         t: 0,
         rowV: -10.78696,
-        rowI: { index: 13, factor: 0.21304 },
+        rowI: { index: 13, weight: 0.21304 },
         colV: 911.32813,
-        colI: { index: 0, factor: 0.17734 },
+        colI: { index: 0, weight: 0.17734 },
         m: 3.7152,
       })
     })
