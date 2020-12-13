@@ -72,6 +72,32 @@ export default class LogFile {
       table[rowI].fill({ length: 0, value: null })
     }
 
+    function addSample (value, rowIndex, colIndex, weight) {
+      if (!(weight > 0)) return
+
+      let cell = table[rowIndex][colIndex]
+      if (cell && cell.value) {
+        const newCellLength = cell.length + 1
+        const newCellWeight = cell.weight + weight
+        cell.rawValue = (cell.rawValue * cell.weight + value * weight) / newCellWeight
+        cell.value = round(cell.rawValue, 2)
+        cell.length = newCellLength
+        cell.weight = newCellWeight
+        cell.min = Math.min(cell.min, value)
+        cell.max = Math.max(cell.max, value)
+      } else {
+        cell = {
+          weight,
+          length: 1,
+          rawValue: value,
+          value: round(value, 2),
+          min: value,
+          max: value,
+        }
+      }
+      table[rowIndex][colIndex] = cell
+    }
+
     for (const line of this.data) {
       const { rowI, colI, m: newLineValue } = line
       if (!rowI || !colI || !newLineValue) {
@@ -79,20 +105,12 @@ export default class LogFile {
         continue
       }
 
-      let cell = table[rowI.index][colI.index]
-      if (cell && cell.value) {
-        const newCellLength = cell.length + 1
-        cell.length = newCellLength
-        cell.rawValue = (cell.rawValue * cell.length + newLineValue) / (cell.length + 1)
-        cell.value = round(cell.rawValue, 2)
-      } else {
-        cell = {
-          length: 1,
-          rawValue: newLineValue,
-          value: round(newLineValue, 2),
-        }
-      }
-      table[rowI.index][colI.index] = cell
+      const { index: rowIndex, weight: rowWeight } = rowI
+      const { index: colIndex, weight: colWeight } = colI
+      addSample(newLineValue, rowIndex, colIndex, rowWeight * colWeight) // top reft
+      addSample(newLineValue, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
+      addSample(newLineValue, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left
+      addSample(newLineValue, rowIndex + 1, colIndex + 1, (1 - rowWeight) * (1 - colWeight)) // bottom right
     }
 
     this.avgFuelMixtureTable = table

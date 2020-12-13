@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
+import { round } from 'common/helpers'
 
 import req from 'common/req'
 const path = req('path')
@@ -68,6 +69,7 @@ class LogFilePage extends React.Component {
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
             readOnly
+            renderHoverTip={(cell) => `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length}`}
           />
         </GridContainer>
       </Container>

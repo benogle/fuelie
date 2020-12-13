@@ -96,6 +96,7 @@ class DataGrid extends React.Component {
   }
 
   renderCell = (props) => {
+    const { renderHoverTip } = this.props
     const {
       cell, row, col, columns, attributesRenderer,
       selected, editing, updated, style,
@@ -105,12 +106,13 @@ class DataGrid extends React.Component {
     // hey, how about some custom attributes on our cell?
     const attributes = {
       ...cell.attributes,
-      ...(attributesRenderer ? attributesRenderer(cell) : {}),
+      ...(attributesRenderer ? attributesRenderer(cell) : null),
     }
 
+    const title = renderHoverTip ? renderHoverTip(cell) : null
     const Tag = cell.isHeader ? 'th' : 'td'
     return (
-      <Tag {...rest} {...attributes} title="test">
+      <Tag {...rest} {...attributes} title={title}>
         <CellContainer style={{ background: cell.background }}>
           {props.children}
         </CellContainer>
@@ -171,6 +173,8 @@ DataGrid.propTypes = {
     color: PropTypes.string,
     value: PropTypes.number,
   })).isRequired,
+
+  renderHoverTip: PropTypes.func,
 }
 
 export default DataGrid
