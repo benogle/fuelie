@@ -39,14 +39,21 @@ const CellContainer = styled.div`
   }
 `
 
+const colorMap = {
+  red: chroma('#ffaeae').alpha(0.7),
+  blue: chroma('#aaf1ff').alpha(0.7),
+  green: chroma('#99ff99').alpha(0.7),
+  yellow: chroma('#fbff18').alpha(0.7),
+}
+
 class DataGrid extends React.Component {
   getColorScaleFunc () {
     const { colorScale } = this.props
     const colors = []
     const values = []
-    for (const colorStop of colorScale) {
-      colors.push(colorStop.color)
-      values.push(colorStop.value)
+    for (const { color, value } of colorScale) {
+      colors.push(colorMap[color] || color)
+      values.push(value)
     }
     return chroma.scale(colors).domain(values)
   }
@@ -139,7 +146,8 @@ DataGrid.defaultProps = {
   rowSigFigs: 2,
   columnSigFigs: 0,
   colorScale: [
-    { color: 'blue', value: 10 },
+    { color: 'red', value: 9.5 },
+    { color: 'blue', value: 11.5 },
     { color: 'green', value: 14.7 },
     { color: 'yellow', value: 16 },
     { color: 'red', value: 22 },
