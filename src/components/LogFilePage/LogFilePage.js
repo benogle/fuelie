@@ -4,10 +4,21 @@ import styled from 'styled-components'
 
 import LogFile from 'lib/LogFile'
 
-import ReactDataSheet from 'react-datasheet'
-import 'react-datasheet/lib/react-datasheet.css'
+import DataGrid from 'components/DataGrid'
 
 const Container = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+`
+
+const InfoContainer = styled.div`
+`
+
+const GridContainer = styled.div`
+  flex-grow: 1;
+  width: 100%;
 `
 
 class LogFilePage extends React.Component {
@@ -36,22 +47,21 @@ class LogFilePage extends React.Component {
   renderData () {
     const { filename, configProfile } = this.props
     const table = this.logFile.getAvgFuelMixtureTable()
+    const rowHeaders = configProfile.getFuelMapRows()
+    const columnHeaders = configProfile.getFuelMapColumns()
     return (
       <Container>
-        <div>
+        <InfoContainer>
           fname: {filename}
-        </div>
-        <div>
-          {JSON.stringify(configProfile)}
-        </div>
+        </InfoContainer>
 
-        <ReactDataSheet
-          data={table}
-          valueRenderer={(cell) => cell.value}
-          onCellsChanged={(changes) => {
-            console.log(changes)
-          }}
-        />
+        <GridContainer>
+          <DataGrid
+            data={table}
+            rowHeaders={rowHeaders}
+            columnHeaders={columnHeaders}
+          />
+        </GridContainer>
       </Container>
     )
   }

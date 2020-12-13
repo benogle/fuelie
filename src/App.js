@@ -8,6 +8,7 @@ import withConfig from './hoc/withConfig'
 const MainWithConfig = withConfig()(Main)
 
 const AppContainer = styled.div`
+  height: 100%;
 `
 
 function App () {
