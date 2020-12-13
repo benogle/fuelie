@@ -29,19 +29,27 @@ class LogFilePage extends React.Component {
     loaded: false,
   }
 
-  // TODO: Maybe try to use constructor as this is deprecated, but the
-  // constructor gets run twice.... Probably a better place to read the file.
-  componentWillMount () {
+  componentDidMount () {
+    const { filename } = this.props
+    document.title = path.basename(filename)
+    this.loadFile()
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.configProfile !== prevProps.configProfile) {
+      this.loadFile()
+    }
+  }
+
+  loadFile () {
     const { filename, configProfile } = this.props
+    if (this.state.loaded) {
+      this.setState({ loaded: false })
+    }
     this.logFile = new LogFile(filename, configProfile)
     this.logFile.readFile().then(() => {
       this.setState({ loaded: true })
     })
-  }
-
-  componentDidMount () {
-    const { filename } = this.props
-    document.title = path.basename(filename)
   }
 
   renderLoading () {
