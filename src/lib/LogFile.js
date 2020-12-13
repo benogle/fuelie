@@ -66,6 +66,8 @@ export default class LogFile {
   buildAvgFuelMixtureTable () {
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
+    const { minValue, maxValue, minWeight } = this.configProfile.get('avgFuelMixture')
+
     const table = new Array(fuelRows.length)
     for (let rowI = 0; rowI < table.length; rowI++) {
       table[rowI] = new Array(fuelColumns.length)
@@ -73,7 +75,8 @@ export default class LogFile {
     }
 
     function addSample (value, rowIndex, colIndex, weight) {
-      if (!(weight > 0)) return
+      if (!(weight > (minWeight || 0))) return
+      if (value < minValue || value > maxValue) return
 
       let cell = table[rowIndex][colIndex]
       if (cell && cell.value) {

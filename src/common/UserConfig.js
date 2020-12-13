@@ -1,5 +1,6 @@
 // The thing that reads and makes sense of the user's config
 
+const defaultsDeep = require('lodash/defaultsDeep')
 const ConfigProfile = require('./ConfigProfile')
 
 class UserConfig {
@@ -8,7 +9,7 @@ class UserConfig {
   }
 
   constructor (config) {
-    this.config = config
+    this.config = defaultsDeep(config, defaultConfig)
   }
 
   getConfigProfile () {
@@ -81,6 +82,11 @@ const defaultConfig = {
       row: 'Engine Load',
       column: 'Engine Speed',
       mixture: 'O2 #2',
+    },
+    avgFuelMixture: {
+      minValue: 8,
+      maxValue: 20,
+      minWeight: 0.3,
     },
   }],
 }

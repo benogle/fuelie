@@ -1,4 +1,4 @@
-
+const get = require('lodash/get')
 // {
 //   name: 'Default',
 //   suggestCalc: 'afr',
@@ -32,6 +32,10 @@ class ConfigProfile {
 
   getFuelMapColumns () {
     return this.profile.fuelMap.columns
+  }
+
+  get (key) {
+    return get(this.profile, key)
   }
 }
 
