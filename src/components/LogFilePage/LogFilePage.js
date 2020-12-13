@@ -69,7 +69,15 @@ class LogFilePage extends React.Component {
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
             readOnly
-            renderHoverTip={(cell) => `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length}`}
+            renderHoverTip={(cell) => {
+              if (!cell.length) return null
+              const counts = Object.keys(cell.vCount)
+                .map((value) => ({ value, count: cell.vCount[value] }))
+                .sort((a, b) => b.count - a.count)
+                .map(({ value, count }) => `${value}(${count})`)
+                .join(', ')
+              return `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length};\n${counts}`
+            }}
           />
         </GridContainer>
       </Container>

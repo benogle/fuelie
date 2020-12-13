@@ -85,6 +85,13 @@ export default class LogFile {
         cell.weight = newCellWeight
         cell.min = Math.min(cell.min, value)
         cell.max = Math.max(cell.max, value)
+
+        const vCountValue = round(value, 1)
+        if (cell.vCount[vCountValue]) {
+          cell.vCount[vCountValue]++
+        } else {
+          cell.vCount[vCountValue] = 1
+        }
       } else {
         cell = {
           weight,
@@ -93,6 +100,7 @@ export default class LogFile {
           value: round(value, 2),
           min: value,
           max: value,
+          vCount: { [round(value, 1)]: 1 },
         }
       }
       table[rowIndex][colIndex] = cell
