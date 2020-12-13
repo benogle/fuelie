@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import chroma from 'chroma-js'
+import isEqual from 'lodash/isEqual'
 
 import ReactDataSheet from 'react-datasheet'
 import 'react-datasheet/lib/react-datasheet.css'
@@ -47,6 +48,10 @@ const colorMap = {
 }
 
 class DataGrid extends React.Component {
+  shouldComponentUpdate (nextProps) {
+    return this.props.data !== nextProps.data
+  }
+
   getColorScaleFunc () {
     const { colorScale } = this.props
     const colors = []
@@ -121,6 +126,7 @@ class DataGrid extends React.Component {
   }
 
   render () {
+    const { onSelect, data } = this.props
     return (
       <ReactDataSheet
         data={this.getTableData()}
@@ -139,6 +145,14 @@ class DataGrid extends React.Component {
             </tbody>
           </GridContainer>
         )}
+        onSelect={({ start, end }) => {
+          if (onSelect) {
+            const cell = isEqual(start, end)
+              ? data[start.i][start.j]
+              : null
+            onSelect({ start, end, cell })
+          }
+        }}
       />
     )
   }
@@ -175,6 +189,7 @@ DataGrid.propTypes = {
   })).isRequired,
 
   renderHoverTip: PropTypes.func,
+  onSelect: PropTypes.func,
 }
 
 export default DataGrid
