@@ -60,6 +60,7 @@ class LogFilePage extends React.Component {
             data={table}
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
+            readOnly
           />
         </GridContainer>
       </Container>

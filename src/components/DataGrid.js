@@ -8,6 +8,11 @@ import 'react-datasheet/lib/react-datasheet.css'
 const GridContainer = styled.table`
   width: 100%;
   height: 100%;
+
+  td.cell.read-only {
+    background: white !important;
+    color: inherit !important;
+  }
 `
 
 const CellContainer = styled.div`
@@ -34,12 +39,20 @@ const CellContainer = styled.div`
 `
 
 class DataGrid extends React.Component {
+  getRow (rowValues) {
+    const { readOnly } = this.props
+    return rowValues.map((v) => ({
+      ...v,
+      readOnly,
+    }))
+  }
+
   getTableData () {
-    const { data, rowHeaders, columnHeaders, readOnly, rowSigFigs, columnSigFigs } = this.props
+    const { data, rowHeaders, columnHeaders, rowSigFigs, columnSigFigs } = this.props
 
     const newData = data.map((row, index) => [
       this.buildHeaderCellData(rowHeaders[index].toFixed(rowSigFigs)),
-    ].concat(row))
+    ].concat(this.getRow(row)))
 
     newData.push(
       [this.buildHeaderCellData(null)]
