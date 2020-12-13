@@ -11,8 +11,10 @@
     "electron-is-dev": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.0",
+    "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "react": "^16.13.1",
+    "react-datasheet": "^1.4.8",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
     "styled-components": "^5.2.0"
