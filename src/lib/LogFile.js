@@ -66,12 +66,16 @@ export default class LogFile {
   buildAvgFuelMixtureTable () {
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
-    const { minValue, maxValue, minWeight } = this.configProfile.get('avgFuelMixture')
+    const { minValue, maxValue, minWeight, minTotalWeight } = this.configProfile.get('avgFuelMixture')
+
+    function getEmptyValue () {
+      return { length: 0, value: null }
+    }
 
     const table = new Array(fuelRows.length)
     for (let rowI = 0; rowI < table.length; rowI++) {
       table[rowI] = new Array(fuelColumns.length)
-      table[rowI].fill({ length: 0, value: null })
+      table[rowI].fill(getEmptyValue())
     }
 
     function addSample (value, rowIndex, colIndex, weight) {
@@ -122,6 +126,16 @@ export default class LogFile {
       addSample(newLineValue, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
       addSample(newLineValue, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left
       addSample(newLineValue, rowIndex + 1, colIndex + 1, (1 - rowWeight) * (1 - colWeight)) // bottom right
+    }
+
+    for (let rowIndex = 0; rowIndex < table.length; rowIndex++) {
+      const row = table[rowIndex]
+      for (var colIndex = 0; colIndex < row.length; colIndex++) {
+        const cell = row[colIndex]
+        if (cell.weight < minTotalWeight) {
+          row[colIndex] = getEmptyValue()
+        }
+      }
     }
 
     this.avgFuelMixtureTable = table

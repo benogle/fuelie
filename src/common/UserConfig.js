@@ -87,6 +87,7 @@ const defaultConfig = {
       minValue: 8,
       maxValue: 20,
       minWeight: 0.3,
+      minTotalWeight: 1,
     },
   }],
 }
