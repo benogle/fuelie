@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "chroma-js": "^2.1.0",
     "csv-parser": "^3.0.0",
+    "detect-csv": "^1.1.0",
     "electron-is-dev": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.0",

@@ -2,6 +2,7 @@ import csv from 'csv-parser'
 import req from 'common/req'
 import { round } from 'common/helpers'
 import getInterpolatedIndex from 'lib/getInterpolatedIndex'
+import detectCSV from 'detect-csv'
 
 const fs = req('fs')
 
@@ -98,47 +99,28 @@ export default class LogFile {
   }
 }
 
-const separators = [',', '\t']
 async function detectSeparator (filename) {
-  for (const separator of separators) {
-    if (await isSeparator(filename, separator)) return separator
-  }
-  return null
+  const firstLine = await readFirstLine(filename)
+  const csvInfo = detectCSV(firstLine)
+  return csvInfo && csvInfo.delimiter
+    ? csvInfo.delimiter
+    : null
 }
 
-function isSeparator (filename, separator) {
-  return new Promise((resolve) => {
-    let isit = false
-    const stream = fs.createReadStream(filename, { encoding: 'utf8' })
-      .pipe(csv({ separator }))
-      .on('data', (data) => {
-        isit = data && Object.keys(data).length > 2
-        stream.destroy()
-        resolve(isit)
-      })
-      .on('error', (error) => {
-        console.log('seperr', error)
-      })
+function readFirstLine (path) {
+  return new Promise(function (resolve, reject) {
+    const rs = fs.createReadStream(path, { encoding: 'utf8' })
+    let acc = ''
+    let pos = 0
+    let index
+    rs.on('data', function (chunk) {
+      index = chunk.indexOf('\n')
+      acc += chunk
+      index !== -1 ? rs.close() : pos += chunk.length
+    }).on('close', function () {
+      resolve(acc.slice(0, pos + index))
+    }).on('error', function (err) {
+      reject(err)
+    })
   })
 }
-// TODO: use this to work out the separator
-// function readFirstLine (path) {
-//   return Q.promise(function (resolve, reject) {
-//     var rs = fs.createReadStream(path, {encoding: 'utf8'});
-//     var acc = '';
-//     var pos = 0;
-//     var index;
-//     rs
-//       .on('data', function (chunk) {
-//         index = chunk.indexOf('\n');
-//         acc += chunk;
-//         index !== -1 ? rs.close() : pos += chunk.length;
-//       })
-//       .on('close', function () {
-//         resolve(acc.slice(0, pos + index));
-//       })
-//       .on('error', function (err) {
-//         reject(err);
-//       })
-//   });
-// }

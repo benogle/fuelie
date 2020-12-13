@@ -110,7 +110,7 @@ class DataGrid extends React.Component {
 
     const Tag = cell.isHeader ? 'th' : 'td'
     return (
-      <Tag {...rest} {...attributes}>
+      <Tag {...rest} {...attributes} title="test">
         <CellContainer style={{ background: cell.background }}>
           {props.children}
         </CellContainer>
@@ -157,10 +157,10 @@ DataGrid.defaultProps = {
 DataGrid.propTypes = {
   readOnly: PropTypes.bool,
   columnHeaders: PropTypes.arrayOf(
-    PropTypes.string,
+    PropTypes.number,
   ).isRequired,
   rowHeaders: PropTypes.arrayOf(
-    PropTypes.string,
+    PropTypes.number,
   ).isRequired,
   rowSigFigs: PropTypes.number,
   columnSigFigs: PropTypes.number,
