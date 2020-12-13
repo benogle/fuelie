@@ -24,13 +24,13 @@ export default function getInterpolatedIndex (value, scaleArr) {
   for (let i = 0; i < lastIndex; i++) {
     const left = scaleArr[i]
     const right = scaleArr[i + 1]
-    let factor
+    let factor = null
     if (isReverse && value <= left && value > right) {
       factor = 1 - getFactor(value, right, left)
     } else if (!isReverse && value >= left && value < right) {
       factor = getFactor(value, left, right)
     }
-    if (factor) {
+    if (factor != null) {
       return { index: i, factor }
     }
   }

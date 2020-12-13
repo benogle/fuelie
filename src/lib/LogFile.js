@@ -75,7 +75,7 @@ export default class LogFile {
     for (const line of this.data) {
       const { rowI, colI, m: newLineValue } = line
       if (!rowI || !colI || !newLineValue) {
-        console.log('problem with interpolate', rowI, colI, line)
+        console.log('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
       }
 

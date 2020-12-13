@@ -37,5 +37,10 @@ describe('getInterpolatedIndex', function () {
       expect(getInterpolatedIndex(-13, scaleArr)).to.eql({ index: scaleArr.length - 1, factor: 1 })
       expect(getInterpolatedIndex(-20, scaleArr)).to.eql({ index: scaleArr.length - 1, factor: 1 })
     })
+
+    it('handles this weird negative case...', async function () {
+      scaleArr = [9.96717357635498, 6.95952606201172, 3.9518780708313, 1.52635419368744, -0.0259800497442484, -1.1902312040329, -2.35448241233826, -3.51873373985291, -4.68298482894897, -5.84723567962646, -6.91446542739868, -8.07871723175049, -9.24296760559082, -10.4072189331055, -11.5714702606201, -12.7357206344604, -13.8999719619751]
+      expect(getInterpolatedIndex(-2.35448, scaleArr)).to.eql({ index: 5, factor: 0 })
+    })
   })
 })
