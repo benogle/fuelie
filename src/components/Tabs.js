@@ -48,7 +48,7 @@ const TabBar = styled.div`
   padding-top: 10px;
   padding-left: ${CONTENT_PADDING}px;
   ${Tab} {
-    margin-right: 12px;
+    margin-right: 10px;
   }
 `
 
@@ -63,6 +63,7 @@ class Tabs extends React.Component {
     const isActive = index === tabIndex
     return (
       <Tab
+        key={name}
         isActive={isActive}
         onClick={() => this.handleClickTab(index)}
       >
@@ -105,8 +106,8 @@ Tabs.propTypes = {
   tabIndex: PropTypes.number.isRequired,
   onChangeTab: PropTypes.func.isRequired,
   tabs: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string,
-    render: PropTypes.number,
+    name: PropTypes.string.isRequired,
+    render: PropTypes.func.isRequired,
   })).isRequired,
 }
 
