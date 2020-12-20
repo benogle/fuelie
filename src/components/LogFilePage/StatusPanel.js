@@ -10,6 +10,7 @@ const PanelContainer = styled.div`
 
   min-width: 250px;
   padding: ${PADDING}px;
+  padding-top: 0;
 `
 
 const PanelScroller = styled.div`
@@ -27,6 +28,7 @@ const MainValueContainer = styled.div`
 const MainValue = styled.div`
   font-size: 20px;
   font-weight: bold;
+  line-height: 1;
 `
 
 const SubValue = styled.div`

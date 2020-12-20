@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import theme from 'style/theme'
+
 import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
 import Tabs from 'components/Tabs'
@@ -12,22 +14,42 @@ import StatusPanel from './StatusPanel'
 import req from 'common/req'
 const path = req('path')
 
+// FIXME: This is stupid but I am fighting flexbox
+const CHROME_HEIGHT = 90
+
 const Container = styled.div`
   height: 100%;
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  flex-direction: column;
 `
 
-const LeftPanel = styled.div`
+const TabContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  flex-direction: row;
+  flex: 1;
+  height: calc(100% - ${CHROME_HEIGHT}px); /* FIXME: This is stupid but i am fighting flexbox */
 `
 
 const GridContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
-  width: 100%;
+  padding: 20px;
+  background: white;
+  box-shadow: ${theme.boxShadows[50]};
+
+  .data-grid-container {
+    height: 100%;
+  }
+
+`
+
+const StatusBar = styled.div`
+  display: flex;
+  align-items: center;
+  height: 40px;
+  font-size: 14px;
+  padding-left: 20px;
 `
 
 class LogFilePage extends React.Component {
@@ -144,16 +166,19 @@ class LogFilePage extends React.Component {
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
     return (
-      <GridContainer>
-        <DataGrid
-          data={table}
-          rowHeaders={rowHeaders}
-          columnHeaders={columnHeaders}
-          readOnly
-          renderHoverTip={this.renderHoverTip}
-          onSelect={this.handleSelect}
-        />
-      </GridContainer>
+      <TabContainer>
+        <GridContainer>
+          <DataGrid
+            data={table}
+            rowHeaders={rowHeaders}
+            columnHeaders={columnHeaders}
+            readOnly
+            renderHoverTip={this.renderHoverTip}
+            onSelect={this.handleSelect}
+          />
+        </GridContainer>
+        {this.renderSidePanel()}
+      </TabContainer>
     )
   }
 
@@ -186,10 +211,10 @@ class LogFilePage extends React.Component {
   renderData () {
     return (
       <Container>
-        <LeftPanel>
-          {this.renderTabs()}
-        </LeftPanel>
-        {this.renderSidePanel()}
+        {this.renderTabs()}
+        <StatusBar>
+          <span>{this.props.filename}</span>
+        </StatusBar>
       </Container>
     )
   }

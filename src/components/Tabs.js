@@ -2,19 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-const BACKGROUND = '#ebebeb'
+import theme from 'style/theme'
+
+const BACKGROUND = theme.colors.blacks[20]
 const BACKGROUND_ACTIVE = 'white'
 const CONTENT_PADDING = 20
 const TAB_PADDING = 30
 const TAB_HEIGHT = 40
 const TAB_WIDTH = 120
-const BOX_SHADOW = '0 1px 12px 0 rgba(0,0,0,0.06)'
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-`
 
 const Tab = styled.div`
   position: relative;
@@ -33,7 +28,7 @@ const Tab = styled.div`
 
   ${({ isActive }) => isActive && `
     background: ${BACKGROUND_ACTIVE};
-    box-shadow: ${BOX_SHADOW};
+    box-shadow: ${theme.boxShadows[50]};
 
     /* super ghetto to cover the tabs shadow */
     &::after {
@@ -55,15 +50,6 @@ const TabBar = styled.div`
   ${Tab} {
     margin-right: 12px;
   }
-`
-
-const TabContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: ${CONTENT_PADDING}px;
-  flex-grow: 1;
-  background: ${BACKGROUND_ACTIVE};
-  box-shadow: ${BOX_SHADOW};
 `
 
 class Tabs extends React.Component {
@@ -97,18 +83,16 @@ class Tabs extends React.Component {
   renderTabContent () {
     const { tabs, tabIndex } = this.props
     return (
-      <TabContent>
-        {tabs[tabIndex].render()}
-      </TabContent>
+      tabs[tabIndex].render()
     )
   }
 
   render () {
     return (
-      <Container>
+      <>
         {this.renderTabBar()}
         {this.renderTabContent()}
-      </Container>
+      </>
     )
   }
 }
