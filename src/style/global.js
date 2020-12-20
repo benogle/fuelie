@@ -13,6 +13,7 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
+    background: #f8f8f8;
   }
 
   #root {

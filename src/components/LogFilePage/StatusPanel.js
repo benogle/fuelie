@@ -8,7 +8,6 @@ const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  background: #eee;
   min-width: 250px;
   padding: ${PADDING}px;
 `
@@ -40,11 +39,12 @@ const ValueContainer = styled.div`
   padding: 5px ${PADDING}px;
 
   &:hover {
-    background: #f5f5f5;
+    background: #f2f2f2;
   }
 `
 
 const ValueName = styled.div`
+  cursor: default;
 `
 
 const Value = styled.div`

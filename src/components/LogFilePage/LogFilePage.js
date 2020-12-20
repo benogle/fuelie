@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
+import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
 
 import StatusPanel from './StatusPanel'
@@ -21,7 +22,6 @@ const Container = styled.div`
 const LeftPanel = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
   flex-grow: 1;
 `
 
@@ -36,6 +36,7 @@ class LogFilePage extends React.Component {
     selectedCell: null,
     selectedStart: null,
     selectedEnd: null,
+    tabIndex: 0,
   }
 
   componentDidMount () {
@@ -56,6 +57,10 @@ class LogFilePage extends React.Component {
       selectedStart: start,
       selectedEnd: end,
     })
+  }
+
+  handleChangeTab = ({ tabIndex }) => {
+    this.setState({ tabIndex })
   }
 
   loadFile () {
@@ -86,7 +91,7 @@ class LogFilePage extends React.Component {
   }
 
   renderSidePanel () {
-    const { selectedCell, selectedStart, selectedEnd } = this.state
+    const { selectedCell, selectedStart } = this.state
 
     let mainValue = null
     let values = null
@@ -133,25 +138,56 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderData () {
-    // console.log('render')
+  renderAverageMixture = () => {
     const { configProfile } = this.props
     const table = this.logFile.getAvgFuelMixtureTable()
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
     return (
+      <GridContainer>
+        <DataGrid
+          data={table}
+          rowHeaders={rowHeaders}
+          columnHeaders={columnHeaders}
+          readOnly
+          renderHoverTip={this.renderHoverTip}
+          onSelect={this.handleSelect}
+        />
+      </GridContainer>
+    )
+  }
+
+  renderOtherTab () {
+    return (
+      <div>
+        IHIUD IUHSIUDFHIUSHDFIUHSIUDHF
+      </div>
+    )
+  }
+
+  renderTabs () {
+    const { tabIndex } = this.state
+    const tabs = [{
+      name: 'Average AFR',
+      render: this.renderAverageMixture,
+    }, {
+      name: 'Target AFR',
+      render: this.renderOtherTab,
+    }]
+    return (
+      <Tabs
+        tabIndex={tabIndex}
+        onChangeTab={this.handleChangeTab}
+        tabs={tabs}
+      />
+    )
+  }
+
+  renderData () {
+    return (
       <Container>
         <LeftPanel>
-          <GridContainer>
-            <DataGrid
-              data={table}
-              rowHeaders={rowHeaders}
-              columnHeaders={columnHeaders}
-              readOnly
-              renderHoverTip={this.renderHoverTip}
-              onSelect={this.handleSelect}
-            />
-          </GridContainer>
+          {this.renderTabs()}
         </LeftPanel>
         {this.renderSidePanel()}
       </Container>
