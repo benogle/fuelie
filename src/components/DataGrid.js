@@ -145,10 +145,12 @@ class DataGrid extends React.Component {
             </tbody>
           </GridContainer>
         )}
-        onSelect={({ start, end }) => {
+        onSelect={({ start: ogStart, end: ogEnd }) => {
           if (onSelect) {
+            const end = { x: ogEnd.j - 1, y: ogEnd.i }
+            const start = { x: ogStart.j - 1, y: ogStart.i }
             const cell = isEqual(start, end)
-              ? data[start.i][start.j]
+              ? data[start.y][start.x]
               : null
             onSelect({ start, end, cell })
           }

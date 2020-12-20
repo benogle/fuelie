@@ -130,7 +130,7 @@ class LogFilePage extends React.Component {
     if (selectedStart) {
       content.push(
         <div key="cellloc">
-          Location ({selectedStart.j - 1}, {selectedStart.i})
+          Location ({selectedStart.x}, {selectedStart.y})
         </div>,
       )
     }
