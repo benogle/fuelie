@@ -6,6 +6,8 @@ import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
 import { round } from 'common/helpers'
 
+import StatusPanel from './StatusPanel'
+
 import req from 'common/req'
 const path = req('path')
 
@@ -21,18 +23,6 @@ const LeftPanel = styled.div`
   flex-direction: column;
   padding: 20px;
   flex-grow: 1;
-`
-
-const RightPanel = styled.div`
-  background: #eee;
-  min-width: 250px;
-  padding: 20px;
-`
-
-const ValueContainer = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 20px;
 `
 
 const GridContainer = styled.div`
@@ -98,47 +88,48 @@ class LogFilePage extends React.Component {
   renderSidePanel () {
     const { selectedCell, selectedStart, selectedEnd } = this.state
 
-    const content = []
+    let mainValue = null
+    let values = null
 
     if (selectedCell && selectedCell.value) {
+      mainValue = selectedCell.value
+
       const counts = getCellVCountArray(selectedCell)
         .map(({ value, count }) => (
           <div key={`v${value}`}>
-            {value}({count})
+            {value} ({count})
           </div>
         ))
 
-      content.push(
-        <ValueContainer key="value">
-          {selectedCell.value}
-        </ValueContainer>,
-        <div key="minmax">
-          Range {round(selectedCell.min, 2)} - {round(selectedCell.max, 2)}
-        </div>,
-        <div key="len">
-          Samples {selectedCell.length}
-        </div>,
-        <div key="weight">
-          Weight {round(selectedCell.weight, 2)}
-        </div>,
-        <div key="counts">
-          {counts}
-        </div>,
-      )
+      values = [{
+        name: 'Range',
+        value: `${round(selectedCell.min, 2)} - ${round(selectedCell.max, 2)}`,
+      }, {
+        name: 'Weight',
+        value: `${round(selectedCell.weight, 2)}`,
+      }, {
+        name: 'Samples',
+        value: `${selectedCell.length}`,
+      }, {
+        name: counts,
+        key: 'counts',
+      }]
     }
 
-    if (selectedStart) {
-      content.push(
-        <div key="cellloc">
-          Location ({selectedStart.x}, {selectedStart.y})
-        </div>,
+    const subValue = selectedStart
+      ? (
+        <span title="Table Location">
+          ({selectedStart.x}, {selectedStart.y})
+        </span>
       )
-    }
+      : null
 
     return (
-      <RightPanel>
-        {content}
-      </RightPanel>
+      <StatusPanel
+        mainValue={mainValue}
+        subValue={subValue}
+        values={values}
+      />
     )
   }
 

@@ -147,6 +147,7 @@ class DataGrid extends React.Component {
         )}
         onSelect={({ start: ogStart, end: ogEnd }) => {
           if (onSelect) {
+            // -1 cause the header is in the 0 position
             const end = { x: ogEnd.j - 1, y: ogEnd.i }
             const start = { x: ogStart.j - 1, y: ogStart.i }
             const cell = isEqual(start, end)
