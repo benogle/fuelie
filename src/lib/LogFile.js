@@ -1,3 +1,4 @@
+import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
 import req from 'common/req'
 import { round } from 'common/helpers'
@@ -6,10 +7,42 @@ import detectCSV from 'detect-csv'
 
 const fs = req('fs')
 
+const RELOAD_KEYS = ['fuelMap', 'logHeaders', 'units']
+
 export default class LogFile {
-  constructor (filename, configProfile) {
+  constructor (filename, configProfile, { onChange } = {}) {
     this.filename = filename
     this.configProfile = configProfile
+  }
+
+  async setConfigProfile (newConfigProfile) {
+    const changedKeys = this.configProfile.getChangedKeys(newConfigProfile)
+    this.configProfile = newConfigProfile
+    if (!changedKeys) return
+
+    const changedReloadKeys = intersection(RELOAD_KEYS, changedKeys)
+    if (changedReloadKeys.length) {
+      console.log('Reloading file', changedReloadKeys)
+      return this.readFile()
+    }
+
+    const changeHandlers = {
+      avgFuelMixture: () => this.buildAvgFuelMixtureTable(),
+      fuelMixtureTarget: () => {
+        console.log('OK!')
+      },
+      // suggestCalc: () => {},
+    }
+
+    // A simpler change happend, can use the data we already have
+    for (const key of changedKeys) {
+      if (changeHandlers[key]) {
+        console.log('Trigger logfile update', key)
+        await changeHandlers[key]()
+      } else {
+        console.log('Key didnt trigger any changes', key)
+      }
+    }
   }
 
   readLine (logLine) {

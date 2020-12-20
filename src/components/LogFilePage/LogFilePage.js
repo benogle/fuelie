@@ -67,9 +67,10 @@ class LogFilePage extends React.Component {
     this.loadFile()
   }
 
-  componentDidUpdate (prevProps) {
+  async componentDidUpdate (prevProps) {
     if (this.props.configProfile !== prevProps.configProfile) {
-      this.loadFile()
+      await this.logFile.setConfigProfile(this.props.configProfile)
+      this.setState({ loaded: this.state.loaded })
     }
   }
 
