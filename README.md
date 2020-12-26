@@ -2,7 +2,7 @@
 [ ] Status panel
   [ ] what goes there for target? Maybe actual, or actual & error?
   [ ] Keep selection between tabs
-[ ] Display another table: amount off target afr
+[ ] Add a thing so I can omit lines with accel trim
 [ ] slider to walk through the logfile
 [ ] make default target afr better
 [ ] cmd-z undo
@@ -15,6 +15,7 @@
 
 ---
 
+[x] Display another table: amount off target afr
 [x] Draw status thing with the hover info
 [x] draw table
   [x] hover info
