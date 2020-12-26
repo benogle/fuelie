@@ -188,6 +188,28 @@ export default class LogFile {
         value,
       }))
     ))
+    this.buildSuggestedMixtureChangeTable()
+  }
+
+  getSuggestedMixtureChangeTable () {
+    return this.suggestedMixtureChangeTable
+  }
+
+  buildSuggestedMixtureChangeTable () {
+    // 12.3 / targetFuel = 14.7 / 1
+    // targetFuel = 12.3 / 14.7 = 0.8367 (scaling factor on fuel cell)
+    // actualAir / actualFuel = targetAir / targetFuel
+    // targetFuel = actualAir / targetAir
+    this.suggestedMixtureChangeTable = this.targetMixtureTable.map((row, rowIndex) => (
+      row.map(({ value: targetValue }, colIndex) => {
+        const { value: loggedValue } = this.avgFuelMixtureTable[rowIndex][colIndex]
+        let value = null
+        if (loggedValue != null) {
+          value = round((loggedValue / targetValue - 1) * 100, 2)
+        }
+        return { value, targetValue, loggedValue }
+      })
+    ))
   }
 }
 

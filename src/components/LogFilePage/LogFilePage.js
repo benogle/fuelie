@@ -215,6 +215,36 @@ class LogFilePage extends React.Component {
     )
   }
 
+  renderSuggestedMixtureChange = () => {
+    const { configProfile } = this.props
+    const table = this.logFile.getSuggestedMixtureChangeTable()
+    const rowHeaders = configProfile.getFuelMapRows()
+    const columnHeaders = configProfile.getFuelMapColumns()
+    return (
+      <TabContainer>
+        <GridContainer>
+          <DataGrid
+            data={table}
+            rowHeaders={rowHeaders}
+            columnHeaders={columnHeaders}
+            readOnly
+            onSelect={this.handleSelect}
+            colorScale={[
+              { color: 'red', value: -18 },
+              { color: 'yellow', value: -10 },
+              { color: 'blue', value: -4 },
+              { color: 'green', value: 0 },
+              { color: 'blue', value: 4 },
+              { color: 'yellow', value: 10 },
+              { color: 'red', value: 18 },
+            ]}
+          />
+        </GridContainer>
+        {this.renderSidePanel()}
+      </TabContainer>
+    )
+  }
+
   renderTabs () {
     const { tabIndex } = this.state
     const tabs = [{
@@ -223,6 +253,9 @@ class LogFilePage extends React.Component {
     }, {
       name: 'Target AFR',
       render: this.renderTargetMixture,
+    }, {
+      name: 'Suggested Change',
+      render: this.renderSuggestedMixtureChange,
     }]
     return (
       <Tabs
