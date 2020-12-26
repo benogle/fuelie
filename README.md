@@ -4,6 +4,7 @@
   [ ] Keep selection between tabs
 [ ] Add a thing so I can omit lines with accel trim
 [ ] slider to walk through the logfile
+
 [ ] make default target afr better
 [ ] cmd-z undo
 [ ] cmd-option arrows, move through tabs

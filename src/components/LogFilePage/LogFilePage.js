@@ -113,15 +113,13 @@ class LogFilePage extends React.Component {
     return `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length};\n${counts}`
   }
 
-  renderSidePanel () {
+  renderSidePanel ({ isAvgFuelMixture, isTargetMixture, isSuggestedMixtureChange }) {
     const { selectedCell, selectedStart } = this.state
 
     let mainValue = null
     let values = null
 
     if (selectedCell) {
-      mainValue = selectedCell.value ? selectedCell.value : null
-
       const avgFuelMixtureTable = this.logFile.getAvgFuelMixtureTable()
       const targetMixtureTable = this.logFile.getTargetMixtureTable()
       const suggestedMixtureChangeTable = this.logFile.getSuggestedMixtureChangeTable()
@@ -130,30 +128,48 @@ class LogFilePage extends React.Component {
       const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
       const suggestedMixtureChangeCell = suggestedMixtureChangeTable[selectedStart.y][selectedStart.x]
 
+      if (isAvgFuelMixture) {
+        mainValue = avgFuelMixtureCell.value ? avgFuelMixtureCell.value : null
+      } else if (isTargetMixture) {
+        mainValue = targetMixtureCell.value
+      } else if (isSuggestedMixtureChange) {
+        mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + '%' : null
+      }
+
       values = []
 
       const hasLoggedValues = avgFuelMixtureCell && avgFuelMixtureCell.value
 
       if (hasLoggedValues) {
+        if (!isAvgFuelMixture) {
+          values.push({
+            name: 'Avg Mixture',
+            value: `${round(avgFuelMixtureCell.value, 2)}`,
+          })
+        }
+
         values.push({
-          name: 'Avg Mixture',
-          value: `${round(avgFuelMixtureCell.value, 2)}`,
-        }, {
           name: 'Mix. Range',
           value: `${round(avgFuelMixtureCell.min, 2)} - ${round(avgFuelMixtureCell.max, 2)}`,
         })
       }
 
-      values.push({
-        name: 'Target',
-        value: `${round(targetMixtureCell.value, 2)}`,
-      })
+      if (!isTargetMixture) {
+        values.push({
+          name: 'Target',
+          value: `${round(targetMixtureCell.value, 2)}`,
+        })
+      }
 
       if (hasLoggedValues) {
+        if (!isSuggestedMixtureChange) {
+          values.push({
+            name: 'Sug. Change',
+            value: `${round(suggestedMixtureChangeCell.value, 2)}%`,
+          })
+        }
+
         values.push({
-          name: 'Sug. Change',
-          value: `${round(suggestedMixtureChangeCell.value, 2)}%`,
-        }, {
           name: 'Weight',
           value: `${round(avgFuelMixtureCell.weight, 2)}`,
         }, {
@@ -205,7 +221,7 @@ class LogFilePage extends React.Component {
             onSelect={this.handleSelect}
           />
         </GridContainer>
-        {this.renderSidePanel()}
+        {this.renderSidePanel({ isAvgFuelMixture: true })}
       </TabContainer>
     )
   }
@@ -237,7 +253,7 @@ class LogFilePage extends React.Component {
             onCellsChanged={handleChange}
           />
         </GridContainer>
-        {this.renderSidePanel()}
+        {this.renderSidePanel({ isTargetMixture: true })}
       </TabContainer>
     )
   }
@@ -267,7 +283,7 @@ class LogFilePage extends React.Component {
             ]}
           />
         </GridContainer>
-        {this.renderSidePanel()}
+        {this.renderSidePanel({ isSuggestedMixtureChange: true })}
       </TabContainer>
     )
   }
