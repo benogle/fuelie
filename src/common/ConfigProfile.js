@@ -1,5 +1,6 @@
 const get = require('lodash/get')
 const each = require('lodash/each')
+const clone = require('lodash/clone')
 const isEqual = require('lodash/isEqual')
 // {
 //   name: 'Default',
@@ -20,8 +21,9 @@ const isEqual = require('lodash/isEqual')
 // }
 
 class ConfigProfile {
-  constructor (profile) {
+  constructor (profile, { userConfig } = {}) {
     this.profile = profile
+    this.userConfig = userConfig // reference to the main userConfig for sets
     if (!this.profile.fuelMixtureTarget) {
       this.profile.fuelMixtureTarget = this.getDefaultFuelMixtureTarget()
     }
@@ -56,7 +58,6 @@ class ConfigProfile {
   }
 
   getFuelMixtureTarget () {
-    console.log('omg', this.profile.fuelMixtureTarget)
     return this.profile.fuelMixtureTarget
   }
 
@@ -71,6 +72,25 @@ class ConfigProfile {
       table.push(newRow)
     }
     return { table }
+  }
+
+  // setters
+
+  set (key, value) {
+    if (!this.userConfig) return
+    return this.userConfig.setConfigProfileKey(this.profile.name, key, value)
+  }
+
+  // changes - Array of objects: [{x, y, value}, ...]
+  updateFuelMixtureTarget (changes) {
+    const newTarget = {
+      ...this.profile.fuelMixtureTarget,
+      table: clone(this.profile.fuelMixtureTarget.table),
+    }
+    for (const { x, y, value } of changes) {
+      newTarget.table[y][x] = value
+    }
+    return this.set('fuelMixtureTarget', newTarget)
   }
 }
 

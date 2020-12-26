@@ -69,7 +69,7 @@ class LogFilePage extends React.Component {
 
   async componentDidUpdate (prevProps) {
     if (this.props.configProfile !== prevProps.configProfile) {
-      await this.logFile.setConfigProfile(this.props.configProfile)
+      await this.logFile.setConfigProfile(this.props.configProfile, this.props.prevConfigProfile)
       this.setState({ loaded: this.state.loaded })
     }
   }
@@ -196,8 +196,14 @@ class LogFilePage extends React.Component {
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
             readOnly={false}
-            // renderHoverTip={this.renderHoverTip}
             onSelect={this.handleSelect}
+            onCellsChanged={(changes) => {
+              configProfile.updateFuelMixtureTarget(changes.map(({ x, y, value, cell }) => ({
+                x,
+                y,
+                value: parseFloat(value) || cell.value,
+              })))
+            }}
           />
         </GridContainer>
         {this.renderSidePanel()}
@@ -251,6 +257,7 @@ function getCellVCountArray (cell) {
 LogFilePage.propTypes = {
   filename: PropTypes.string.isRequired,
   configProfile: PropTypes.object.isRequired,
+  prevConfigProfile: PropTypes.object.isRequired,
 }
 
 export default LogFilePage

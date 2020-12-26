@@ -1,5 +1,6 @@
 // The thing that reads and makes sense of the user's config
 
+const findIndex = require('lodash/findIndex')
 const defaultsDeep = require('lodash/defaultsDeep')
 const ConfigProfile = require('./ConfigProfile')
 
@@ -8,7 +9,8 @@ class UserConfig {
     return defaultConfig
   }
 
-  constructor (config) {
+  constructor (config, { store } = {}) {
+    this.store = store
     this.config = defaultsDeep(config, defaultConfig)
   }
 
@@ -21,7 +23,14 @@ class UserConfig {
     const profile = found && found.length
       ? found[0]
       : profiles[0]
-    return new ConfigProfile(profile)
+
+    return new ConfigProfile(profile, { userConfig: this })
+  }
+
+  setConfigProfileKey (profileName, key, value) {
+    if (!this.store) return
+    const index = findIndex(this.config.profiles, (p) => p.name === profileName)
+    return this.store.set(`profiles.${index}.${key}`, value)
   }
 }
 

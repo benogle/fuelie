@@ -31,11 +31,12 @@ class Main extends React.Component {
   }
 
   renderFile () {
-    const { userConfig } = this.props
+    const { userConfig, prevUserConfig } = this.props
     return (
       <LogFilePage
         filename={this.filename}
         configProfile={userConfig.getConfigProfile()}
+        prevConfigProfile={prevUserConfig ? prevUserConfig.getConfigProfile() : null}
       />
     )
   }
@@ -49,6 +50,7 @@ class Main extends React.Component {
 
 Main.propTypes = {
   userConfig: PropTypes.object.isRequired,
+  prevUserConfig: PropTypes.object,
 }
 
 export default Main

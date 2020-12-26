@@ -52,6 +52,35 @@ class DataGrid extends React.Component {
     return this.props.data !== nextProps.data
   }
 
+  handleSelect = ({ start: ogStart, end: ogEnd }) => {
+    const { onSelect, data } = this.props
+    if (onSelect) {
+      // -1 cause the header is in the 0 position
+      const end = { x: ogEnd.j - 1, y: ogEnd.i }
+      const start = { x: ogStart.j - 1, y: ogStart.i }
+      const cell = isEqual(start, end)
+        ? data[start.y][start.x]
+        : null
+      onSelect({ start, end, cell })
+    }
+  }
+
+  handleCellsChanged = (changes) => {
+    const { onCellsChanged } = this.props
+    // changes will be an array of objects
+    // [{cell, col, row, value}, ...]
+    // value is the value that the user set
+    if (onCellsChanged) {
+      const updatedChanges = changes.map(({ col, row, value, cell }) => ({
+        x: col - 1,
+        y: row,
+        value,
+        cell,
+      }))
+      onCellsChanged(updatedChanges)
+    }
+  }
+
   getColorScaleFunc () {
     const { colorScale } = this.props
     const colors = []
@@ -126,18 +155,16 @@ class DataGrid extends React.Component {
   }
 
   render () {
-    const { onSelect, data } = this.props
     return (
       <ReactDataSheet
         data={this.getTableData()}
-        valueRenderer={(cell) => cell.value}
         isCellNavigable={(cell, row, col) => (
           !cell.isHeader
         )}
-        onCellsChanged={(changes) => {
-          console.log(changes)
-        }}
+        onSelect={this.handleSelect}
+        onCellsChanged={this.handleCellsChanged}
         cellRenderer={this.renderCell}
+        valueRenderer={(cell) => cell.value}
         sheetRenderer={(props) => (
           <GridContainer className={props.className}>
             <tbody>
@@ -145,17 +172,6 @@ class DataGrid extends React.Component {
             </tbody>
           </GridContainer>
         )}
-        onSelect={({ start: ogStart, end: ogEnd }) => {
-          if (onSelect) {
-            // -1 cause the header is in the 0 position
-            const end = { x: ogEnd.j - 1, y: ogEnd.i }
-            const start = { x: ogStart.j - 1, y: ogStart.i }
-            const cell = isEqual(start, end)
-              ? data[start.y][start.x]
-              : null
-            onSelect({ start, end, cell })
-          }
-        }}
       />
     )
   }
@@ -193,6 +209,7 @@ DataGrid.propTypes = {
 
   renderHoverTip: PropTypes.func,
   onSelect: PropTypes.func,
+  onCellsChanged: PropTypes.func,
 }
 
 export default DataGrid

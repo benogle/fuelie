@@ -15,10 +15,14 @@ export default class LogFile {
     this.configProfile = configProfile
   }
 
-  async setConfigProfile (newConfigProfile) {
-    const changedKeys = this.configProfile.getChangedKeys(newConfigProfile)
+  async setConfigProfile (newConfigProfile, prevConfigProfile) {
+    if (!prevConfigProfile) prevConfigProfile = this.configProfile
     this.configProfile = newConfigProfile
-    if (!changedKeys) return
+    const changedKeys = this.configProfile.getChangedKeys(prevConfigProfile)
+    if (!changedKeys) {
+      console.log('No changed keys, not updating LogFile state')
+      return
+    }
 
     const changedReloadKeys = intersection(RELOAD_KEYS, changedKeys)
     if (changedReloadKeys.length) {

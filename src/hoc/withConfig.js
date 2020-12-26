@@ -24,8 +24,11 @@ const withConfig = (options) => (Component) => {
       this.configDisposable()
     }
 
-    updateConfig = () => {
-      this.setState({ userConfig: userConfigStore.getUserConfig() })
+    updateConfig = (newStore, prevStore) => {
+      this.setState({
+        userConfig: userConfigStore.getUserConfig(),
+        prevUserConfig: userConfigStore.getUserConfig(prevStore),
+      })
     }
 
     render () {

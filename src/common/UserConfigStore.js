@@ -15,8 +15,11 @@ class UserConfigStore extends Store {
     })
   }
 
-  getUserConfig () {
-    return new UserConfig(this.store)
+  getUserConfig (configStoreData) {
+    if (configStoreData) {
+      return new UserConfig(configStoreData) // no setting/updating on this one
+    }
+    return new UserConfig(this.store, { store: this })
   }
 }
 
