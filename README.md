@@ -1,6 +1,6 @@
 
 [ ] Status panel
-  [ ] what goes there for target? Maybe actual, or actual & error?
+  [x] what goes there for target? Maybe actual, or actual & error?
   [ ] Keep selection between tabs
 [ ] Add a thing so I can omit lines with accel trim
 [ ] slider to walk through the logfile
