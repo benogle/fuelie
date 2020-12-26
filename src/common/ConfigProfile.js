@@ -1,4 +1,6 @@
 const get = require('lodash/get')
+const each = require('lodash/each')
+const isEqual = require('lodash/isEqual')
 // {
 //   name: 'Default',
 //   suggestCalc: 'afr',
@@ -20,6 +22,9 @@ const get = require('lodash/get')
 class ConfigProfile {
   constructor (profile) {
     this.profile = profile
+    if (!this.profile.fuelMixtureTarget) {
+      this.profile.fuelMixtureTarget = this.getDefaultFuelMixtureTarget()
+    }
   }
 
   getLogHeaders () {
@@ -36,6 +41,36 @@ class ConfigProfile {
 
   get (key) {
     return get(this.profile, key)
+  }
+
+  getChangedKeys (otherConfigProfile) {
+    const changedKeys = []
+    each(this.profile, (v, k) => {
+      if (!isEqual(v, otherConfigProfile.get(k))) {
+        changedKeys.push(k)
+      }
+    })
+    return changedKeys && changedKeys.length
+      ? changedKeys
+      : null
+  }
+
+  getFuelMixtureTarget () {
+    console.log('omg', this.profile.fuelMixtureTarget)
+    return this.profile.fuelMixtureTarget
+  }
+
+  getDefaultFuelMixtureTarget () {
+    const table = []
+    // TODO: make something smart here that gives good defaults
+    for (const row of this.profile.fuelMap.rows) {
+      const newRow = []
+      for (const column of this.profile.fuelMap.columns) {
+        newRow.push(12.5)
+      }
+      table.push(newRow)
+    }
+    return { table }
   }
 }
 

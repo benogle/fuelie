@@ -74,6 +74,12 @@ const defaultConfig = {
         10500,
       ],
     },
+    // fuelMixtureTarget: {
+    //   table: [
+    //     [col, col, col],
+    //     // ...other rows
+    //   ],
+    // },
     units: {
       mixture: 'afr',
     },

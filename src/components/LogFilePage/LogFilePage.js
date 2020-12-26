@@ -183,11 +183,25 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderOtherTab () {
+  renderTargetMixture = () => {
+    const { configProfile } = this.props
+    const table = this.logFile.getTargetMixtureTable()
+    const rowHeaders = configProfile.getFuelMapRows()
+    const columnHeaders = configProfile.getFuelMapColumns()
     return (
-      <div>
-        IHIUD IUHSIUDFHIUSHDFIUHSIUDHF
-      </div>
+      <TabContainer>
+        <GridContainer>
+          <DataGrid
+            data={table}
+            rowHeaders={rowHeaders}
+            columnHeaders={columnHeaders}
+            readOnly={false}
+            // renderHoverTip={this.renderHoverTip}
+            onSelect={this.handleSelect}
+          />
+        </GridContainer>
+        {this.renderSidePanel()}
+      </TabContainer>
     )
   }
 
@@ -198,7 +212,7 @@ class LogFilePage extends React.Component {
       render: this.renderAverageMixture,
     }, {
       name: 'Target AFR',
-      render: this.renderOtherTab,
+      render: this.renderTargetMixture,
     }]
     return (
       <Tabs
@@ -228,6 +242,7 @@ class LogFilePage extends React.Component {
 }
 
 function getCellVCountArray (cell) {
+  if (!cell || !cell.vCount) return []
   return Object.keys(cell.vCount)
     .map((value) => ({ value, count: cell.vCount[value] }))
     .sort((a, b) => b.count - a.count)

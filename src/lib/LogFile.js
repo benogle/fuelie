@@ -28,9 +28,7 @@ export default class LogFile {
 
     const changeHandlers = {
       avgFuelMixture: () => this.buildAvgFuelMixtureTable(),
-      fuelMixtureTarget: () => {
-        console.log('OK!')
-      },
+      fuelMixtureTarget: () => this.buildTargetMixtureTable(),
       // suggestCalc: () => {},
     }
 
@@ -87,6 +85,7 @@ export default class LogFile {
 
     // Build out second order things
     this.buildAvgFuelMixtureTable()
+    this.buildTargetMixtureTable()
 
     return this.data
   }
@@ -172,6 +171,19 @@ export default class LogFile {
     }
 
     this.avgFuelMixtureTable = table
+  }
+
+  getTargetMixtureTable () {
+    return this.targetMixtureTable
+  }
+
+  buildTargetMixtureTable () {
+    const { table } = this.configProfile.getFuelMixtureTarget()
+    this.targetMixtureTable = table.map((row) => (
+      row.map((value) => ({
+        value,
+      }))
+    ))
   }
 }
 
