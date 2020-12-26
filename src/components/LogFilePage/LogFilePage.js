@@ -188,6 +188,16 @@ class LogFilePage extends React.Component {
     const table = this.logFile.getTargetMixtureTable()
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
+    const min = 9
+    const max = 22
+    const handleChange = (changes) => {
+      configProfile.updateFuelMixtureTarget(changes.map(({ x, y, value, cell }) => ({
+        x,
+        y,
+        value: Math.min(max, Math.max(min, parseFloat(value))) || cell.value,
+      })))
+    }
+
     return (
       <TabContainer>
         <GridContainer>
@@ -197,13 +207,7 @@ class LogFilePage extends React.Component {
             columnHeaders={columnHeaders}
             readOnly={false}
             onSelect={this.handleSelect}
-            onCellsChanged={(changes) => {
-              configProfile.updateFuelMixtureTarget(changes.map(({ x, y, value, cell }) => ({
-                x,
-                y,
-                value: parseFloat(value) || cell.value,
-              })))
-            }}
+            onCellsChanged={handleChange}
           />
         </GridContainer>
         {this.renderSidePanel()}
@@ -257,7 +261,7 @@ function getCellVCountArray (cell) {
 LogFilePage.propTypes = {
   filename: PropTypes.string.isRequired,
   configProfile: PropTypes.object.isRequired,
-  prevConfigProfile: PropTypes.object.isRequired,
+  prevConfigProfile: PropTypes.object,
 }
 
 export default LogFilePage
