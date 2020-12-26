@@ -203,11 +203,11 @@ export default class LogFile {
     this.suggestedMixtureChangeTable = this.targetMixtureTable.map((row, rowIndex) => (
       row.map(({ value: targetValue }, colIndex) => {
         const { value: loggedValue } = this.avgFuelMixtureTable[rowIndex][colIndex]
-        let value = null
+        let suggestedValue = null
         if (loggedValue != null) {
-          value = round((loggedValue / targetValue - 1) * 100, 2)
+          suggestedValue = round((loggedValue / targetValue - 1) * 100, 2)
         }
-        return { value, targetValue, loggedValue }
+        return { value: suggestedValue, targetValue, loggedValue }
       })
     ))
   }

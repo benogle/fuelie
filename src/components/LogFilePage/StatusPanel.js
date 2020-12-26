@@ -90,8 +90,8 @@ class StatusPanel extends React.Component {
 }
 
 StatusPanel.propTypes = {
-  mainValue: PropTypes.string,
-  subValue: PropTypes.string,
+  mainValue: PropTypes.node,
+  subValue: PropTypes.node,
   values: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.node,
     value: PropTypes.node,

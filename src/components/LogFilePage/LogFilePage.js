@@ -119,29 +119,56 @@ class LogFilePage extends React.Component {
     let mainValue = null
     let values = null
 
-    if (selectedCell && selectedCell.value) {
-      mainValue = selectedCell.value
+    if (selectedCell) {
+      mainValue = selectedCell.value ? selectedCell.value : null
 
-      const counts = getCellVCountArray(selectedCell)
-        .map(({ value, count }) => (
-          <div key={`v${value}`}>
-            {value} ({count})
-          </div>
-        ))
+      const avgFuelMixtureTable = this.logFile.getAvgFuelMixtureTable()
+      const targetMixtureTable = this.logFile.getTargetMixtureTable()
+      const suggestedMixtureChangeTable = this.logFile.getSuggestedMixtureChangeTable()
 
-      values = [{
-        name: 'Range',
-        value: `${round(selectedCell.min, 2)} - ${round(selectedCell.max, 2)}`,
-      }, {
-        name: 'Weight',
-        value: `${round(selectedCell.weight, 2)}`,
-      }, {
-        name: 'Samples',
-        value: `${selectedCell.length}`,
-      }, {
-        name: counts,
-        key: 'counts',
-      }]
+      const avgFuelMixtureCell = avgFuelMixtureTable[selectedStart.y][selectedStart.x]
+      const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
+      const suggestedMixtureChangeCell = suggestedMixtureChangeTable[selectedStart.y][selectedStart.x]
+
+      values = []
+
+      const hasLoggedValues = avgFuelMixtureCell && avgFuelMixtureCell.value
+
+      if (hasLoggedValues) {
+        values.push({
+          name: 'Avg Mixture',
+          value: `${round(avgFuelMixtureCell.value, 2)}`,
+        }, {
+          name: 'Mix. Range',
+          value: `${round(avgFuelMixtureCell.min, 2)} - ${round(avgFuelMixtureCell.max, 2)}`,
+        })
+      }
+
+      values.push({
+        name: 'Target',
+        value: `${round(targetMixtureCell.value, 2)}`,
+      })
+
+      if (hasLoggedValues) {
+        values.push({
+          name: 'Sug. Change',
+          value: `${round(suggestedMixtureChangeCell.value, 2)}%`,
+        }, {
+          name: 'Weight',
+          value: `${round(avgFuelMixtureCell.weight, 2)}`,
+        }, {
+          name: 'Samples',
+          value: `${avgFuelMixtureCell.length}`,
+        }, {
+          key: 'counts',
+          name: getCellVCountArray(avgFuelMixtureCell)
+            .map(({ value, count }) => (
+              <div key={`v${value}`}>
+                {value} ({count})
+              </div>
+            )),
+        })
+      }
     }
 
     const subValue = selectedStart
