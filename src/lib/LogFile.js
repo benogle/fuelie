@@ -1,13 +1,17 @@
+import some from 'lodash/some'
+import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
+
 import req from 'common/req'
 import { round } from 'common/helpers'
+import expressions from 'common/expressions'
 import getInterpolatedIndex from 'lib/getInterpolatedIndex'
 import detectCSV from 'detect-csv'
 
 const fs = req('fs')
 
-const RELOAD_KEYS = ['fuelMap', 'logHeaders', 'units']
+const RELOAD_KEYS = ['fuelMap', 'logFile', 'units']
 
 export default class LogFile {
   constructor (filename, configProfile, { onChange } = {}) {
@@ -48,13 +52,17 @@ export default class LogFile {
   }
 
   readLine (logLine) {
-    const { time, row, column, mixture } = this.configProfile.getLogHeaders()
+    const { time, row, column, mixture, defaultType, headerTypes } = this.configProfile.getLogFileConfig()
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const rowV = parseFloat(logLine[row])
     const colV = parseFloat(logLine[column])
 
+    const parsedLine = mapValues(logLine, (v, k) => (
+      parseValue(v, defaultType, headerTypes)
+    ))
     return {
+      ...parsedLine,
       t: parseFloat(logLine[time]),
       rowV,
       rowI: getInterpolatedIndex(rowV, fuelRows),
@@ -102,7 +110,7 @@ export default class LogFile {
   buildAvgFuelMixtureTable () {
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
-    const { minValue, maxValue, minWeight, minTotalWeight } = this.configProfile.get('avgFuelMixture')
+    const { minValue, maxValue, minWeight, minTotalWeight, ignore } = this.configProfile.get('avgFuelMixture')
 
     function getEmptyValue () {
       return { length: 0, value: null }
@@ -154,6 +162,20 @@ export default class LogFile {
       if (!rowI || !colI || !newLineValue) {
         console.log('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
+      }
+
+      if (ignore && ignore.length) {
+        const conditionResults = ignore.map((expressionObj) => {
+          const { condition } = expressions.eval({ expressionObj, data: line, booleanOnly: true })
+          return condition
+        })
+
+        // some() will basically OR the expressions. If any returns true, ignore this line
+        const shouldIgnore = some(conditionResults)
+        if (shouldIgnore) {
+          console.log('Ignore', line)
+          continue
+        }
       }
 
       const { index: rowIndex, weight: rowWeight } = rowI
@@ -211,6 +233,15 @@ export default class LogFile {
       })
     ))
   }
+}
+
+function parseValue (value, headerTypes = {}, defaultType = 'float') {
+  if (defaultType === 'float') {
+    return parseFloat(value) || 0
+  } else if (defaultType === 'integer') {
+    return parseInt(value) || 0
+  }
+  return value
 }
 
 async function detectSeparator (filename) {

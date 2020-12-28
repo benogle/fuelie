@@ -75,6 +75,7 @@ class LogFilePage extends React.Component {
   }
 
   handleSelect = ({ start, end, cell }) => {
+    console.log('select', cell)
     this.setState({
       selectedCell: cell,
       selectedStart: start,

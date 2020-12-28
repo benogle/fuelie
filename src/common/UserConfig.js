@@ -92,17 +92,22 @@ const defaultConfig = {
     units: {
       mixture: 'afr',
     },
-    logHeaders: {
+    logFile: {
       time: 'Time/s',
       row: 'Engine Load',
       column: 'Engine Speed',
       mixture: 'O2 #2',
+      defaultType: 'float',
     },
     avgFuelMixture: {
       minValue: 8,
       maxValue: 20,
       minWeight: 0.3,
       minTotalWeight: 1,
+      // "ignore": [{
+      //   "accel": "Fuel Trim (Accel)",
+      //   "condition": "accel > 15"
+      // }]
     },
   }],
 }

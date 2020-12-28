@@ -2,17 +2,14 @@
 [ ] Status panel
   [x] what goes there for target? Maybe actual, or actual & error?
   [ ] Keep selection between tabs
-[ ] Add a thing so I can omit lines with accel trim
+[x] Add a thing so I can omit lines with accel trim
 [ ] slider to walk through the logfile
+[ ] Fix jank config file handling: when trailing comma, or unparsable, it will wipe the config back to default. Just error....
 
 [ ] make default target afr better
 [ ] cmd-z undo
 [ ] cmd-option arrows, move through tabs
 [ ] can take files as parameters
-
-[ ] Fix
-  [ ] rename things
-    [ ] is config.headers right? might need stuff like units
 
 ---
 

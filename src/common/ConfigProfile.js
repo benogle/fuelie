@@ -12,7 +12,7 @@ const isEqual = require('lodash/isEqual')
 //   units: {
 //     mixture: 'afr',
 //   },
-//   logHeaders: {
+//   logFile: {
 //     time: 'Time/s',
 //     row: 'Engine Load',
 //     column: 'Engine Speed',
@@ -29,8 +29,8 @@ class ConfigProfile {
     }
   }
 
-  getLogHeaders () {
-    return this.profile.logHeaders
+  getLogFileConfig () {
+    return this.profile.logFile
   }
 
   getFuelMapRows () {
