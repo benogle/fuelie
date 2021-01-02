@@ -76,7 +76,6 @@ class DataGridSheet extends React.Component {
 
   handleSelect = ({ start: ogStart, end: ogEnd }) => {
     const { onSelect, data } = this.props
-    console.log('select', ogStart)
     if (onSelect) {
       // -1 cause the header is in the 0 position
       const end = { x: ogEnd.j - 1, y: ogEnd.i }
