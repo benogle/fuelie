@@ -50,7 +50,7 @@ const StatusBar = styled.div`
   align-items: center;
   height: 40px;
   font-size: 14px;
-  padding-left: 20px;
+  padding: 0 20px;
 `
 
 class LogFilePage extends React.Component {
@@ -60,6 +60,10 @@ class LogFilePage extends React.Component {
     selectedStart: null,
     selectedEnd: null,
     tabIndex: 0,
+
+    // Replay things
+    isReplayMode: true,
+    replayIndex: 0,
   }
 
   componentDidMount () {
@@ -86,6 +90,20 @@ class LogFilePage extends React.Component {
 
   handleChangeTab = ({ tabIndex }) => {
     this.setState({ tabIndex })
+  }
+
+  getReplayCellPosition () {
+    const { isReplayMode, replayIndex } = this.state
+    if (!isReplayMode) return null
+
+    const logLine = this.logFile.getLineAtindex(replayIndex)
+    return {
+      x: logLine.colI.index + 1, // +1 to account for the header
+      xWeight: logLine.colI.weight,
+      y: logLine.rowI.index,
+      yWeight: logLine.rowI.weight,
+      value: logLine.m.toFixed(2),
+    }
   }
 
   loadFile () {
@@ -221,6 +239,7 @@ class LogFilePage extends React.Component {
             readOnly
             renderHoverTip={this.renderHoverTip}
             onSelect={this.handleSelect}
+            floatingCellPosition={this.getReplayCellPosition()}
           />
         </GridContainer>
         {this.renderSidePanel({ isAvgFuelMixture: true })}
@@ -253,6 +272,7 @@ class LogFilePage extends React.Component {
             readOnly={false}
             onSelect={this.handleSelect}
             onCellsChanged={handleChange}
+            floatingCellPosition={this.getReplayCellPosition()}
           />
         </GridContainer>
         {this.renderSidePanel({ isTargetMixture: true })}
@@ -274,6 +294,7 @@ class LogFilePage extends React.Component {
             columnHeaders={columnHeaders}
             readOnly
             onSelect={this.handleSelect}
+            floatingCellPosition={this.getReplayCellPosition()}
             colorScale={[
               { color: 'red', value: -18 },
               { color: 'yellow', value: -10 },
@@ -316,7 +337,23 @@ class LogFilePage extends React.Component {
       <Container>
         {this.renderTabs()}
         <StatusBar>
-          <span>{this.props.filename}</span>
+          <input
+            type="checkbox"
+            value={this.state.isReplayMode}
+            onChange={({ target }) => { this.setState({ isReplayMode: target.value, replayIndex: 0 }) }}
+          />
+          <input
+            style={{ flexGrow: 1 }}
+            type="range"
+            value={this.state.replayIndex}
+            step="1"
+            min={0}
+            max={this.logFile.length - 1}
+            onChange={({ target }) => { this.setState({ replayIndex: target.value }) }}
+          />
+          <div>
+            {this.state.replayIndex}
+          </div>
         </StatusBar>
       </Container>
     )

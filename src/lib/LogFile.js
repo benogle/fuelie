@@ -94,12 +94,17 @@ export default class LogFile {
         })
         .on('end', () => resolve(lines))
     })
+    this.length = this.data.length
 
     // Build out second order things
     this.buildAvgFuelMixtureTable()
     this.buildTargetMixtureTable()
 
     return this.data
+  }
+
+  getLineAtindex (index) {
+    return this.data[index] || null
   }
 
   // Returns an array of rows. Access via result[row][column]

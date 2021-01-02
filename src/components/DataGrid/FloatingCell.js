@@ -8,7 +8,7 @@ const CellContainer = styled.div`
   justify-content: center;
 
   position: absolute;
-  background: rgba(0,0,0,.1);
+  background: rgba(255,255,255,.7);
   border: 1px solid rgba(0,0,0,.5);
 
   text-align: center;
@@ -16,11 +16,11 @@ const CellContainer = styled.div`
 
 class FloatingCell extends React.Component {
   render () {
-    const { x, y, xPctToNext, yPctToNext, numRows, numColumns, children } = this.props
+    const { x, y, xWeight, yWeight, numRows, numColumns, children } = this.props
     const widthPct = 100 / numColumns
-    const left = (widthPct * x) + (widthPct * xPctToNext)
+    const left = (widthPct * x) + (widthPct * (1 - xWeight))
     const heightPct = 100 / numRows
-    const top = (heightPct * y) + (heightPct * yPctToNext)
+    const top = (heightPct * y) + (heightPct * (1 - yWeight))
     return (
       <CellContainer
         style={{
@@ -42,8 +42,8 @@ FloatingCell.defaultProps = {
 FloatingCell.propTypes = {
   x: PropTypes.number, // actual column
   y: PropTypes.number, // actual row
-  xPctToNext: PropTypes.number, // range: 0 - 1
-  yPctToNext: PropTypes.number, // range: 0 - 1
+  xWeight: PropTypes.number, // range: 0 - 1
+  yWeight: PropTypes.number, // range: 0 - 1
   numColumns: PropTypes.number,
   numRows: PropTypes.number,
   children: PropTypes.node,
