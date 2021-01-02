@@ -11,9 +11,7 @@ import DataGrid from 'components/DataGrid'
 import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
 
-import IconPlay from 'components/icons/IconPlay'
-import IconPause from 'components/icons/IconPause'
-import IconStop from 'components/icons/IconStop'
+import PlaybackBar from 'components/PlaybackBar'
 
 import StatusPanel from './StatusPanel'
 
@@ -114,13 +112,13 @@ class LogFilePage extends React.Component {
     this.setState({ isReplayMode, replayIndex: 0 })
   }
 
-  handleChangeReplayIndex = (value) => {
+  handleChangeReplayIndex = (replayIndex) => {
     this.handlePause()
-    this.setState({ replayIndex: parseInt(value), isReplayMode: true })
+    this.setState({ replayIndex, isReplayMode: true })
   }
 
-  handleChangeReplaySpeed = (value) => {
-    this.setState({ replaySpeedFactor: parseFloat(value) })
+  handleChangeReplaySpeed = (replaySpeedFactor) => {
+    this.setState({ replaySpeedFactor })
   }
 
   handlePlay = () => {
@@ -434,44 +432,23 @@ class LogFilePage extends React.Component {
   }
 
   renderData () {
-    const { isPlaying, isReplayMode, replaySpeedFactor } = this.state
+    const { isPlaying, isReplayMode, replayIndex, replaySpeedFactor } = this.state
     return (
       <Container>
         {this.renderTabs()}
         <StatusBar>
-          {isPlaying
-            ? (<IconPause onClick={this.handlePause} />)
-            : (<IconPlay onClick={this.handlePlay} />)}
-
-          <IconStop
-            fill={isReplayMode ? 'black' : '#ccc'}
-            onClick={() => this.handleChangeReplayEnable(false)}
+          <PlaybackBar
+            isEnabled={isReplayMode}
+            isPlaying={isPlaying}
+            currentIndex={replayIndex}
+            maxIndex={this.logFile.length - 1}
+            replaySpeedFactor={replaySpeedFactor}
+            onPause={this.handlePause}
+            onPlay={this.handlePlay}
+            onStop={() => this.handleChangeReplayEnable(false)}
+            onChangeIndex={this.handleChangeReplayIndex}
+            onChangeReplaySpeedFactor={this.handleChangeReplaySpeed}
           />
-
-          <input
-            style={{ flexGrow: 1 }}
-            type="range"
-            value={this.state.replayIndex}
-            step="1"
-            min={0}
-            max={this.logFile.length - 1}
-            onChange={({ target }) => this.handleChangeReplayIndex(target.value)}
-          />
-
-          <select
-            onChange={({ target }) => this.handleChangeReplaySpeed(target.value)}
-          >
-            <option value="2" selected={replaySpeedFactor === 2}>2x</option>
-            <option value="1" selected={replaySpeedFactor === 1}>1x</option>
-            <option value="0.5" selected={replaySpeedFactor === 0.5}>1/2x</option>
-            <option value="0.25" selected={replaySpeedFactor === 0.25}>1/4x</option>
-            <option value="0.1" selected={replaySpeedFactor === 0.1}>1/10x</option>
-            <option value="0.01" selected={replaySpeedFactor === 0.01}>1/100x</option>
-          </select>
-
-          <div style={{ width: 75 }}>
-            {this.state.replayIndex}
-          </div>
         </StatusBar>
       </Container>
     )

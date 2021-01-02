@@ -2,6 +2,8 @@
 const blacks = {
   5: '#f8f8f8',
   20: '#ebebeb',
+  30: '#ccc',
+  100: 'black',
 }
 export default {
   colors: {
