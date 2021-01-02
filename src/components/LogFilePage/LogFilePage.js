@@ -2,6 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import debounce from 'lodash/debounce'
+import isNumber from 'lodash/isNumber'
+
 import theme from 'style/theme'
 
 import LogFile from 'lib/LogFile'
@@ -92,6 +95,14 @@ class LogFilePage extends React.Component {
     this.setState({ tabIndex })
   }
 
+  handleChangeReplayEnable = ({ target }) => {
+    this.setState({ isReplayMode: target.value, replayIndex: 0 })
+  }
+
+  handleChangeReplayIndex = (value) => {
+    this.setState({ replayIndex: value })
+  }
+
   getReplayCellPosition () {
     const { isReplayMode, replayIndex } = this.state
     if (!isReplayMode) return null
@@ -133,8 +144,50 @@ class LogFilePage extends React.Component {
     return `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length};\n${counts}`
   }
 
+  renderReplaySidePanel () {
+    const { configProfile } = this.props
+    const { isReplayMode, replayIndex } = this.state
+    if (!isReplayMode) return null
+
+    const logLine = this.logFile.getLineAtindex(replayIndex)
+    const { t, rowV, rowI, colV, colI, m, ...logParams } = logLine
+
+    const mainValue = logLine.m.toFixed(2)
+    const x = logLine.colI.weight > 0.5
+      ? logLine.colI.index + 2
+      : logLine.colI.index + 1
+    const y = logLine.rowI.weight > 0.5
+      ? logLine.rowI.index + 1
+      : logLine.rowI.index
+
+    const values = []
+    const logParamValues = Object.keys(logParams).map((name) => name && ({
+      name,
+      value: isNumber(logParams[name])
+        ? logParams[name].toFixed(configProfile.getLogFileColumnDecimals(name))
+        : logParams[name],
+    }))
+    values.push(...logParamValues)
+
+    const subValue = (
+      <span title="Table Location">
+        {Math.round(t)} sec ({x}, {y})
+      </span>
+    )
+
+    return (
+      <StatusPanel
+        mainValue={mainValue}
+        subValue={subValue}
+        values={values}
+      />
+    )
+  }
+
   renderSidePanel ({ isAvgFuelMixture, isTargetMixture, isSuggestedMixtureChange }) {
-    const { selectedCell, selectedStart } = this.state
+    const { selectedCell, selectedStart, isReplayMode } = this.state
+
+    if (isReplayMode) return this.renderReplaySidePanel()
 
     let mainValue = null
     let values = null
@@ -339,8 +392,8 @@ class LogFilePage extends React.Component {
         <StatusBar>
           <input
             type="checkbox"
-            value={this.state.isReplayMode}
-            onChange={({ target }) => { this.setState({ isReplayMode: target.value, replayIndex: 0 }) }}
+            checked={this.state.isReplayMode}
+            onChange={this.handleChangeReplayEnable}
           />
           <input
             style={{ flexGrow: 1 }}
@@ -349,9 +402,9 @@ class LogFilePage extends React.Component {
             step="1"
             min={0}
             max={this.logFile.length - 1}
-            onChange={({ target }) => { this.setState({ replayIndex: target.value }) }}
+            onChange={({ target }) => this.handleChangeReplayIndex(target.value)}
           />
-          <div>
+          <div style={{ width: 75 }}>
             {this.state.replayIndex}
           </div>
         </StatusBar>

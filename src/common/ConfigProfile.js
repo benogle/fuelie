@@ -2,6 +2,8 @@ const get = require('lodash/get')
 const each = require('lodash/each')
 const clone = require('lodash/clone')
 const isEqual = require('lodash/isEqual')
+const isNumber = require('lodash/isNumber')
+
 // {
 //   name: 'Default',
 //   suggestCalc: 'afr',
@@ -43,6 +45,17 @@ class ConfigProfile {
 
   get (key) {
     return get(this.profile, key)
+  }
+
+  getLogFileColumnConfig (columnName) {
+    return this.get(['logFile', 'columns', columnName])
+  }
+
+  getLogFileColumnDecimals (columnName) {
+    const config = this.getLogFileColumnConfig(columnName)
+    if (config && config.type === 'integer') return 0
+    if (config && isNumber(config.decimals)) return config.decimals
+    return 2
   }
 
   getChangedKeys (otherConfigProfile) {

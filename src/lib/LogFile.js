@@ -52,14 +52,14 @@ export default class LogFile {
   }
 
   readLine (logLine) {
-    const { time, row, column, mixture, defaultType, headerTypes } = this.configProfile.getLogFileConfig()
+    const { time, row, column, mixture, defaultType, columns } = this.configProfile.getLogFileConfig()
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const rowV = parseFloat(logLine[row])
     const colV = parseFloat(logLine[column])
 
     const parsedLine = mapValues(logLine, (v, k) => (
-      parseValue(v, defaultType, headerTypes)
+      parseValue(v, k, columns, defaultType)
     ))
     return {
       ...parsedLine,
@@ -243,11 +243,18 @@ export default class LogFile {
   }
 }
 
-function parseValue (value, headerTypes = {}, defaultType = 'float') {
-  if (defaultType === 'float') {
-    return parseFloat(value) || 0
-  } else if (defaultType === 'integer') {
-    return parseInt(value) || 0
+function notNaNOrValue (parsedValue, originalValue) {
+  return isNaN(parsedValue)
+    ? originalValue
+    : parsedValue
+}
+
+function parseValue (value, key, columns = {}, defaultType = 'float') {
+  const type = (columns && columns[key] && columns[key].type) || defaultType
+  if (type === 'float') {
+    return notNaNOrValue(parseFloat(value) || 0, value)
+  } else if (type === 'integer') {
+    return notNaNOrValue(parseInt(value) || 0, value)
   }
   return value
 }
