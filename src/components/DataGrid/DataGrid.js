@@ -43,29 +43,8 @@ DataGrid.defaultProps = {
 }
 
 DataGrid.propTypes = {
-  // All is forwarded to the DataGridSheet
-  readOnly: PropTypes.bool,
-  columnHeaders: PropTypes.arrayOf(
-    PropTypes.number,
-  ).isRequired,
-  rowHeaders: PropTypes.arrayOf(
-    PropTypes.number,
-  ).isRequired,
-  rowSigFigs: PropTypes.number,
-  columnSigFigs: PropTypes.number,
-  data: PropTypes.arrayOf(
-    PropTypes.arrayOf(PropTypes.object),
-  ).isRequired,
-  colorScale: PropTypes.arrayOf(PropTypes.shape({
-    color: PropTypes.string,
-    value: PropTypes.number,
-  })).isRequired,
+  // All props other than the following are forwarded to the DataGridSheet
 
-  renderHoverTip: PropTypes.func,
-  onSelect: PropTypes.func,
-  onCellsChanged: PropTypes.func,
-
-  // Renders this
   floatingCellPosition: PropTypes.shape({
     x: PropTypes.number, // actual column
     y: PropTypes.number, // actual row

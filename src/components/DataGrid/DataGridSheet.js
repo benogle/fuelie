@@ -49,11 +49,28 @@ const colorMap = {
 
 class DataGridSheet extends React.Component {
   componentDidMount () {
-    console.log('mounted', this.grid)
+    // HACK: This dgDom thing is undocumented, hope it doesnt go away!
+    this.grid.dgDom.addEventListener('focus', this.handleFocus)
+    this.grid.dgDom.addEventListener('blur', this.handleBlur)
   }
 
   shouldComponentUpdate (nextProps) {
     return this.props.data !== nextProps.data
+  }
+
+  componentWillUnmount () {
+    this.grid.dgDom.removeEventListener('focus', this.handleFocus)
+    this.grid.dgDom.removeEventListener('blur', this.handleBlur)
+  }
+
+  handleFocus = () => {
+    const { onFocus } = this.props
+    if (onFocus) onFocus()
+  }
+
+  handleBlur = () => {
+    const { onBlur } = this.props
+    if (onBlur) onBlur()
   }
 
   handleSelect = ({ start: ogStart, end: ogEnd }) => {
@@ -216,6 +233,8 @@ DataGridSheet.propTypes = {
   renderHoverTip: PropTypes.func,
   onSelect: PropTypes.func,
   onCellsChanged: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 }
 
 export default DataGridSheet
