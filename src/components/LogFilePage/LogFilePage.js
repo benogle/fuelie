@@ -40,6 +40,7 @@ const GridContainer = styled.div`
 
   .data-grid-container {
     height: 100%;
+    display: block;
   }
 
 `

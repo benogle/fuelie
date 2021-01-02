@@ -7,6 +7,13 @@ import isEqual from 'lodash/isEqual'
 import ReactDataSheet from 'react-datasheet'
 import 'react-datasheet/lib/react-datasheet.css'
 
+import FloatingCell from './FloatingCell'
+
+const InnerContaier = styled.div`
+  height: 100%;
+  position: relative;
+`
+
 const GridContainer = styled.table`
   width: 100%;
   height: 100%;
@@ -154,6 +161,22 @@ class DataGrid extends React.Component {
     )
   }
 
+  renderFloatingCell () {
+    const { rowHeaders, columnHeaders } = this.props
+    return (
+      <FloatingCell
+        numRows={rowHeaders.length + 1}
+        numColumns={columnHeaders.length + 1}
+        x={1}
+        xPctToNext={0.8}
+        y={5}
+        yPctToNext={0.2}
+      >
+        ok
+      </FloatingCell>
+    )
+  }
+
   render () {
     return (
       <ReactDataSheet
@@ -166,11 +189,14 @@ class DataGrid extends React.Component {
         cellRenderer={this.renderCell}
         valueRenderer={(cell) => cell.value}
         sheetRenderer={(props) => (
-          <GridContainer className={props.className}>
-            <tbody>
-              {props.children}
-            </tbody>
-          </GridContainer>
+          <InnerContaier>
+            <GridContainer className={props.className}>
+              <tbody>
+                {props.children}
+              </tbody>
+            </GridContainer>
+            {this.renderFloatingCell()}
+          </InnerContaier>
         )}
       />
     )
