@@ -17,23 +17,46 @@ describe('expressions', function () {
         condition: 'accel > 150',
       }
       res = await expressions.eval({ expressionObj, data, booleanOnly: true })
-      expect(res).to.eql({ condition: false })
+      expect(res).to.eql(false)
 
       expressionObj = {
         accel: 'Fuel Trim (Accel)',
         condition: 'accel + 1',
       }
       res = await expressions.eval({ expressionObj, data, booleanOnly: true })
-      expect(res).to.eql({ condition: true })
+      expect(res).to.eql(true)
     })
 
-    it('returns boolean only when option set', async function () {
+    it('returns non-bool vals', async function () {
       expressionObj = {
         accel: 'Fuel Trim (Accel)',
         condition: 'accel + 1',
       }
       res = await expressions.eval({ expressionObj, data })
-      expect(res).to.eql({ condition: 124 })
+      expect(res).to.eql(124)
+    })
+  })
+
+  describe('buildEval', function () {
+    let fn
+    it('returns boolean only when booleanOnly: true', async function () {
+      expressionObj = {
+        accel: 'Fuel Accel',
+        condition: 'accel > 150',
+      }
+      fn = await expressions.buildEval({ expressionObj, booleanOnly: true })
+      expect(fn({ 'Fuel Accel': 10 })).to.eql(false)
+      expect(fn({ 'Fuel Accel': 200 })).to.eql(true)
+    })
+
+    it('returns non-bool values', async function () {
+      expressionObj = {
+        accel: 'Fuel Accel',
+        condition: 'accel + 1',
+      }
+      fn = await expressions.buildEval({ expressionObj })
+      expect(fn({ 'Fuel Accel': 10 })).to.eql(11)
+      expect(fn({ 'Fuel Accel': 200 })).to.eql(201)
     })
   })
 })

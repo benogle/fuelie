@@ -112,6 +112,13 @@ export default class LogFile {
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const { minValue, maxValue, minWeight, minTotalWeight, ignore } = this.configProfile.get('avgFuelMixture')
 
+    let ignoreFunctions = null
+    if (ignore && ignore.length) {
+      ignoreFunctions = ignore.map((expressionObj) => (
+        expressions.buildEval({ expressionObj, booleanOnly: true })
+      ))
+    }
+
     function getEmptyValue () {
       return { length: 0, value: null }
     }
@@ -164,12 +171,8 @@ export default class LogFile {
         continue
       }
 
-      if (ignore && ignore.length) {
-        const conditionResults = ignore.map((expressionObj) => {
-          const { condition } = expressions.eval({ expressionObj, data: line, booleanOnly: true })
-          return condition
-        })
-
+      if (ignoreFunctions) {
+        const conditionResults = ignoreFunctions.map((ignoreFn) => ignoreFn(line))
         // some() will basically OR the expressions. If any returns true, ignore this line
         const shouldIgnore = some(conditionResults)
         if (shouldIgnore) {

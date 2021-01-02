@@ -1,5 +1,4 @@
 const omit = require('lodash/omit')
-const fromPairs = require('lodash/fromPairs')
 const mapValues = require('lodash/mapValues')
 
 // HACK: this is basically eval. Don't use anyone's sketchy config file.
@@ -11,13 +10,16 @@ const pluginCode = `
   var notAllowed = '"use strict";var global = undefined;var process = undefined;var window = undefined;var console = undefined;var document = undefined;'
 
   var api = {
-    evalExpression: function (expression, keys, values, booleanOnly, evaluate) {
+    buildExpressionFunction: function (expression, keys, booleanOnly) {
       var conditionStr = booleanOnly
         ? notAllowed + ' return (' + expression + ') ? true : false;'
         : notAllowed + ' return (' + expression + ')'
       var fnArgs = keys.concat(conditionStr)
+      return Function.apply(null, fnArgs)
+    },
+    evalExpression: function (expression, keys, values, booleanOnly, evaluate) {
       try {
-        var fn = Function.apply(null, fnArgs)
+        var fn = api.buildExpressionFunction(expression, keys, booleanOnly)
         if (evaluate) {
           return fn.apply(fn, values)
         } else {
@@ -42,18 +44,22 @@ const application = {
 new Function('application', pluginCode)(application) // eslint-disable-line
 
 const expressions = {
-  eval ({ expressionObj, data, dataKeys = ['condition'], booleanOnly }) {
-    const args = expressions.resolveArgs({ expressionObj, data, dataKeys })
-    return fromPairs(dataKeys.map((key) => (
-      [
-        key,
-        expressions.evalExpression({
-          args,
-          booleanOnly,
-          expression: expressionObj[key],
-        }),
-      ]
-    )))
+  eval ({ expressionObj, data, dataKey = 'condition', booleanOnly }) {
+    const args = expressions.resolveArgs({ expressionObj, data, resultKeys: [dataKey] })
+    return expressions.evalExpression({
+      args,
+      booleanOnly,
+      expression: expressionObj[dataKey],
+    })
+  },
+
+  buildEval ({ expressionObj, dataKey = 'condition', booleanOnly }) {
+    const args = expressions.resolveArgs({ expressionObj, data: {}, resultKeys: [dataKey] })
+    const fnArgs = Object.keys(args)
+    const fn = plugin.api.buildExpressionFunction(expressionObj[dataKey], fnArgs, booleanOnly)
+    return (data) => {
+      return fn.apply(null, fnArgs.map((arg) => data[expressionObj[arg]]))
+    }
   },
 
   resolveArgs ({ expressionObj, data, resultKeys }) {

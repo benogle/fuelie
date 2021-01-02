@@ -5,6 +5,8 @@
 [x] Add a thing so I can omit lines with accel trim
 [ ] slider to walk through the logfile
 [ ] Fix jank config file handling: when trailing comma, or unparsable, it will wipe the config back to default. Just error....
+[ ] Rename project
+[ ] Support for a 2nd o2 channel: another table + diff table when key specified
 
 [ ] make default target afr better
 [ ] cmd-z undo
