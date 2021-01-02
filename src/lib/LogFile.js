@@ -107,6 +107,17 @@ export default class LogFile {
     return this.data[index] || null
   }
 
+  // speedFactor - 2 for 2x (faster), .5 for half speed
+  getMSTilNextLine (index, speedFactor = 1) {
+    const currentLine = this.data[index]
+    const nextLine = this.data[index + 1]
+
+    if (!nextLine) return null
+
+    // TODO: Make this time thing configurable
+    return Math.round((nextLine.t - currentLine.t) * 1000 * (1 / speedFactor))
+  }
+
   // Returns an array of rows. Access via result[row][column]
   getAvgFuelMixtureTable () {
     return this.avgFuelMixtureTable

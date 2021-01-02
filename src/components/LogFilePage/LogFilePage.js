@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import debounce from 'lodash/debounce'
 import isNumber from 'lodash/isNumber'
 
 import theme from 'style/theme'
@@ -11,6 +10,9 @@ import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
 import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
+
+import IconPlay from 'components/icons/IconPlay'
+import IconPause from 'components/icons/IconPause'
 
 import StatusPanel from './StatusPanel'
 
@@ -66,7 +68,9 @@ class LogFilePage extends React.Component {
 
     // Replay things
     isReplayMode: true,
+    isPlaying: false,
     replayIndex: 0,
+    replaySpeedFactor: 1,
   }
 
   componentDidMount () {
@@ -100,7 +104,34 @@ class LogFilePage extends React.Component {
   }
 
   handleChangeReplayIndex = (value) => {
-    this.setState({ replayIndex: value })
+    this.handlePause()
+    this.setState({ replayIndex: parseInt(value) })
+  }
+
+  handleChangeReplaySpeed = (value) => {
+    this.setState({ replaySpeedFactor: parseFloat(value) })
+  }
+
+  handlePlay = () => {
+    this.setState({ isPlaying: true }, () => {
+      this.playFrom(this.state.replayIndex)
+    })
+  }
+
+  handlePause = () => {
+    clearInterval(this.interval)
+    this.interval = null
+    this.setState({ isPlaying: false })
+  }
+
+  playFrom = (index) => { // eslint-disable-line
+    const nextMS = this.logFile.getMSTilNextLine(index, this.state.replaySpeedFactor)
+    if (!nextMS) return this.handlePause()
+
+    this.interval = setTimeout(() => {
+      const nextIndex = index + 1
+      this.setState({ replayIndex: nextIndex }, () => this.playFrom(nextIndex))
+    }, nextMS)
   }
 
   getReplayCellPosition () {
@@ -386,6 +417,7 @@ class LogFilePage extends React.Component {
   }
 
   renderData () {
+    const { isPlaying, replaySpeedFactor } = this.state
     return (
       <Container>
         {this.renderTabs()}
@@ -395,6 +427,11 @@ class LogFilePage extends React.Component {
             checked={this.state.isReplayMode}
             onChange={this.handleChangeReplayEnable}
           />
+
+          {isPlaying
+            ? (<IconPause onClick={this.handlePause} />)
+            : (<IconPlay onClick={this.handlePlay} />)}
+
           <input
             style={{ flexGrow: 1 }}
             type="range"
@@ -404,6 +441,18 @@ class LogFilePage extends React.Component {
             max={this.logFile.length - 1}
             onChange={({ target }) => this.handleChangeReplayIndex(target.value)}
           />
+
+          <select
+            onChange={({ target }) => this.handleChangeReplaySpeed(target.value)}
+          >
+            <option value="2" selected={replaySpeedFactor === 2}>2x</option>
+            <option value="1" selected={replaySpeedFactor === 1}>1x</option>
+            <option value="0.5" selected={replaySpeedFactor === 0.5}>1/2x</option>
+            <option value="0.25" selected={replaySpeedFactor === 0.25}>1/4x</option>
+            <option value="0.1" selected={replaySpeedFactor === 0.1}>1/10x</option>
+            <option value="0.01" selected={replaySpeedFactor === 0.01}>1/100x</option>
+          </select>
+
           <div style={{ width: 75 }}>
             {this.state.replayIndex}
           </div>
