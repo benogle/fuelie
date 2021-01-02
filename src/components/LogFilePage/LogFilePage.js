@@ -66,6 +66,7 @@ class LogFilePage extends React.Component {
     selectedStart: null,
     selectedEnd: null,
     tabIndex: 0,
+    isTableFocused: false,
 
     // Replay things
     isReplayMode: false,
@@ -96,11 +97,20 @@ class LogFilePage extends React.Component {
     })
   }
 
+  handleTableFocus = () => {
+    this.setState({ isTableFocused: true })
+  }
+
+  handleTableBlur = () => {
+    this.setState({ isTableFocused: false })
+  }
+
   handleChangeTab = ({ tabIndex }) => {
     this.setState({ tabIndex })
   }
 
   handleChangeReplayEnable = (isReplayMode) => {
+    if (!isReplayMode) this.handlePause()
     this.setState({ isReplayMode, replayIndex: 0 })
   }
 
@@ -217,9 +227,9 @@ class LogFilePage extends React.Component {
   }
 
   renderSidePanel ({ isAvgFuelMixture, isTargetMixture, isSuggestedMixtureChange }) {
-    const { selectedCell, selectedStart, isReplayMode } = this.state
+    const { selectedCell, selectedStart, isReplayMode, isTableFocused } = this.state
 
-    if (isReplayMode) return this.renderReplaySidePanel()
+    if (isReplayMode && !isTableFocused) return this.renderReplaySidePanel()
 
     let mainValue = null
     let values = null
@@ -324,6 +334,8 @@ class LogFilePage extends React.Component {
             readOnly
             renderHoverTip={this.renderHoverTip}
             onSelect={this.handleSelect}
+            onFocus={this.handleTableFocus}
+            onBlur={this.handleTableBlur}
             floatingCellPosition={this.getReplayCellPosition()}
           />
         </GridContainer>
@@ -357,6 +369,8 @@ class LogFilePage extends React.Component {
             readOnly={false}
             onSelect={this.handleSelect}
             onCellsChanged={handleChange}
+            onFocus={this.handleTableFocus}
+            onBlur={this.handleTableBlur}
             floatingCellPosition={this.getReplayCellPosition()}
           />
         </GridContainer>
@@ -379,6 +393,8 @@ class LogFilePage extends React.Component {
             columnHeaders={columnHeaders}
             readOnly
             onSelect={this.handleSelect}
+            onFocus={this.handleTableFocus}
+            onBlur={this.handleTableBlur}
             floatingCellPosition={this.getReplayCellPosition()}
             colorScale={[
               { color: 'red', value: -18 },

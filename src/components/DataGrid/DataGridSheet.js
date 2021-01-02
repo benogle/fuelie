@@ -59,6 +59,7 @@ class DataGridSheet extends React.Component {
   }
 
   componentWillUnmount () {
+    this.handleBlur()
     this.grid.dgDom.removeEventListener('focus', this.handleFocus)
     this.grid.dgDom.removeEventListener('blur', this.handleBlur)
   }
