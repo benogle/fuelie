@@ -98,6 +98,15 @@ const defaultConfig = {
       column: 'Engine Speed',
       mixture: 'O2 #2',
       defaultType: 'float',
+      // columns: {
+      //   'Engine Speed': {
+      //     type: 'integer',
+      //   },
+      //   'Fuel Map': {
+      //     type: 'float',
+      //     decimals: 3
+      //   },
+      // },
     },
     avgFuelMixture: {
       minValue: 8,
