@@ -13,6 +13,7 @@ import { round } from 'common/helpers'
 
 import IconPlay from 'components/icons/IconPlay'
 import IconPause from 'components/icons/IconPause'
+import IconStop from 'components/icons/IconStop'
 
 import StatusPanel from './StatusPanel'
 
@@ -67,7 +68,7 @@ class LogFilePage extends React.Component {
     tabIndex: 0,
 
     // Replay things
-    isReplayMode: true,
+    isReplayMode: false,
     isPlaying: false,
     replayIndex: 0,
     replaySpeedFactor: 1,
@@ -99,13 +100,13 @@ class LogFilePage extends React.Component {
     this.setState({ tabIndex })
   }
 
-  handleChangeReplayEnable = ({ target }) => {
-    this.setState({ isReplayMode: target.value, replayIndex: 0 })
+  handleChangeReplayEnable = (isReplayMode) => {
+    this.setState({ isReplayMode, replayIndex: 0 })
   }
 
   handleChangeReplayIndex = (value) => {
     this.handlePause()
-    this.setState({ replayIndex: parseInt(value) })
+    this.setState({ replayIndex: parseInt(value), isReplayMode: true })
   }
 
   handleChangeReplaySpeed = (value) => {
@@ -113,7 +114,7 @@ class LogFilePage extends React.Component {
   }
 
   handlePlay = () => {
-    this.setState({ isPlaying: true }, () => {
+    this.setState({ isPlaying: true, isReplayMode: true }, () => {
       this.playFrom(this.state.replayIndex)
     })
   }
@@ -417,20 +418,19 @@ class LogFilePage extends React.Component {
   }
 
   renderData () {
-    const { isPlaying, replaySpeedFactor } = this.state
+    const { isPlaying, isReplayMode, replaySpeedFactor } = this.state
     return (
       <Container>
         {this.renderTabs()}
         <StatusBar>
-          <input
-            type="checkbox"
-            checked={this.state.isReplayMode}
-            onChange={this.handleChangeReplayEnable}
-          />
-
           {isPlaying
             ? (<IconPause onClick={this.handlePause} />)
             : (<IconPlay onClick={this.handlePlay} />)}
+
+          <IconStop
+            fill={isReplayMode ? 'black' : '#ccc'}
+            onClick={() => this.handleChangeReplayEnable(false)}
+          />
 
           <input
             style={{ flexGrow: 1 }}
