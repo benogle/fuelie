@@ -211,7 +211,7 @@ class LogFilePage extends React.Component {
 
     const subValue = (
       <span title="Table Location">
-        {Math.round(t)} sec ({x}, {y})
+        playback ({x}, {y})
       </span>
     )
 
@@ -441,7 +441,9 @@ class LogFilePage extends React.Component {
             isEnabled={isReplayMode}
             isPlaying={isPlaying}
             currentIndex={replayIndex}
-            maxIndex={this.logFile.length - 1}
+            maxIndex={this.logFile.getLastIndex()}
+            currentTimeMS={this.logFile.getTimeMS(replayIndex)}
+            lengthMS={this.logFile.getTotalTimeMS()}
             replaySpeedFactor={replaySpeedFactor}
             onPause={this.handlePause}
             onPlay={this.handlePlay}

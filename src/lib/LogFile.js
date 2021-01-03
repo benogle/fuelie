@@ -107,6 +107,10 @@ export default class LogFile {
     return this.data[index] || null
   }
 
+  getLastIndex () {
+    return this.length - 1
+  }
+
   // speedFactor - 2 for 2x (faster), .5 for half speed
   getMSTilNextLine (index, speedFactor = 1) {
     const currentLine = this.data[index]
@@ -116,6 +120,18 @@ export default class LogFile {
 
     // TODO: Make this time thing configurable
     return Math.round((nextLine.t - currentLine.t) * 1000 * (1 / speedFactor))
+  }
+
+  getTimeMS (index) {
+    const firstLine = this.data[0]
+    const lastLine = this.data[index]
+
+    // TODO: Make this time thing configurable
+    return Math.round((lastLine.t - firstLine.t) * 1000)
+  }
+
+  getTotalTimeMS () {
+    return this.getTimeMS(this.getLastIndex())
   }
 
   // Returns an array of rows. Access via result[row][column]

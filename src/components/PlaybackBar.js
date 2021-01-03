@@ -4,6 +4,8 @@ import styled from 'styled-components'
 
 import theme from 'style/theme'
 
+import { millisecondsToTimeCode } from 'common/helpers'
+
 import IconPlay from 'components/icons/IconPlay'
 import IconPause from 'components/icons/IconPause'
 import IconStop from 'components/icons/IconStop'
@@ -31,11 +33,40 @@ const Container = styled.div`
   }
 `
 
+const TimeCode = styled.div`
+  font-size: 14px;
+  font-family: ${theme.fontFamilies.mono};
+`
+
+const StyledRange = styled.input.attrs({ type: 'range' })`
+  cursor: pointer;
+`
+
+const StyledSelect = styled.select`
+  border-radius: 0;
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0 18px 0 8px;
+
+  cursor: pointer;
+
+  &:hover {
+    background: ${theme.colors.blacks[20]};
+  }
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+`
+
 class PlaybackBar extends React.Component {
   render () {
     const {
       isEnabled, isPlaying, replaySpeedFactor, currentIndex, maxIndex,
       onPlay, onPause, onStop, onChangeIndex, onChangeReplaySpeedFactor,
+      currentTimeMS, lengthMS,
     } = this.props
     return (
       <Container>
@@ -48,9 +79,8 @@ class PlaybackBar extends React.Component {
           onClick={onStop}
         />
 
-        <input
+        <StyledRange
           style={{ flexGrow: 1 }}
-          type="range"
           value={currentIndex}
           step="1"
           min={0}
@@ -58,20 +88,20 @@ class PlaybackBar extends React.Component {
           onChange={({ target }) => onChangeIndex(parseInt(target.value))}
         />
 
-        <select
+        <StyledSelect
           onChange={({ target }) => onChangeReplaySpeedFactor(parseFloat(target.value))}
         >
-          <option value="2" selected={replaySpeedFactor === 2}>2x</option>
-          <option value="1" selected={replaySpeedFactor === 1}>1x</option>
-          <option value="0.5" selected={replaySpeedFactor === 0.5}>1/2x</option>
-          <option value="0.25" selected={replaySpeedFactor === 0.25}>1/4x</option>
-          <option value="0.1" selected={replaySpeedFactor === 0.1}>1/10x</option>
-          <option value="0.01" selected={replaySpeedFactor === 0.01}>1/100x</option>
-        </select>
+          <option value="2" selected={replaySpeedFactor === 2}>2x speed</option>
+          <option value="1" selected={replaySpeedFactor === 1}>1x speed</option>
+          <option value="0.5" selected={replaySpeedFactor === 0.5}>.5x speed</option>
+          <option value="0.25" selected={replaySpeedFactor === 0.25}>.25x speed</option>
+          <option value="0.1" selected={replaySpeedFactor === 0.1}>.1x speed</option>
+          <option value="0.01" selected={replaySpeedFactor === 0.01}>.01x speed</option>
+        </StyledSelect>
 
-        <div style={{ width: 75 }}>
-          {currentIndex}
-        </div>
+        <TimeCode>
+          {millisecondsToTimeCode(currentTimeMS)} / {millisecondsToTimeCode(lengthMS)}
+        </TimeCode>
       </Container>
     )
   }
@@ -89,6 +119,7 @@ PlaybackBar.propTypes = {
   isPlaying: PropTypes.bool.isRequired,
   currentIndex: PropTypes.number.isRequired,
   maxIndex: PropTypes.number.isRequired,
+  currentTimeMS: PropTypes.number.isRequired,
   lengthMS: PropTypes.number.isRequired,
   replaySpeedFactor: PropTypes.number.isRequired,
 
