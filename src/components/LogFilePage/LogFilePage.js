@@ -12,6 +12,7 @@ import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
 
 import PlaybackBar from 'components/PlaybackBar'
+import KeyboardTool from 'components/KeyboardTool'
 
 import StatusPanel from './StatusPanel'
 
@@ -131,6 +132,26 @@ class LogFilePage extends React.Component {
     clearInterval(this.interval)
     this.interval = null
     this.setState({ isPlaying: false })
+  }
+
+  handlePausePlayToggle = ({ handle }) => {
+    handle()
+    return this.state.isPlaying
+      ? this.handlePause()
+      : this.handlePlay()
+  }
+
+  handleArrow = ({ direction, handle }) => {
+    const { isTableFocused, replayIndex } = this.state
+    const changes = { left: -1, right: 1 }
+    console.log({ isTableFocused, direction })
+    if (!isTableFocused && (direction === 'left' || direction === 'right')) {
+      const newIndex = replayIndex + changes[direction]
+      if (newIndex >= 0 && newIndex < this.logFile.length) {
+        handle()
+        this.handleChangeReplayIndex(newIndex)
+      }
+    }
   }
 
   playFrom = (index) => { // eslint-disable-line
@@ -436,6 +457,10 @@ class LogFilePage extends React.Component {
     return (
       <Container>
         {this.renderTabs()}
+        <KeyboardTool
+          onArrow={this.handleArrow}
+          onPausePlay={this.handlePausePlayToggle}
+        />
         <StatusBar>
           <PlaybackBar
             isEnabled={isReplayMode}
