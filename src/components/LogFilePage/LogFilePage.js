@@ -141,12 +141,13 @@ class LogFilePage extends React.Component {
       : this.handlePlay()
   }
 
-  handleArrow = ({ direction, handle }) => {
+  handleArrow = ({ direction, handle, event }) => {
     const { isTableFocused, replayIndex } = this.state
     const changes = { left: -1, right: 1 }
-    console.log({ isTableFocused, direction })
+    const largeChanges = { left: -10, right: 10 }
     if (!isTableFocused && (direction === 'left' || direction === 'right')) {
-      const newIndex = replayIndex + changes[direction]
+      const change = event.shiftKey ? largeChanges[direction] : changes[direction]
+      const newIndex = replayIndex + change
       if (newIndex >= 0 && newIndex < this.logFile.length) {
         handle()
         this.handleChangeReplayIndex(newIndex)
