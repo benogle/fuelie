@@ -15,6 +15,14 @@ const GridContainer = styled.table`
     background: white !important;
     color: inherit !important;
   }
+
+  td {
+    font-size: 16px;
+  }
+
+  th {
+    font-size: 12px;
+  }
 `
 
 const CellContainer = styled.div`
