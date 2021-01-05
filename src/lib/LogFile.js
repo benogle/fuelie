@@ -1,4 +1,5 @@
 import some from 'lodash/some'
+import last from 'lodash/last'
 import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
@@ -12,6 +13,7 @@ import detectCSV from 'detect-csv'
 const fs = req('fs')
 
 const RELOAD_KEYS = ['fuelMap', 'logFile', 'units']
+const MAX_LINE_RANGE_GAP = 5
 
 export default class LogFile {
   constructor (filename, configProfile, { onChange } = {}) {
@@ -161,7 +163,7 @@ export default class LogFile {
       table[rowI].fill(getEmptyValue())
     }
 
-    function addSample (value, rowIndex, colIndex, weight) {
+    function addSample (value, lineIndex, rowIndex, colIndex, weight) {
       if (!(weight > (minWeight || 0))) return
       if (value < minValue || value > maxValue) return
 
@@ -175,6 +177,13 @@ export default class LogFile {
         cell.weight = newCellWeight
         cell.min = Math.min(cell.min, value)
         cell.max = Math.max(cell.max, value)
+
+        const lastRange = last(cell.lineRanges)
+        if (lineIndex - lastRange.end <= MAX_LINE_RANGE_GAP) {
+          lastRange.end = lineIndex
+        } else {
+          cell.lineRanges.push({ start: lineIndex, end: lineIndex })
+        }
 
         const vCountValue = round(value, 1)
         if (cell.vCount[vCountValue]) {
@@ -190,13 +199,15 @@ export default class LogFile {
           value: round(value, 2),
           min: value,
           max: value,
+          lineRanges: [{ start: lineIndex, end: lineIndex }],
           vCount: { [round(value, 1)]: 1 },
         }
       }
       table[rowIndex][colIndex] = cell
     }
 
-    for (const line of this.data) {
+    for (let lineIndex = 0; lineIndex < this.data.length; lineIndex++) {
+      const line = this.data[lineIndex]
       const { rowI, colI, m: newLineValue } = line
       if (!rowI || !colI || !newLineValue) {
         console.log('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
@@ -215,10 +226,10 @@ export default class LogFile {
 
       const { index: rowIndex, weight: rowWeight } = rowI
       const { index: colIndex, weight: colWeight } = colI
-      addSample(newLineValue, rowIndex, colIndex, rowWeight * colWeight) // top reft
-      addSample(newLineValue, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
-      addSample(newLineValue, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left
-      addSample(newLineValue, rowIndex + 1, colIndex + 1, (1 - rowWeight) * (1 - colWeight)) // bottom right
+      addSample(newLineValue, lineIndex, rowIndex, colIndex, rowWeight * colWeight) // top reft
+      addSample(newLineValue, lineIndex, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
+      addSample(newLineValue, lineIndex, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left
+      addSample(newLineValue, lineIndex, rowIndex + 1, colIndex + 1, (1 - rowWeight) * (1 - colWeight)) // bottom right
     }
 
     for (let rowIndex = 0; rowIndex < table.length; rowIndex++) {

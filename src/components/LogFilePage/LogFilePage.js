@@ -454,7 +454,10 @@ class LogFilePage extends React.Component {
   }
 
   renderData () {
-    const { isPlaying, isReplayMode, replayIndex, replaySpeedFactor } = this.state
+    const { isPlaying, isReplayMode, replayIndex, replaySpeedFactor, selectedCell } = this.state
+    const ticks = selectedCell
+      ? selectedCell.lineRanges
+      : []
     return (
       <Container>
         {this.renderTabs()}
@@ -471,6 +474,7 @@ class LogFilePage extends React.Component {
             currentTimeMS={this.logFile.getTimeMS(replayIndex)}
             lengthMS={this.logFile.getTotalTimeMS()}
             replaySpeedFactor={replaySpeedFactor}
+            ticks={ticks}
             onPause={this.handlePause}
             onPlay={this.handlePlay}
             onStop={() => this.handleChangeReplayEnable(false)}

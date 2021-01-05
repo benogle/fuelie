@@ -10,6 +10,8 @@ import IconPlay from 'components/icons/IconPlay'
 import IconPause from 'components/icons/IconPause'
 import IconStop from 'components/icons/IconStop'
 
+import RangeWithTicks from './RangeWithTicks'
+
 const CONTENT_PADDING = 10
 const COLOR_ENABLED = theme.colors.blacks[100]
 const COLOR_DISABLED = theme.colors.blacks[30]
@@ -20,7 +22,6 @@ const Container = styled.div`
   flex-grow: 1;
 
   > * {
-    display: block;
     margin-right: ${CONTENT_PADDING}px;
 
     &:last-child {
@@ -29,6 +30,7 @@ const Container = styled.div`
   }
 
   > svg {
+    display: block;
     cursor: pointer
   }
 `
@@ -36,10 +38,6 @@ const Container = styled.div`
 const TimeCode = styled.div`
   font-size: 14px;
   font-family: ${theme.fontFamilies.mono};
-`
-
-const StyledRange = styled.input.attrs({ type: 'range' })`
-  cursor: pointer;
 `
 
 const StyledSelect = styled.select`
@@ -62,11 +60,16 @@ const StyledSelect = styled.select`
 `
 
 class PlaybackBar extends React.Component {
+  handleClickTick =(tick) => {
+    const { onChangeIndex } = this.props
+    onChangeIndex(tick.start)
+  }
+
   render () {
     const {
       isEnabled, isPlaying, replaySpeedFactor, currentIndex, maxIndex,
       onPlay, onPause, onStop, onChangeIndex, onChangeReplaySpeedFactor,
-      currentTimeMS, lengthMS,
+      currentTimeMS, lengthMS, ticks,
     } = this.props
     return (
       <Container>
@@ -79,13 +82,12 @@ class PlaybackBar extends React.Component {
           onClick={onStop}
         />
 
-        <StyledRange
-          style={{ flexGrow: 1 }}
-          value={currentIndex}
-          step="1"
-          min={0}
-          max={maxIndex}
-          onChange={({ target }) => onChangeIndex(parseInt(target.value))}
+        <RangeWithTicks
+          currentIndex={currentIndex}
+          maxIndex={maxIndex}
+          ticks={ticks}
+          onChangeIndex={onChangeIndex}
+          onClickTick={this.handleClickTick}
         />
 
         <StyledSelect
@@ -122,6 +124,11 @@ PlaybackBar.propTypes = {
   currentTimeMS: PropTypes.number.isRequired,
   lengthMS: PropTypes.number.isRequired,
   replaySpeedFactor: PropTypes.number.isRequired,
+
+  ticks: PropTypes.arrayOf(PropTypes.shape({
+    start: PropTypes.number.isRequired,
+    end: PropTypes.number,
+  })),
 
   onPlay: PropTypes.func.isRequired,
   onPause: PropTypes.func.isRequired,
