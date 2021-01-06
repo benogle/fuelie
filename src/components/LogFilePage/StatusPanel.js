@@ -11,6 +11,8 @@ const PanelContainer = styled.div`
   min-width: 250px;
   padding: ${PADDING}px;
   padding-top: 0;
+
+  font-size: 14px;
 `
 
 const PanelScroller = styled.div`
