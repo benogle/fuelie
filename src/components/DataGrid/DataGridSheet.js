@@ -159,6 +159,14 @@ class DataGridSheet extends React.Component {
     }
   }
 
+  renderRow = (props) => {
+    return (
+      <tr>
+        {props.children}
+      </tr>
+    )
+  }
+
   renderCell = (props) => {
     const { renderHoverTip } = this.props
     const {
@@ -174,8 +182,13 @@ class DataGridSheet extends React.Component {
 
     const title = renderHoverTip ? renderHoverTip(cell) : null
     const Tag = cell.isHeader ? 'th' : 'td'
+
+    // FIXME: makes all the rows equal height. Doesnt work in css, only in style
+    // tag, not sure why
+    const height = '0px'
+
     return (
-      <Tag {...rest} {...attributes} title={title}>
+      <Tag {...rest} {...attributes} title={title} style={{ height }}>
         <CellContainer style={{ background: cell.background }}>
           {props.children}
         </CellContainer>
@@ -193,6 +206,7 @@ class DataGridSheet extends React.Component {
         )}
         onSelect={this.handleSelect}
         onCellsChanged={this.handleCellsChanged}
+        rowRenderer={this.renderRow}
         cellRenderer={this.renderCell}
         valueRenderer={(cell) => cell.value}
         sheetRenderer={(props) => (
