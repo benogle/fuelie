@@ -177,6 +177,7 @@ export default class LogFile {
     this.avgFuelMixtureTable = times(numberMixtureColumns, (i) => (
       this.buildSingleAvgFuelMixtureTable(i)
     ))
+    this.buildMixtureDifferenceTable()
   }
 
   buildSingleAvgFuelMixtureTable (mixtureIndex) {
@@ -323,6 +324,30 @@ export default class LogFile {
 
     const numberMixtureColumns = this.configProfile.getNumberMixtureColumns()
     this.suggestedMixtureChangeTable = times(numberMixtureColumns, buildSuggestionsForMixtureIndex)
+  }
+
+  getMixtureDifferenceTable () {
+    return this.mixtureDifferenceTable
+  }
+
+  buildMixtureDifferenceTable () {
+    const numberMixtureColumns = this.configProfile.getNumberMixtureColumns()
+    let table = null
+    if (numberMixtureColumns > 1) {
+      table = this.avgFuelMixtureTable[0].map((row, rowIndex) => (
+        row.map(({ value: targetValue }, colIndex) => {
+          const { value: valueA } = this.avgFuelMixtureTable[0][rowIndex][colIndex]
+          const { value: valueB } = this.avgFuelMixtureTable[1][rowIndex][colIndex]
+          let difference = null
+          if (valueA != null && valueB != null) {
+            difference = round(valueB - valueA, 2)
+          }
+          return { value: difference }
+        })
+      ))
+    }
+
+    this.mixtureDifferenceTable = table
   }
 }
 

@@ -430,6 +430,39 @@ class LogFilePage extends React.Component {
     )
   }
 
+  renderMixtureDifference = () => {
+    const { configProfile } = this.props
+    const table = this.logFile.getMixtureDifferenceTable()
+    const rowHeaders = configProfile.getFuelMapRows()
+    const columnHeaders = configProfile.getFuelMapColumns()
+    return (
+      <TabContainer>
+        <GridContainer>
+          <DataGrid
+            data={table}
+            rowHeaders={rowHeaders}
+            columnHeaders={columnHeaders}
+            readOnly
+            onSelect={this.handleSelect}
+            onFocus={this.handleTableFocus}
+            onBlur={this.handleTableBlur}
+            floatingCellPosition={this.getReplayCellPosition()}
+            colorScale={[
+              { color: 'red', value: -1 },
+              { color: 'yellow', value: -0.6 },
+              { color: 'blue', value: -0.2 },
+              { color: 'green', value: 0 },
+              { color: 'blue', value: 0.2 },
+              { color: 'yellow', value: 0.6 },
+              { color: 'red', value: 1 },
+            ]}
+          />
+        </GridContainer>
+        {this.renderSidePanel({ isTargetMixture: true })}
+      </TabContainer>
+    )
+  }
+
   renderSuggestedMixtureChange = (mixtureIndex) => {
     const { configProfile } = this.props
     const table = this.logFile.getSuggestedMixtureChangeTable(mixtureIndex)
@@ -467,6 +500,7 @@ class LogFilePage extends React.Component {
     const { tabIndex } = this.state
 
     const allTables = this.logFile.getAvgFuelMixtureTable()
+    const mixtureDifferenceTable = this.logFile.getMixtureDifferenceTable()
 
     const mixtureTabs = allTables.map((table, index) => ({
       name: `Avg. AFR ${getIndexDisplay(allTables, index)}`,
@@ -477,8 +511,17 @@ class LogFilePage extends React.Component {
       render: () => this.renderSuggestedMixtureChange(index),
     }))
 
+    const diffTabs = []
+    if (mixtureDifferenceTable) {
+      diffTabs.push({
+        name: 'AFR Diff',
+        render: this.renderMixtureDifference,
+      })
+    }
+
     const tabs = [
       ...mixtureTabs,
+      ...diffTabs,
       {
         name: 'Target',
         render: this.renderTargetMixture,
