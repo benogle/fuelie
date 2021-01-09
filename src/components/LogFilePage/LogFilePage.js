@@ -300,6 +300,10 @@ class LogFilePage extends React.Component {
                 name: `${indexDisplay} Sug. Change`,
                 value: `${round(suggestionCell.value, 2)}%`,
               },
+              {
+                name: `${indexDisplay} Weight`,
+                value: `${round(afrCell.weight, 2)}`,
+              },
             ]
           })),
         )
@@ -310,24 +314,21 @@ class LogFilePage extends React.Component {
           name: 'Target',
           value: `${round(targetMixtureCell.value, 2)}`,
         })
-      }
 
-      if (hasLoggedValues) {
-        values.push({
-          name: 'Weight',
-          value: `${round(avgFuelMixtureCell.weight, 2)}`,
-        }, {
-          name: 'Samples',
-          value: `${avgFuelMixtureCell.length}`,
-        }, {
-          key: 'counts',
-          name: getCellVCountArray(avgFuelMixtureCell)
-            .map(({ value, count }) => (
-              <div key={`v${value}`}>
-                {value} ({count})
-              </div>
-            )),
-        })
+        if (hasLoggedValues) {
+          values.push({
+            name: 'Samples',
+            value: `${avgFuelMixtureCell.length}`,
+          }, {
+            key: 'counts',
+            name: getCellVCountArray(avgFuelMixtureCell)
+              .map(({ value, count }) => (
+                <div key={`v${value}`}>
+                  {value} ({count})
+                </div>
+              )),
+          })
+        }
       }
     }
 
