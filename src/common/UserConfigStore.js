@@ -11,6 +11,7 @@ class UserConfigStore extends Store {
     super({
       name: 'user',
       defaults: UserConfig.getDefaultConfig(),
+      clearInvalidConfig: false,
       ...options,
     })
   }
