@@ -65,7 +65,7 @@ class Tabs extends React.Component {
       <Tab
         key={name}
         isActive={isActive}
-        onClick={() => this.handleClickTab(index)}
+        onMouseDown={() => this.handleClickTab(index)}
       >
         {name}
       </Tab>
