@@ -21,6 +21,9 @@ import StatusPanel from './StatusPanel'
 import req from 'common/req'
 const path = req('path')
 
+// FIXME: This is stupid but I am fighting flexbox
+const CHROME_HEIGHT = 94
+
 const Container = styled.div`
   height: 100%;
   display: flex;
@@ -31,6 +34,7 @@ const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
   flex: 1;
+  height: calc(100% - ${CHROME_HEIGHT}px); /* FIXME: This is stupid but i am fighting flexbox */
 `
 
 const GridContainer = styled.div`
