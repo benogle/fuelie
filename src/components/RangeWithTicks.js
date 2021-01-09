@@ -2,11 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import theme from 'style/theme'
-
-const COLOR_ENABLED = theme.colors.blacks[100]
-const COLOR_DISABLED = theme.colors.blacks[30]
-
 const StyledRange = styled.input.attrs({ type: 'range' })`
   position: relative;
   cursor: pointer;

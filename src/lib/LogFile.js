@@ -1,6 +1,10 @@
 import some from 'lodash/some'
 import last from 'lodash/last'
 import times from 'lodash/times'
+import flatten from 'lodash/flatten'
+import uniqWith from 'lodash/uniqWith'
+import isEqual from 'lodash/isEqual'
+import sortBy from 'lodash/sortBy'
 import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
@@ -136,6 +140,30 @@ export default class LogFile {
 
   getTotalTimeMS () {
     return this.getTimeMS(this.getLastIndex())
+  }
+
+  getLineRanges ({ minX, maxX, minY, maxY }) {
+    const mixTable = this.getAvgFuelMixtureTable(0) // should be the same on all mixture tables
+    const ranges = []
+    for (let y = minY; y <= maxY; y++) {
+      const row = mixTable[y]
+      for (let x = minX; x <= maxX; x++) {
+        const cell = row[x]
+        if (cell.lineRanges) ranges.push(cell.lineRanges)
+      }
+    }
+
+    // Probably the most common case...
+    if (ranges.length === 1) return ranges[0]
+
+    // Could merge the ranges with an interval tree. This is fine and probably faster
+    const seen = new Set()
+    return flatten(ranges).filter(({ start, end }) => {
+      const str = `${start},${end}`
+      if (seen.has(str)) return false
+      seen.add(str)
+      return true
+    })
   }
 
   // Returns an array of rows. Access via result[row][column]

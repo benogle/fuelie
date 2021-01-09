@@ -1,3 +1,6 @@
+// The main file. This displays all the tabs, sidebar, playback, etc.
+// TODO: Probably should split this up so it isnt 600 lines...
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
@@ -165,24 +168,6 @@ class LogFilePage extends React.Component {
     }
   }
 
-  moveToRelativeTabIndex (countToMove) {
-    const numberOfTabs = this.numberOfTabs || 3
-    // NOTE: add the numberOfTabs to guard against modding -1
-    this.setState({
-      tabIndex: (numberOfTabs + this.state.tabIndex + countToMove) % numberOfTabs,
-    })
-  }
-
-  playFrom = (index) => { // eslint-disable-line
-    const nextMS = this.logFile.getMSTilNextLine(index, this.state.replaySpeedFactor)
-    if (!nextMS) return this.handlePause()
-
-    this.interval = setTimeout(() => {
-      const nextIndex = index + 1
-      this.setState({ replayIndex: nextIndex }, () => this.playFrom(nextIndex))
-    }, nextMS)
-  }
-
   getReplayCellPosition (index = 0) {
     const { isReplayMode, replayIndex } = this.state
     if (!isReplayMode) return null
@@ -195,6 +180,34 @@ class LogFilePage extends React.Component {
       yWeight: logLine.rowI.weight,
       value: logLine.m[index].toFixed(2),
     }
+  }
+
+  getLineRanges () {
+    const { selectedStart, selectedEnd } = this.state
+    if (!selectedStart || !selectedEnd) return []
+    const minX = Math.min(selectedStart.x, selectedEnd.x)
+    const maxX = Math.max(selectedStart.x, selectedEnd.x)
+    const minY = Math.min(selectedStart.y, selectedEnd.y)
+    const maxY = Math.max(selectedStart.y, selectedEnd.y)
+    return this.logFile.getLineRanges({ minX, maxX, minY, maxY })
+  }
+
+  playFrom = (index) => {
+    const nextMS = this.logFile.getMSTilNextLine(index, this.state.replaySpeedFactor)
+    if (!nextMS) return this.handlePause()
+
+    this.interval = setTimeout(() => {
+      const nextIndex = index + 1
+      this.setState({ replayIndex: nextIndex }, () => this.playFrom(nextIndex))
+    }, nextMS)
+  }
+
+  moveToRelativeTabIndex (countToMove) {
+    const numberOfTabs = this.numberOfTabs || 3
+    // NOTE: add the numberOfTabs to guard against modding -1
+    this.setState({
+      tabIndex: (numberOfTabs + this.state.tabIndex + countToMove) % numberOfTabs,
+    })
   }
 
   loadFile () {
@@ -486,10 +499,8 @@ class LogFilePage extends React.Component {
   }
 
   renderData () {
-    const { isPlaying, isReplayMode, replayIndex, replaySpeedFactor, selectedCell } = this.state
-    const ticks = selectedCell
-      ? selectedCell.lineRanges
-      : []
+    const { isPlaying, isReplayMode, replayIndex, replaySpeedFactor } = this.state
+    const ticks = this.getLineRanges()
     return (
       <Container>
         {this.renderTabs()}
