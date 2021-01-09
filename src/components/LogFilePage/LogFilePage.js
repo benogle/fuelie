@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import flatten from 'lodash/flatten'
 import isNumber from 'lodash/isNumber'
 
 import theme from 'style/theme'
@@ -282,28 +283,24 @@ class LogFilePage extends React.Component {
 
       if (hasLoggedValues) {
         values.push(
-          ...avgFuelMixtureTables.map((table, index) => {
-            const cellValue = table[selectedStart.y][selectedStart.x].value
-            const value = cellValue ? round(cellValue, 2) : 'N/A'
-            return {
-              name: `Avg Mixture ${getIndexDisplay(avgFuelMixtureTables, index)}`,
-              value,
-            }
-          }),
-        )
-        // if (!isAvgFuelMixture) {
-        //
-        // }
-
-        values.push(
-          ...avgFuelMixtureTables.map((table, index) => {
-            const cell = table[selectedStart.y][selectedStart.x]
-            const value = `${round(cell.min, 2)} - ${round(cell.max, 2)}`
-            return {
-              name: `Mix. Range ${getIndexDisplay(avgFuelMixtureTables, index)}`,
-              value,
-            }
-          }),
+          ...flatten(avgFuelMixtureTables.map((table, index) => {
+            const afrCell = table[selectedStart.y][selectedStart.x]
+            const suggestionCell = suggestedMixtureChangeTables[index][selectedStart.y][selectedStart.x]
+            return [
+              {
+                name: `Avg Mixture ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+                value: round(afrCell.value, 2),
+              },
+              {
+                name: `Mix. Range ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+                value: `${round(afrCell.min, 2)} - ${round(afrCell.max, 2)}`,
+              },
+              {
+                name: `Sug. Change ${getIndexDisplay(suggestedMixtureChangeTables, index)}`,
+                value: `${round(suggestionCell.value, 2)}%`,
+              },
+            ]
+          })),
         )
       }
 
@@ -315,17 +312,6 @@ class LogFilePage extends React.Component {
       }
 
       if (hasLoggedValues) {
-        values.push(
-          ...suggestedMixtureChangeTables.map((table, index) => {
-            const cellValue = table[selectedStart.y][selectedStart.x].value
-            const value = `${round(cellValue, 2)}%`
-            return {
-              name: `Sug. Change ${getIndexDisplay(suggestedMixtureChangeTables, index)}`,
-              value,
-            }
-          }),
-        )
-
         values.push({
           name: 'Weight',
           value: `${round(avgFuelMixtureCell.weight, 2)}`,
