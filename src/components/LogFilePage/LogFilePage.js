@@ -286,17 +286,18 @@ class LogFilePage extends React.Component {
           ...flatten(avgFuelMixtureTables.map((table, index) => {
             const afrCell = table[selectedStart.y][selectedStart.x]
             const suggestionCell = suggestedMixtureChangeTables[index][selectedStart.y][selectedStart.x]
+            const indexDisplay = getIndexDisplay(avgFuelMixtureTables, index)
             return [
               {
-                name: `Avg Mixture ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+                name: `${indexDisplay} Avg. Mixture`,
                 value: round(afrCell.value, 2),
               },
               {
-                name: `Mix. Range ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+                name: `${indexDisplay} Mix. Range`,
                 value: `${round(afrCell.min, 2)} - ${round(afrCell.max, 2)}`,
               },
               {
-                name: `Sug. Change ${getIndexDisplay(suggestedMixtureChangeTables, index)}`,
+                name: `${indexDisplay} Sug. Change`,
                 value: `${round(suggestionCell.value, 2)}%`,
               },
             ]
@@ -519,7 +520,7 @@ function getCellVCountArray (cell) {
 }
 
 function getIndexDisplay (allTables, index) {
-  return allTables.length > 1 ? index + 1 : ''
+  return allTables.length > 1 ? `#${index + 1}` : ''
 }
 
 LogFilePage.propTypes = {
