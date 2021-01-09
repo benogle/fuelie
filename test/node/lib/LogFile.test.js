@@ -48,7 +48,7 @@ describe('LogFile', function () {
         rowI: { index: 13, weight: 0.21304 },
         colV: 911.32813,
         colI: { index: 0, weight: 0.17734 },
-        m: 1.2,
+        m: [1.2],
 
         'Engine Load': -10.78696,
         'Engine Speed': 911.32813,
@@ -87,7 +87,7 @@ describe('LogFile', function () {
         rowI: { index: 13, weight: 0.21304 },
         colV: 911.32813,
         colI: { index: 0, weight: 0.17734 },
-        m: 1.2,
+        m: [1.2],
 
         'Engine Load': -10.78696,
         'Engine Speed': 911.32813,
@@ -111,9 +111,14 @@ describe('LogFile', function () {
     })
 
     describe('buildAvgFuelMixtureTable', function () {
+      it('has only one fule mixture table', async function () {
+        await logFile.readFile()
+        expect(logFile.getAvgFuelMixtureTable()).to.have.length(1)
+      })
+
       it('builds the avgFuelMixtureTable', async function () {
         await logFile.readFile()
-        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable()
+        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable(0)
         expect(avgFuelMixtureTable.length).to.equal(17)
         expect(avgFuelMixtureTable[0].length).to.equal(17)
 
@@ -137,7 +142,7 @@ describe('LogFile', function () {
       it('omits cells less than a minTotalWeight', async function () {
         configProfile.profile.avgFuelMixture.minTotalWeight = 1
         await logFile.readFile()
-        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable()
+        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable(0)
         expect(avgFuelMixtureTable[13][0].value).equal(null)
         expect(avgFuelMixtureTable[13][1].value).equal(null)
         expect(avgFuelMixtureTable[14][0].value).equal(null)
@@ -153,7 +158,7 @@ describe('LogFile', function () {
         }]
         await logFile.readFile()
 
-        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable()
+        const avgFuelMixtureTable = logFile.getAvgFuelMixtureTable(0)
         expect(avgFuelMixtureTable[13][0].value).equal(5.03)
         expect(avgFuelMixtureTable[13][0].min).equal(1.2)
         expect(avgFuelMixtureTable[13][0].max).equal(11.12)
@@ -169,6 +174,33 @@ describe('LogFile', function () {
         expect(avgFuelMixtureTable[14][1].value).equal(5.41)
         expect(avgFuelMixtureTable[14][1].min).equal(1.2)
         expect(avgFuelMixtureTable[14][1].max).equal(11.12)
+      })
+
+      describe('when there is more than one mixture column', function () {
+        beforeEach(async function () {
+          configProfile.profile.logFile.mixture = ['O2 #1', 'O2 #2']
+        })
+
+        it('builds all avgFuelMixtureTables', async function () {
+          await logFile.readFile()
+          expect(logFile.getAvgFuelMixtureTable()).to.have.length(2)
+
+          let avgFuelMixtureTable = logFile.getAvgFuelMixtureTable(0)
+          expect(avgFuelMixtureTable.length).to.equal(17)
+          expect(avgFuelMixtureTable[0].length).to.equal(17)
+
+          expect(avgFuelMixtureTable[13][0].value).equal(7.12)
+          expect(avgFuelMixtureTable[13][0].min).equal(2.3)
+          expect(avgFuelMixtureTable[13][0].max).equal(12.13)
+
+          avgFuelMixtureTable = logFile.getAvgFuelMixtureTable(1)
+          expect(avgFuelMixtureTable.length).to.equal(17)
+          expect(avgFuelMixtureTable[0].length).to.equal(17)
+
+          expect(avgFuelMixtureTable[13][0].value).equal(6.04)
+          expect(avgFuelMixtureTable[13][0].min).equal(1.2)
+          expect(avgFuelMixtureTable[13][0].max).equal(11.12)
+        })
       })
     })
   })

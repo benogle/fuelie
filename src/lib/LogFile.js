@@ -1,5 +1,6 @@
 import some from 'lodash/some'
 import last from 'lodash/last'
+import times from 'lodash/times'
 import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
@@ -54,7 +55,8 @@ export default class LogFile {
   }
 
   readLine (logLine) {
-    const { time, row, column, mixture, defaultType, columns } = this.configProfile.getLogFileConfig()
+    const { time, row, column, columns, defaultType } = this.configProfile.getLogFileConfig()
+    const mixtureColumns = this.configProfile.getMixtureColumns()
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const rowV = parseFloat(logLine[row])
@@ -70,7 +72,7 @@ export default class LogFile {
       rowI: getInterpolatedIndex(rowV, fuelRows),
       colV,
       colI: getInterpolatedIndex(colV, fuelColumns),
-      m: parseFloat(logLine[mixture]),
+      m: mixtureColumns.map((mixCol) => parseFloat(logLine[mixCol])),
     }
   }
 
@@ -137,11 +139,19 @@ export default class LogFile {
   }
 
   // Returns an array of rows. Access via result[row][column]
-  getAvgFuelMixtureTable () {
-    return this.avgFuelMixtureTable
+  getAvgFuelMixtureTable (index) {
+    if (index == null) return this.avgFuelMixtureTable
+    return this.avgFuelMixtureTable[index]
   }
 
   buildAvgFuelMixtureTable () {
+    const numberMixtureColumns = this.configProfile.getNumberMixtureColumns()
+    this.avgFuelMixtureTable = times(numberMixtureColumns, (i) => (
+      this.buildSingleAvgFuelMixtureTable(i)
+    ))
+  }
+
+  buildSingleAvgFuelMixtureTable (mixtureIndex) {
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const { minValue, maxValue, minWeight, minTotalWeight, ignore } = this.configProfile.get('avgFuelMixture')
@@ -208,7 +218,8 @@ export default class LogFile {
 
     for (let lineIndex = 0; lineIndex < this.data.length; lineIndex++) {
       const line = this.data[lineIndex]
-      const { rowI, colI, m: newLineValue } = line
+      const { rowI, colI, m } = line
+      const newLineValue = m[mixtureIndex]
       if (!rowI || !colI || !newLineValue) {
         console.log('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
@@ -219,7 +230,7 @@ export default class LogFile {
         // some() will basically OR the expressions. If any returns true, ignore this line
         const shouldIgnore = some(conditionResults)
         if (shouldIgnore) {
-          console.log('Ignore', line)
+          // console.log('Ignore', line)
           continue
         }
       }
@@ -242,7 +253,7 @@ export default class LogFile {
       }
     }
 
-    this.avgFuelMixtureTable = table
+    return table
   }
 
   getTargetMixtureTable () {
@@ -259,8 +270,9 @@ export default class LogFile {
     this.buildSuggestedMixtureChangeTable()
   }
 
-  getSuggestedMixtureChangeTable () {
-    return this.suggestedMixtureChangeTable
+  getSuggestedMixtureChangeTable (index) {
+    if (index == null) return this.suggestedMixtureChangeTable
+    return this.suggestedMixtureChangeTable[index]
   }
 
   buildSuggestedMixtureChangeTable () {
@@ -268,16 +280,21 @@ export default class LogFile {
     // targetFuel = 12.3 / 14.7 = 0.8367 (scaling factor on fuel cell)
     // actualAir / actualFuel = targetAir / targetFuel
     // targetFuel = actualAir / targetAir
-    this.suggestedMixtureChangeTable = this.targetMixtureTable.map((row, rowIndex) => (
-      row.map(({ value: targetValue }, colIndex) => {
-        const { value: loggedValue } = this.avgFuelMixtureTable[rowIndex][colIndex]
-        let suggestedValue = null
-        if (loggedValue != null) {
-          suggestedValue = round((loggedValue / targetValue - 1) * 100, 2)
-        }
-        return { value: suggestedValue, targetValue, loggedValue }
-      })
-    ))
+    const buildSuggestionsForMixtureIndex = (mixtureIndex) => (
+      this.targetMixtureTable.map((row, rowIndex) => (
+        row.map(({ value: targetValue }, colIndex) => {
+          const { value: loggedValue } = this.avgFuelMixtureTable[mixtureIndex][rowIndex][colIndex]
+          let suggestedValue = null
+          if (loggedValue != null) {
+            suggestedValue = round((loggedValue / targetValue - 1) * 100, 2)
+          }
+          return { value: suggestedValue, targetValue, loggedValue }
+        })
+      ))
+    )
+
+    const numberMixtureColumns = this.configProfile.getNumberMixtureColumns()
+    this.suggestedMixtureChangeTable = times(numberMixtureColumns, buildSuggestionsForMixtureIndex)
   }
 }
 
