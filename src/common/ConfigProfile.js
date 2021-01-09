@@ -1,6 +1,7 @@
 const get = require('lodash/get')
 const each = require('lodash/each')
 const clone = require('lodash/clone')
+const isArray = require('lodash/isArray')
 const isEqual = require('lodash/isEqual')
 const isNumber = require('lodash/isNumber')
 
@@ -68,6 +69,16 @@ class ConfigProfile {
     return changedKeys && changedKeys.length
       ? changedKeys
       : null
+  }
+
+  getMixtureColumns () {
+    const { mixture } = this.getLogFileConfig()
+    return isArray(mixture) ? mixture : [mixture]
+  }
+
+  getNumberMixtureColumns () {
+    const { mixture } = this.getLogFileConfig()
+    return isArray(mixture) ? mixture.length : 1
   }
 
   getFuelMixtureTarget () {

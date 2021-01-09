@@ -165,7 +165,7 @@ class LogFilePage extends React.Component {
     }, nextMS)
   }
 
-  getReplayCellPosition () {
+  getReplayCellPosition (index = 0) {
     const { isReplayMode, replayIndex } = this.state
     if (!isReplayMode) return null
 
@@ -175,7 +175,7 @@ class LogFilePage extends React.Component {
       xWeight: logLine.colI.weight,
       y: logLine.rowI.index,
       yWeight: logLine.rowI.weight,
-      value: logLine.m.toFixed(2),
+      value: logLine.m[index].toFixed(2),
     }
   }
 
@@ -214,7 +214,7 @@ class LogFilePage extends React.Component {
     const logLine = this.logFile.getLineAtindex(replayIndex)
     const { t, rowV, rowI, colV, colI, m, ...logParams } = logLine
 
-    const mainValue = logLine.m.toFixed(2)
+    const mainValue = m[0].toFixed(2) // FIXME
     const x = logLine.colI.weight > 0.5
       ? logLine.colI.index + 2
       : logLine.colI.index + 1
@@ -246,7 +246,12 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderSidePanel ({ isAvgFuelMixture, isTargetMixture, isSuggestedMixtureChange }) {
+  renderSidePanel ({
+    isAvgFuelMixture,
+    isTargetMixture,
+    isSuggestedMixtureChange,
+    mixtureIndex = 0,
+  }) {
     const { selectedCell, selectedStart, isReplayMode, isTableFocused } = this.state
 
     if (isReplayMode && !isTableFocused) return this.renderReplaySidePanel()
@@ -255,20 +260,20 @@ class LogFilePage extends React.Component {
     let values = null
 
     if (selectedCell) {
-      const avgFuelMixtureTable = this.logFile.getAvgFuelMixtureTable()
+      const avgFuelMixtureTables = this.logFile.getAvgFuelMixtureTable()
       const targetMixtureTable = this.logFile.getTargetMixtureTable()
-      const suggestedMixtureChangeTable = this.logFile.getSuggestedMixtureChangeTable()
+      const suggestedMixtureChangeTables = this.logFile.getSuggestedMixtureChangeTable()
 
-      const avgFuelMixtureCell = avgFuelMixtureTable[selectedStart.y][selectedStart.x]
+      const avgFuelMixtureCell = avgFuelMixtureTables[mixtureIndex][selectedStart.y][selectedStart.x]
       const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
-      const suggestedMixtureChangeCell = suggestedMixtureChangeTable[selectedStart.y][selectedStart.x]
+      const suggestedMixtureChangeCell = suggestedMixtureChangeTables[mixtureIndex][selectedStart.y][selectedStart.x]
 
       if (isAvgFuelMixture) {
-        mainValue = avgFuelMixtureCell.value ? avgFuelMixtureCell.value : null
+        mainValue = avgFuelMixtureCell.value ? avgFuelMixtureCell.value : 'N/A'
       } else if (isTargetMixture) {
-        mainValue = targetMixtureCell.value
+        mainValue = targetMixtureCell.value || 'N/A'
       } else if (isSuggestedMixtureChange) {
-        mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + '%' : null
+        mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + '%' : 'N/A'
       }
 
       values = []
@@ -276,17 +281,30 @@ class LogFilePage extends React.Component {
       const hasLoggedValues = avgFuelMixtureCell && avgFuelMixtureCell.value
 
       if (hasLoggedValues) {
-        if (!isAvgFuelMixture) {
-          values.push({
-            name: 'Avg Mixture',
-            value: `${round(avgFuelMixtureCell.value, 2)}`,
-          })
-        }
+        values.push(
+          ...avgFuelMixtureTables.map((table, index) => {
+            const cellValue = table[selectedStart.y][selectedStart.x].value
+            const value = cellValue ? round(cellValue, 2) : 'N/A'
+            return {
+              name: `Avg Mixture ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+              value,
+            }
+          }),
+        )
+        // if (!isAvgFuelMixture) {
+        //
+        // }
 
-        values.push({
-          name: 'Mix. Range',
-          value: `${round(avgFuelMixtureCell.min, 2)} - ${round(avgFuelMixtureCell.max, 2)}`,
-        })
+        values.push(
+          ...avgFuelMixtureTables.map((table, index) => {
+            const cell = table[selectedStart.y][selectedStart.x]
+            const value = `${round(cell.min, 2)} - ${round(cell.max, 2)}`
+            return {
+              name: `Mix. Range ${getIndexDisplay(avgFuelMixtureTables, index)}`,
+              value,
+            }
+          }),
+        )
       }
 
       if (!isTargetMixture) {
@@ -297,12 +315,16 @@ class LogFilePage extends React.Component {
       }
 
       if (hasLoggedValues) {
-        if (!isSuggestedMixtureChange) {
-          values.push({
-            name: 'Sug. Change',
-            value: `${round(suggestedMixtureChangeCell.value, 2)}%`,
-          })
-        }
+        values.push(
+          ...suggestedMixtureChangeTables.map((table, index) => {
+            const cellValue = table[selectedStart.y][selectedStart.x].value
+            const value = `${round(cellValue, 2)}%`
+            return {
+              name: `Sug. Change ${getIndexDisplay(suggestedMixtureChangeTables, index)}`,
+              value,
+            }
+          }),
+        )
 
         values.push({
           name: 'Weight',
@@ -339,9 +361,9 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderAverageMixture = () => {
+  renderAverageMixture = (mixtureIndex) => {
     const { configProfile } = this.props
-    const table = this.logFile.getAvgFuelMixtureTable()
+    const table = this.logFile.getAvgFuelMixtureTable(mixtureIndex)
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
     return (
@@ -356,10 +378,10 @@ class LogFilePage extends React.Component {
             onSelect={this.handleSelect}
             onFocus={this.handleTableFocus}
             onBlur={this.handleTableBlur}
-            floatingCellPosition={this.getReplayCellPosition()}
+            floatingCellPosition={this.getReplayCellPosition(mixtureIndex)}
           />
         </GridContainer>
-        {this.renderSidePanel({ isAvgFuelMixture: true })}
+        {this.renderSidePanel({ mixtureIndex, isAvgFuelMixture: true })}
       </TabContainer>
     )
   }
@@ -399,9 +421,9 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderSuggestedMixtureChange = () => {
+  renderSuggestedMixtureChange = (mixtureIndex) => {
     const { configProfile } = this.props
-    const table = this.logFile.getSuggestedMixtureChangeTable()
+    const table = this.logFile.getSuggestedMixtureChangeTable(mixtureIndex)
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
     return (
@@ -415,7 +437,7 @@ class LogFilePage extends React.Component {
             onSelect={this.handleSelect}
             onFocus={this.handleTableFocus}
             onBlur={this.handleTableBlur}
-            floatingCellPosition={this.getReplayCellPosition()}
+            floatingCellPosition={this.getReplayCellPosition(mixtureIndex)}
             colorScale={[
               { color: 'red', value: -18 },
               { color: 'yellow', value: -10 },
@@ -427,23 +449,33 @@ class LogFilePage extends React.Component {
             ]}
           />
         </GridContainer>
-        {this.renderSidePanel({ isSuggestedMixtureChange: true })}
+        {this.renderSidePanel({ mixtureIndex, isSuggestedMixtureChange: true })}
       </TabContainer>
     )
   }
 
   renderTabs () {
     const { tabIndex } = this.state
-    const tabs = [{
-      name: 'Average AFR',
-      render: this.renderAverageMixture,
-    }, {
-      name: 'Target AFR',
-      render: this.renderTargetMixture,
-    }, {
-      name: 'Suggested Change',
-      render: this.renderSuggestedMixtureChange,
-    }]
+
+    const allTables = this.logFile.getAvgFuelMixtureTable()
+
+    const mixtureTabs = allTables.map((table, index) => ({
+      name: `Average AFR ${getIndexDisplay(allTables, index)}`,
+      render: () => this.renderAverageMixture(index),
+    }))
+    const suggestionTabs = allTables.map((table, index) => ({
+      name: `Suggested Change ${getIndexDisplay(allTables, index)}`,
+      render: () => this.renderSuggestedMixtureChange(index),
+    }))
+
+    const tabs = [
+      ...mixtureTabs,
+      {
+        name: 'Target AFR',
+        render: this.renderTargetMixture,
+      },
+      ...suggestionTabs,
+    ]
     return (
       <Tabs
         tabIndex={tabIndex}
@@ -498,6 +530,10 @@ function getCellVCountArray (cell) {
   return Object.keys(cell.vCount)
     .map((value) => ({ value, count: cell.vCount[value] }))
     .sort((a, b) => b.count - a.count)
+}
+
+function getIndexDisplay (allTables, index) {
+  return allTables.length > 1 ? index + 1 : ''
 }
 
 LogFilePage.propTypes = {
