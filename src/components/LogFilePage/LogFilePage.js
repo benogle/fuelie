@@ -212,14 +212,6 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderHoverTip = (cell) => {
-    if (!cell.length) return null
-    const counts = getCellVCountArray(cell)
-      .map(({ value, count }) => `${value}(${count})`)
-      .join(', ')
-    return `min ${round(cell.min, 2)}, max ${round(cell.max, 2)}, weight ${round(cell.weight, 2)}, length ${cell.length};\n${counts}`
-  }
-
   renderReplaySidePanel () {
     const { configProfile } = this.props
     const { isReplayMode, replayIndex } = this.state
@@ -375,7 +367,6 @@ class LogFilePage extends React.Component {
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
             readOnly
-            renderHoverTip={this.renderHoverTip}
             onSelect={this.handleSelect}
             onFocus={this.handleTableFocus}
             onBlur={this.handleTableBlur}

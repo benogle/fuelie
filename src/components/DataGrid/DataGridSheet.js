@@ -167,7 +167,6 @@ class DataGridSheet extends React.Component {
       ...rest
     } = props
 
-    // hey, how about some custom attributes on our cell?
     const attributes = {
       ...cell.attributes,
       ...(attributesRenderer ? attributesRenderer(cell) : null),

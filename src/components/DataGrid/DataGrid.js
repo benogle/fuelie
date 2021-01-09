@@ -43,8 +43,14 @@ DataGrid.defaultProps = {
 }
 
 DataGrid.propTypes = {
-  // All props other than the following are forwarded to the DataGridSheet
+  columnHeaders: PropTypes.arrayOf(
+    PropTypes.number,
+  ).isRequired,
+  rowHeaders: PropTypes.arrayOf(
+    PropTypes.number,
+  ).isRequired,
 
+  // All props other than the following are forwarded to the DataGridSheet
   floatingCellPosition: PropTypes.shape({
     x: PropTypes.number, // actual column
     y: PropTypes.number, // actual row
