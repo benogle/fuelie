@@ -465,18 +465,18 @@ class LogFilePage extends React.Component {
     const allTables = this.logFile.getAvgFuelMixtureTable()
 
     const mixtureTabs = allTables.map((table, index) => ({
-      name: `Average AFR ${getIndexDisplay(allTables, index)}`,
+      name: `Avg. AFR ${getIndexDisplay(allTables, index)}`,
       render: () => this.renderAverageMixture(index),
     }))
     const suggestionTabs = allTables.map((table, index) => ({
-      name: `Suggested Change ${getIndexDisplay(allTables, index)}`,
+      name: `Sug. Change ${getIndexDisplay(allTables, index)}`,
       render: () => this.renderSuggestedMixtureChange(index),
     }))
 
     const tabs = [
       ...mixtureTabs,
       {
-        name: 'Target AFR',
+        name: 'Target',
         render: this.renderTargetMixture,
       },
       ...suggestionTabs,

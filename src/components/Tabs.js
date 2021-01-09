@@ -7,13 +7,14 @@ import theme from 'style/theme'
 const BACKGROUND = theme.colors.blacks[20]
 const BACKGROUND_ACTIVE = 'white'
 const CONTENT_PADDING = 20
-const TAB_PADDING = 30
-const TAB_HEIGHT = 40
-const TAB_WIDTH = 120
+const TAB_PADDING = 20
+const TAB_HEIGHT = 34
+const TAB_WIDTH = 80
 
 const Tab = styled.div`
   position: relative;
   z-index: 10;
+  font-size: 14px;
 
   display: flex;
   align-items: center;
