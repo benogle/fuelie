@@ -14,6 +14,11 @@ const arrowDirection = {
   [KEYRIGHT]: 'right',
 }
 
+const tabFunction = {
+  [KEYLEFT]: 'onPreviousTab',
+  [KEYRIGHT]: 'onNextTab',
+}
+
 class KeyboardTool extends React.Component {
   componentDidMount () {
     document.addEventListener('keydown', this.handleKeyDown)
@@ -33,10 +38,14 @@ class KeyboardTool extends React.Component {
     }
 
     const isHandled = !!event.keyboardToolHandled
+    const { metaKey, altKey, ctrlKey, keyCode } = event
 
-    if (event.keyCode >= KEYLEFT && event.keyCode <= KEYDOWN) {
-      return this.callHandler('onArrow', { direction: arrowDirection[event.keyCode], event, handle, isHandled })
-    } else if (event.keyCode === KEYSPACE) {
+    if (keyCode >= KEYLEFT && keyCode <= KEYDOWN) {
+      if (((metaKey && altKey) || (ctrlKey && altKey)) && (keyCode === KEYLEFT || keyCode === KEYRIGHT)) {
+        return this.callHandler(tabFunction[keyCode], { event, handle, isHandled })
+      }
+      return this.callHandler('onArrow', { direction: arrowDirection[keyCode], event, handle, isHandled })
+    } else if (keyCode === KEYSPACE) {
       return this.callHandler('onPausePlay', { event, handle, isHandled })
     }
   }
@@ -56,6 +65,8 @@ class KeyboardTool extends React.Component {
 KeyboardTool.propTypes = {
   onArrow: PropTypes.func,
   onPausePlay: PropTypes.func,
+  onNextTab: PropTypes.func,
+  onPreviousTab: PropTypes.func,
 }
 
 export default KeyboardTool

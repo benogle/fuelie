@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 import flatten from 'lodash/flatten'
+import compact from 'lodash/compact'
 import isNumber from 'lodash/isNumber'
 
 import theme from 'style/theme'
@@ -109,6 +110,14 @@ class LogFilePage extends React.Component {
     this.setState({ tabIndex })
   }
 
+  handleNextTab = () => {
+    this.moveToRelativeTabIndex(1)
+  }
+
+  handlePreviousTab = () => {
+    this.moveToRelativeTabIndex(-1)
+  }
+
   handleChangeReplayEnable = (isReplayMode) => {
     if (!isReplayMode) this.handlePause()
     this.setState({ isReplayMode, replayIndex: 0 })
@@ -154,6 +163,14 @@ class LogFilePage extends React.Component {
         this.handleChangeReplayIndex(newIndex)
       }
     }
+  }
+
+  moveToRelativeTabIndex (countToMove) {
+    const numberOfTabs = this.numberOfTabs || 3
+    // NOTE: add the numberOfTabs to guard against modding -1
+    this.setState({
+      tabIndex: (numberOfTabs + this.state.tabIndex + countToMove) % numberOfTabs,
+    })
   }
 
   playFrom = (index) => { // eslint-disable-line
@@ -230,7 +247,7 @@ class LogFilePage extends React.Component {
         ? logParams[name].toFixed(configProfile.getLogFileColumnDecimals(name))
         : logParams[name],
     }))
-    values.push(...logParamValues)
+    values.push(...compact(logParamValues))
 
     const subValue = (
       <span title="Table Location">
@@ -464,6 +481,10 @@ class LogFilePage extends React.Component {
       },
       ...suggestionTabs,
     ]
+
+    // HACK: it's fine, you'll get over it
+    this.numberOfTabs = tabs.length
+
     return (
       <Tabs
         tabIndex={tabIndex}
@@ -484,6 +505,8 @@ class LogFilePage extends React.Component {
         <KeyboardTool
           onArrow={this.handleArrow}
           onPausePlay={this.handlePausePlayToggle}
+          onNextTab={this.handleNextTab}
+          onPreviousTab={this.handlePreviousTab}
         />
         <StatusBar>
           <PlaybackBar

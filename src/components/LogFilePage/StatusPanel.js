@@ -72,7 +72,7 @@ class StatusPanel extends React.Component {
 
     if (values && values.length) {
       content.push(
-        <PanelScroller>
+        <PanelScroller key="scroller">
           {values.map(({ key, name, value }, i) => (
             <ValueContainer key={`v${key || name}${i}`}>
               <ValueName>{name}</ValueName>
