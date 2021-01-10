@@ -1,20 +1,48 @@
 # Fuelie
 
-Fuelie is a Mac & Windows desktop app that helps you analyze data logged from your car's ECU. It's currently focused on helping you analyze logged air-fuel-ratios from your wideband oxygen sensors.
+Fuelie is a Mac & Windows desktop app that helps you analyze data logged from your car's ECU. It's currently focused on helping you analyze logged air-fuel ratios from your wideband oxygen sensors.
 
-It works with data from _any_ car or ECU provided you can get the logged data out in CSV or TSV format.
+It works with data from _any_ car or ECU provided you can get the logged data out in CSV or TSV format. See the [configuration](#configuration) section for details on setting it up for your ECU.
 
 <img width="1537" alt="Screen Shot 2021-01-09 at 7 35 54 AM" src="https://user-images.githubusercontent.com/69169/104095853-f0275100-524d-11eb-9fbf-84236c52fc44.png">
 
+Set up your target AFR
+
+<img width="1105" alt="Screen Shot 2021-01-09 at 5 09 21 PM" src="https://user-images.githubusercontent.com/69169/104111965-859e0180-529d-11eb-92d4-28119c37c3dc.png">
+
+And it will offer percentage change suggestions:
+
+<img width="1108" alt="Screen Shot 2021-01-09 at 5 09 43 PM" src="https://user-images.githubusercontent.com/69169/104111968-8898f200-529d-11eb-9a1c-1207cb1f7bf3.png">
+
 ## Playback
 
-Playback your logfile:
+Play back your logfile:
 
 ![fuelie-logging](https://user-images.githubusercontent.com/69169/104095856-f3bad800-524d-11eb-886c-b1c5f108c8fa.gif)
 
+Playback UI features
+
+![playback](https://user-images.githubusercontent.com/69169/104111837-fcd29600-529b-11eb-962d-77c11e9bea7c.jpg)
+
+## Keyboard Shortcuts
+
+* `arrows`:
+  * When grid is selected: move selection
+  * When grid is _not_ selected: `left` & `right` scrub playback by one sample
+* `shift+left|right`: scrub playback by 10 samples
+* `space` bar: play / pause from current location
+* `cmd+option+left|right` (`ctrl+option+left|right` Windows): move between tabs
+* `cmd+c` (`ctrl+c` Windows) in the grid: copy selected cells
+* `cmd+v` (`ctrl+v` Windows) in the grid: paste selected cells (pasting/editing only available in target AFR)
+* `cmd+,` (`ctrl+,` Windows): open your configuration file
+
 ## Configuration
 
-Currently you setup the app for your car / ECU by editing a JSON config. Open the app then open the file with `cmd+,` or `ctrl+,`
+Before you open a log file, you will probably need to configure the app to work with your setup.
+
+At this time, you set the app up for your car / ECU by editing a JSON config file. Open the app then open the file with `cmd+,` or `ctrl+,`
+
+Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensitive: double quotes only, no stray commas, etc. If you see a complicated-but-not-very-descriptive error about user.json, it's probably a JSON formatting problem.
 
 ```js
 {
@@ -37,7 +65,7 @@ Currently you setup the app for your car / ECU by editing a JSON config. Open th
         "mixture": "afr"
       },
 
-      // Setup how the app should read your logfile
+      // Set up how the app should read your logfile
       "logFile": {
         // Currently time should be decimal seconds starting from 0
         "time": "Time/s",
@@ -56,7 +84,7 @@ Currently you setup the app for your car / ECU by editing a JSON config. Open th
         // Parse values as this by default. float is recommended
         "defaultType": "float",
 
-        // (optional) Setup specific columns for correct display in the sidebar
+        // (optional) Set up specific columns for correct display in the sidebar
         "columns": {
           "Engine Speed": {
             "type": "integer"
@@ -110,16 +138,16 @@ Currently you setup the app for your car / ECU by editing a JSON config. Open th
 
 ## TODO
 
-* [ ] Status panel: Keep selection between tabs
-* [ ] make default target afr better
-* [ ] cmd-z undo
-* [ ] can take files as parameters
-* [ ] Make error better when user.json error
+* [ ] Make error better when user.json issue
+* [ ] Per-window profile selection
+* [ ] Make default target afr better
+* [ ] Cmd-z undo
+* [ ] Can take files as parameters (open with ...)
 
 ## Dev
 
 ```sh
 nvm use # make sure you're on node 14
 yarn install
-yarn dev
+yarn dev # starts the app
 ```
