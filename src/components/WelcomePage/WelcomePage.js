@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import chroma from 'chroma-js'
 import theme from 'style/theme'
 
+import UserConfigStore from 'common/UserConfigStore'
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -58,7 +60,13 @@ class WelcomePage extends React.Component {
           Open a CSV log file
         </Button>
         <OrContainer>or</OrContainer>
-        <LinkButton>Open your config</LinkButton>
+        <LinkButton
+          onClick={() => (
+            new UserConfigStore().openInEditor()
+          )}
+        >
+          Open your config
+        </LinkButton>
       </Container>
     )
   }
