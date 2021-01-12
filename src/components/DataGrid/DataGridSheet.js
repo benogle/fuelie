@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import chroma from 'chroma-js'
 import isEqual from 'lodash/isEqual'
+import theme from 'style/theme'
 
 import ReactDataSheet from 'react-datasheet'
 import 'react-datasheet/lib/react-datasheet.css'
@@ -49,10 +50,10 @@ const CellContainer = styled.div`
 `
 
 const colorMap = {
-  red: chroma('#ffaeae').alpha(0.7),
-  blue: chroma('#aaf1ff').alpha(0.7),
-  green: chroma('#99ff99').alpha(0.7),
-  yellow: chroma('#fbff18').alpha(0.7),
+  red: chroma(theme.colors.red).alpha(0.7),
+  blue: chroma(theme.colors.blue).alpha(0.7),
+  green: chroma(theme.colors.green).alpha(0.7),
+  yellow: chroma(theme.colors.yellow).alpha(0.7),
 }
 
 class DataGridSheet extends React.Component {
