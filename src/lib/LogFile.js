@@ -271,7 +271,7 @@ export default class LogFile {
 
     for (let rowIndex = 0; rowIndex < table.length; rowIndex++) {
       const row = table[rowIndex]
-      for (var colIndex = 0; colIndex < row.length; colIndex++) {
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
         const cell = row[colIndex]
         if (cell.weight < minTotalWeight) {
           row[colIndex] = getEmptyValue()
