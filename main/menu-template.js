@@ -9,26 +9,28 @@ export default ({
   onClickOpenFile,
 }) => [
   // { role: 'appMenu' }
-  ...(isMac ? [{
-    label: app.name,
-    submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      {
-        label: 'Open Config File',
-        accelerator: 'CmdOrCtrl+,',
-        click () {
-          userConfigStore.openInEditor()
-        },
-      },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideothers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' },
-    ],
-  }] : []),
+  ...(isMac
+    ? [{
+        label: app.name,
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          {
+            label: 'Open Config File',
+            accelerator: 'CmdOrCtrl+,',
+            click () {
+              userConfigStore.openInEditor()
+            },
+          },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideothers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' },
+        ],
+      }]
+    : []),
   // { role: 'fileMenu' }
   {
     label: 'File',
@@ -54,23 +56,25 @@ export default ({
       { role: 'cut' },
       { role: 'copy' },
       { role: 'paste' },
-      ...(isMac ? [
-        { role: 'pasteAndMatchStyle' },
-        { role: 'delete' },
-        { role: 'selectAll' },
-        { type: 'separator' },
-        {
-          label: 'Speech',
-          submenu: [
-            { role: 'startSpeaking' },
-            { role: 'stopSpeaking' },
-          ],
-        },
-      ] : [
-        { role: 'delete' },
-        { type: 'separator' },
-        { role: 'selectAll' },
-      ]),
+      ...(isMac
+        ? [
+            { role: 'pasteAndMatchStyle' },
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [
+                { role: 'startSpeaking' },
+                { role: 'stopSpeaking' },
+              ],
+            },
+          ]
+        : [
+            { role: 'delete' },
+            { type: 'separator' },
+            { role: 'selectAll' },
+          ]),
     ],
   },
   // { role: 'viewMenu' }
@@ -94,14 +98,16 @@ export default ({
     submenu: [
       { role: 'minimize' },
       { role: 'zoom' },
-      ...(isMac ? [
-        { type: 'separator' },
-        { role: 'front' },
-        { type: 'separator' },
-        { role: 'window' },
-      ] : [
-        { role: 'close' },
-      ]),
+      ...(isMac
+        ? [
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
+          ]
+        : [
+            { role: 'close' },
+          ]),
     ],
   },
   {
