@@ -6,8 +6,8 @@ export default class AppStateConfigStore extends Store {
       name: 'app-state',
       defaults: {
         windowSize: {
-          width: 800,
-          height: 600,
+          width: 1250,
+          height: 700,
         },
       },
     })
