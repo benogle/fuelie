@@ -17,7 +17,7 @@ const GridContainer = styled.table`
   }
 
   td {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   th {

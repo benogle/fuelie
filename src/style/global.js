@@ -14,6 +14,7 @@ export default createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
     background: #f8f8f8;
+    font-size: 14px;
   }
 
   #root {
