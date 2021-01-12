@@ -1,10 +1,10 @@
 // The thing that reads and makes sense of the user's config
 
-const findIndex = require('lodash/findIndex')
-const defaultsDeep = require('lodash/defaultsDeep')
-const ConfigProfile = require('./ConfigProfile')
+import findIndex from 'lodash/findIndex'
+import defaultsDeep from 'lodash/defaultsDeep'
+import ConfigProfile from './ConfigProfile'
 
-class UserConfig {
+export default class UserConfig {
   static getDefaultConfig () {
     return defaultConfig
   }
@@ -120,5 +120,3 @@ const defaultConfig = {
     },
   }],
 }
-
-module.exports = UserConfig

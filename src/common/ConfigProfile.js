@@ -1,9 +1,9 @@
-const get = require('lodash/get')
-const each = require('lodash/each')
-const clone = require('lodash/clone')
-const isArray = require('lodash/isArray')
-const isEqual = require('lodash/isEqual')
-const isNumber = require('lodash/isNumber')
+import get from 'lodash/get'
+import each from 'lodash/each'
+import clone from 'lodash/clone'
+import isArray from 'lodash/isArray'
+import isEqual from 'lodash/isEqual'
+import isNumber from 'lodash/isNumber'
 
 // {
 //   name: 'Default',
@@ -23,7 +23,7 @@ const isNumber = require('lodash/isNumber')
 //   },
 // }
 
-class ConfigProfile {
+export default class ConfigProfile {
   constructor (profile, { userConfig } = {}) {
     this.profile = profile
     this.userConfig = userConfig // reference to the main userConfig for sets
@@ -117,5 +117,3 @@ class ConfigProfile {
     return this.set('fuelMixtureTarget', newTarget)
   }
 }
-
-module.exports = ConfigProfile

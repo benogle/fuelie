@@ -1,10 +1,11 @@
-const { app } = require('electron')
-const UserConfigStore = require('../src/common/UserConfigStore')
+import { app } from 'electron'
+import UserConfigStore from '../src/common/UserConfigStore'
+
 const isMac = process.platform === 'darwin'
 
 const userConfigStore = new UserConfigStore()
 
-module.exports = ({
+export default ({
   onClickOpenFile,
 }) => [
   // { role: 'appMenu' }

@@ -1,5 +1,5 @@
-const omit = require('lodash/omit')
-const mapValues = require('lodash/mapValues')
+import omit from 'lodash/omit'
+import mapValues from 'lodash/mapValues'
 
 // HACK: this is basically eval. Don't use anyone's sketchy config file.
 // This is setup to slot into using jailed in the future...
@@ -73,4 +73,4 @@ const expressions = {
   },
 }
 
-module.exports = expressions
+export default expressions

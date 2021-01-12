@@ -1,10 +1,10 @@
 // Webpack is annoying as usual: https://github.com/electron/electron/issues/7300
-const req = require('./req')
-const UserConfig = require('./UserConfig')
+import req from './req'
+import UserConfig from './UserConfig'
 
 const Store = req('electron-store')
 
-class UserConfigStore extends Store {
+export default class UserConfigStore extends Store {
   // Can pass any options from https://github.com/sindresorhus/electron-store#api
   // * watch - will watch the file for changes
   constructor (options) {
@@ -23,5 +23,3 @@ class UserConfigStore extends Store {
     return new UserConfig(this.store, { store: this })
   }
 }
-
-module.exports = UserConfigStore
