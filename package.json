@@ -87,7 +87,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "name": "AFR Tools"
+        "name": "Fuelie"
       },
       "makers": [
         {
