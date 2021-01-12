@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "main/index.js",
+  "homepage": ".",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -14,6 +15,7 @@
     "electron-is-dev": "^1.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.0",
+    "esm": "^3.2.25",
     "lodash": "^4.17.20",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
@@ -73,7 +75,6 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.21.3",
     "eslint-plugin-standard": "^4.0.1",
-    "esm": "^3.2.25",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
     "react-app-rewired": "^2.1.8",
