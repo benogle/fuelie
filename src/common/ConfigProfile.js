@@ -88,9 +88,9 @@ export default class ConfigProfile {
   getDefaultFuelMixtureTarget () {
     const table = []
     // TODO: make something smart here that gives good defaults
-    for (const row of this.profile.fuelMap.rows) {
+    for (const row of this.profile.fuelMap.rows) { // eslint-disable-line
       const newRow = []
-      for (const column of this.profile.fuelMap.columns) {
+      for (const column of this.profile.fuelMap.columns) { // eslint-disable-line
         newRow.push(12.5)
       }
       table.push(newRow)

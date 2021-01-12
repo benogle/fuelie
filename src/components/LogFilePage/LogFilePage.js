@@ -359,7 +359,7 @@ class LogFilePage extends React.Component {
         <span title="Table Location">
           ({selectedStart.x}, {selectedStart.y})
         </span>
-      )
+        )
       : null
 
     return (
