@@ -1,52 +1,29 @@
 import expressions from 'src/common/expressions'
 
 describe('expressions', function () {
-  let data, res, expressionObj
+  let fn, data, res, expressionObj
 
-  describe('eval', function () {
-    beforeEach(async function () {
+  describe('buildEval', function () {
+    it('returns boolean only when booleanOnly: true', async function () {
       data = {
         'Fuel Map': 1000,
         'Fuel Trim (Accel)': 123,
       }
-    })
-
-    it('returns boolean only when booleanOnly: true', async function () {
       expressionObj = {
         accel: 'Fuel Trim (Accel)',
         condition: 'accel > 150',
       }
-      res = await expressions.eval({ expressionObj, data, booleanOnly: true })
+      fn = await expressions.buildEval({ expressionObj, booleanOnly: true })
+      res = fn(data)
       expect(res).to.eql(false)
 
       expressionObj = {
         accel: 'Fuel Trim (Accel)',
         condition: 'accel + 1',
       }
-      res = await expressions.eval({ expressionObj, data, booleanOnly: true })
-      expect(res).to.eql(true)
-    })
-
-    it('returns non-bool vals', async function () {
-      expressionObj = {
-        accel: 'Fuel Trim (Accel)',
-        condition: 'accel + 1',
-      }
-      res = await expressions.eval({ expressionObj, data })
-      expect(res).to.eql(124)
-    })
-  })
-
-  describe('buildEval', function () {
-    let fn
-    it('returns boolean only when booleanOnly: true', async function () {
-      expressionObj = {
-        accel: 'Fuel Accel',
-        condition: 'accel > 150',
-      }
       fn = await expressions.buildEval({ expressionObj, booleanOnly: true })
-      expect(fn({ 'Fuel Accel': 10 })).to.eql(false)
-      expect(fn({ 'Fuel Accel': 200 })).to.eql(true)
+      res = fn(data)
+      expect(res).to.eql(true)
     })
 
     it('returns non-bool values', async function () {
