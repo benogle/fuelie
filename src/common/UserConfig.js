@@ -83,12 +83,6 @@ const defaultConfig = {
         10500,
       ],
     },
-    // fuelMixtureTarget: {
-    //   table: [
-    //     [col, col, col],
-    //     // ...other rows
-    //   ],
-    // },
     units: {
       mixture: 'afr',
     },
@@ -96,36 +90,21 @@ const defaultConfig = {
       time: 'Time/s',
       row: 'Engine Load',
       column: 'Engine Speed',
-      mixture: 'O2 #2',
+      mixture: ['O2 #1'],
       defaultType: 'float',
-      // columns: {
-      //   'Engine Speed': {
-      //     type: 'integer',
-      //   },
-      //   'Fuel Map': {
-      //     type: 'float',
-      //     decimals: 3
-      //   },
-      // },
     },
     avgFuelMixture: {
       minValue: 8,
       maxValue: 20,
       minWeight: 0.3,
       minTotalWeight: 1,
-      // "ignore": [{
-      //   "accel": "Fuel Trim (Accel)",
-      //   "condition": "accel > 15"
-      // }]
     },
-
     suggestedMixtureChange: {
       units: '%',
       suggestedValue: {
         result: '(loggedValue / targetValue - 1) * 100',
       },
     },
-
     mixtureDifference: {
       units: '',
       difference: {
