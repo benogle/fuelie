@@ -127,24 +127,57 @@ Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensiti
         }]
       },
 
-      // Edit this in the app's target tab
-      "fuelMixtureTarget": {
-        "table": []
-      },
-
+      // Settings for suggested changes
       "suggestedMixtureChange": {
-        "unit": "%",
+        // units are used for display only at this time
+        "units": "%",
+
+        // Expression to calculate the suggested value for a single cell. This
+        // expression has several variables available to it:
+        //
+        // * `loggedValue` - The average mixture value in the cell
+        // * `targetValue` - The target mixture value in the cell
+        // * `rowIndex` - The cell's row index
+        // * `colIndex` - The cell's column index
+        // * `avgFuelMixtureTable` - The entire table. Access cells via
+        //    avgFuelMixtureTable[rowIndex][colIndex]. Each cell has a number
+        //    of properties:
+        //    * `value` - same as loggedValue
+        //    * `rawValue` - full precision value
+        //    * `min` - min mixture value sample
+        //    * `max` - max mixture value sample
+        //    * `length` - total samples
+        //    * `weight` - total weight
         "suggestedValue": {
           "result": "(loggedValue / targetValue - 1) * 100"
         }
       },
 
+      // Settings for mixture difference table. Used when there is more than one
+      // O2 sensor reading in the log file.
       "mixtureDifference": {
+        // units are used for display only at this time
 	      "units": "",
+
+        // Expression to calculate the difference in a single cell. Available
+        // variables:
+        //
+        // * `mixture0` - First O2 sensor average mixture value in the cell
+        // * `mixture1` - Second O2 sensor average mixture value in the cell
+        // * `targetValue` - The target mixture value in the cell
+        // * `rowIndex` - The cell's row index
+        // * `colIndex` - The cell's column index
+        // * `avgFuelMixtureTable0` - First O2 sensor's entire table
+        // * `avgFuelMixtureTable1` - Second O2 sensor's entire table
 	      "difference": {
 	        "result": "mixture1 - mixture0"
 	      }
 	    }
+
+      // Edit this in the app's target tab
+      "fuelMixtureTarget": {
+        "table": []
+      }
     }
   ]
 }

@@ -373,6 +373,10 @@ export default class LogFile {
         injectArgs: [
           'mixture0',
           'mixture1',
+          'rowIndex',
+          'colIndex',
+          'avgFuelMixtureTable0',
+          'avgFuelMixtureTable1',
         ],
       })
 
@@ -382,7 +386,14 @@ export default class LogFile {
           const { value: mixture1 } = this.avgFuelMixtureTable[1][rowIndex][colIndex]
           let difference = null
           if (mixture0 != null && mixture1 != null) {
-            difference = round(differenceFn({ mixture1, mixture0 }), 2)
+            difference = round(differenceFn({
+              mixture1,
+              mixture0,
+              rowIndex,
+              colIndex,
+              avgFuelMixtureTable0: this.avgFuelMixtureTable[0],
+              avgFuelMixtureTable1: this.avgFuelMixtureTable[1],
+            }), 2)
           }
           return { value: difference }
         })
