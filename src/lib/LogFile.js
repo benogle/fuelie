@@ -42,6 +42,7 @@ export default class LogFile {
       avgFuelMixture: () => this.buildAvgFuelMixtureTable(),
       fuelMixtureTarget: () => this.buildTargetMixtureTable(),
       suggestedMixtureChange: () => this.buildSuggestedMixtureChangeTable(),
+      mixtureDifference: () => this.buildMixtureDifferenceTable(),
     }
 
     // A simpler change happend, can use the data we already have
@@ -358,13 +359,30 @@ export default class LogFile {
     const numberMixtureColumns = this.configProfile.getNumberMixtureColumns()
     let table = null
     if (numberMixtureColumns > 1) {
+      const defaultExpression = {
+        result: 'mixture1 - mixture0',
+      }
+
+      const differenceExpression = this.configProfile.getMixtureDifference().difference ||
+        defaultExpression
+
+      const differenceFn = expressions.buildEval({
+        expressionObj: differenceExpression,
+        dataKey: 'result',
+        booleanOnly: false,
+        injectArgs: [
+          'mixture0',
+          'mixture1',
+        ],
+      })
+
       table = this.avgFuelMixtureTable[0].map((row, rowIndex) => (
         row.map(({ value: targetValue }, colIndex) => {
-          const { value: valueA } = this.avgFuelMixtureTable[0][rowIndex][colIndex]
-          const { value: valueB } = this.avgFuelMixtureTable[1][rowIndex][colIndex]
+          const { value: mixture0 } = this.avgFuelMixtureTable[0][rowIndex][colIndex]
+          const { value: mixture1 } = this.avgFuelMixtureTable[1][rowIndex][colIndex]
           let difference = null
-          if (valueA != null && valueB != null) {
-            difference = round(valueB - valueA, 2)
+          if (mixture0 != null && mixture1 != null) {
+            difference = round(differenceFn({ mixture1, mixture0 }), 2)
           }
           return { value: difference }
         })

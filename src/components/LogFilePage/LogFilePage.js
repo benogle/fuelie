@@ -272,6 +272,7 @@ class LogFilePage extends React.Component {
   renderSidePanel ({
     isAvgFuelMixture,
     isTargetMixture,
+    isMixtureDifference,
     isSuggestedMixtureChange,
     mixtureIndex = 0,
   }) {
@@ -286,12 +287,15 @@ class LogFilePage extends React.Component {
     if (selectedCell) {
       const avgFuelMixtureTables = this.logFile.getAvgFuelMixtureTable()
       const targetMixtureTable = this.logFile.getTargetMixtureTable()
+      const mixtureDifferenceTable = this.logFile.getMixtureDifferenceTable()
+      const mixtureDifferenceUnits = configProfile.getMixtureDifferenceUnits()
       const suggestedMixtureChangeTables = this.logFile.getSuggestedMixtureChangeTable()
       const suggestedMixtureChangeUnits = configProfile.getSuggestedMixtureChangeUnits()
 
       const avgFuelMixtureCell = avgFuelMixtureTables[mixtureIndex][selectedStart.y][selectedStart.x]
       const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
       const suggestedMixtureChangeCell = suggestedMixtureChangeTables[mixtureIndex][selectedStart.y][selectedStart.x]
+      const mixtureDifferenceCell = mixtureDifferenceTable[selectedStart.y][selectedStart.x]
 
       if (isAvgFuelMixture) {
         mainValue = avgFuelMixtureCell.value ? avgFuelMixtureCell.value : 'N/A'
@@ -299,6 +303,8 @@ class LogFilePage extends React.Component {
         mainValue = targetMixtureCell.value || 'N/A'
       } else if (isSuggestedMixtureChange) {
         mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + suggestedMixtureChangeUnits : 'N/A'
+      } else if (isMixtureDifference) {
+        mainValue = mixtureDifferenceCell.value ? mixtureDifferenceCell.value + mixtureDifferenceUnits : 'N/A'
       }
 
       values = []
@@ -460,7 +466,7 @@ class LogFilePage extends React.Component {
             ]}
           />
         </GridContainer>
-        {this.renderSidePanel({ isTargetMixture: true })}
+        {this.renderSidePanel({ isMixtureDifference: true })}
       </TabContainer>
     )
   }

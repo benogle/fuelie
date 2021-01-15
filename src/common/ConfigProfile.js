@@ -106,6 +106,14 @@ export default class ConfigProfile {
     return this.getSuggestedMixtureChange().units || ''
   }
 
+  getMixtureDifference () {
+    return this.profile.mixtureDifference || {}
+  }
+
+  getMixtureDifferenceUnits () {
+    return this.getMixtureDifference().units || ''
+  }
+
   // setters
 
   set (key, value) {

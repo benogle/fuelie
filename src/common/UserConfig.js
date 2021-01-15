@@ -125,5 +125,12 @@ const defaultConfig = {
         result: '(loggedValue / targetValue - 1) * 100',
       },
     },
+
+    mixtureDifference: {
+      units: '',
+      difference: {
+        result: 'mixture1 - mixture0',
+      },
+    },
   }],
 }
