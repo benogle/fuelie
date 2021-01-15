@@ -295,7 +295,9 @@ class LogFilePage extends React.Component {
       const avgFuelMixtureCell = avgFuelMixtureTables[mixtureIndex][selectedStart.y][selectedStart.x]
       const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
       const suggestedMixtureChangeCell = suggestedMixtureChangeTables[mixtureIndex][selectedStart.y][selectedStart.x]
-      const mixtureDifferenceCell = mixtureDifferenceTable[selectedStart.y][selectedStart.x]
+      const mixtureDifferenceCell = mixtureDifferenceTable
+        ? mixtureDifferenceTable[selectedStart.y][selectedStart.x]
+        : null
 
       if (isAvgFuelMixture) {
         mainValue = avgFuelMixtureCell.value ? avgFuelMixtureCell.value : 'N/A'
