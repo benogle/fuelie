@@ -1,5 +1,6 @@
 import omit from 'lodash/omit'
 import mapValues from 'lodash/mapValues'
+import fromPairs from 'lodash/fromPairs'
 
 // HACK: this is basically eval. Don't use anyone's sketchy config file.
 // This is setup to slot into using jailed in the future...
@@ -31,7 +32,6 @@ const pluginCode = `
     },
   }
 
-  // exports the api to the application environment
   application.setInterface(api)
 `
 
@@ -53,7 +53,13 @@ const expressions = {
     })
   },
 
-  buildEval ({ expressionObj, dataKey = 'condition', booleanOnly }) {
+  buildEval ({ expressionObj, dataKey = 'condition', injectArgs, booleanOnly }) {
+    if (injectArgs) {
+      expressionObj = {
+        ...fromPairs(injectArgs.map((a) => [a, a])),
+        ...expressionObj,
+      }
+    }
     const args = expressions.resolveArgs({ expressionObj, data: {}, resultKeys: [dataKey] })
     const fnArgs = Object.keys(args)
     const fn = plugin.api.buildExpressionFunction(expressionObj[dataKey], fnArgs, booleanOnly)
