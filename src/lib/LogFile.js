@@ -41,7 +41,7 @@ export default class LogFile {
     const changeHandlers = {
       avgFuelMixture: () => this.buildAvgFuelMixtureTable(),
       fuelMixtureTarget: () => this.buildTargetMixtureTable(),
-      // suggestCalc: () => {},
+      suggestedMixtureChange: () => this.buildSuggestedMixtureChangeTable(),
     }
 
     // A simpler change happend, can use the data we already have
@@ -306,13 +306,40 @@ export default class LogFile {
     // targetFuel = 12.3 / 14.7 = 0.8367 (scaling factor on fuel cell)
     // actualAir / actualFuel = targetAir / targetFuel
     // targetFuel = actualAir / targetAir
+    const defaultExpression = {
+      result: '(loggedValue / targetValue - 1) * 100',
+    }
+
+    const suggestedValueExpression = this.configProfile.getSuggestedMixtureChange().suggestedValue ||
+      defaultExpression
+
+    const suggestedValueFn = expressions.buildEval({
+      expressionObj: suggestedValueExpression,
+      dataKey: 'result',
+      booleanOnly: false,
+      injectArgs: [
+        'loggedValue',
+        'targetValue',
+        'rowIndex',
+        'colIndex',
+        'avgFuelMixtureTable',
+      ],
+    })
+
     const buildSuggestionsForMixtureIndex = (mixtureIndex) => (
       this.targetMixtureTable.map((row, rowIndex) => (
         row.map(({ value: targetValue }, colIndex) => {
           const { value: loggedValue } = this.avgFuelMixtureTable[mixtureIndex][rowIndex][colIndex]
           let suggestedValue = null
           if (loggedValue != null) {
-            suggestedValue = round((loggedValue / targetValue - 1) * 100, 2)
+            const res = suggestedValueFn({
+              loggedValue,
+              targetValue,
+              rowIndex,
+              colIndex,
+              avgFuelMixtureTable: this.avgFuelMixtureTable[mixtureIndex],
+            })
+            suggestedValue = round(res, 2)
           }
           return { value: suggestedValue, targetValue, loggedValue }
         })

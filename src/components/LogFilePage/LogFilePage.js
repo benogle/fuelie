@@ -276,6 +276,7 @@ class LogFilePage extends React.Component {
     mixtureIndex = 0,
   }) {
     const { selectedCell, selectedStart, isReplayMode, isTableFocused } = this.state
+    const { configProfile } = this.props
 
     if (isReplayMode && !isTableFocused) return this.renderReplaySidePanel()
 
@@ -286,6 +287,7 @@ class LogFilePage extends React.Component {
       const avgFuelMixtureTables = this.logFile.getAvgFuelMixtureTable()
       const targetMixtureTable = this.logFile.getTargetMixtureTable()
       const suggestedMixtureChangeTables = this.logFile.getSuggestedMixtureChangeTable()
+      const suggestedMixtureChangeUnits = configProfile.getSuggestedMixtureChangeUnits()
 
       const avgFuelMixtureCell = avgFuelMixtureTables[mixtureIndex][selectedStart.y][selectedStart.x]
       const targetMixtureCell = targetMixtureTable[selectedStart.y][selectedStart.x]
@@ -296,7 +298,7 @@ class LogFilePage extends React.Component {
       } else if (isTargetMixture) {
         mainValue = targetMixtureCell.value || 'N/A'
       } else if (isSuggestedMixtureChange) {
-        mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + '%' : 'N/A'
+        mainValue = suggestedMixtureChangeCell.value ? suggestedMixtureChangeCell.value + suggestedMixtureChangeUnits : 'N/A'
       }
 
       values = []
@@ -320,7 +322,7 @@ class LogFilePage extends React.Component {
               },
               {
                 name: `${indexDisplay} Sug. Change`,
-                value: `${round(suggestionCell.value, 2)}%`,
+                value: `${round(suggestionCell.value, 2)}${suggestedMixtureChangeUnits}`,
               },
               {
                 name: `${indexDisplay} Weight`,

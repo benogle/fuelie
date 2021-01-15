@@ -98,6 +98,14 @@ export default class ConfigProfile {
     return { table }
   }
 
+  getSuggestedMixtureChange () {
+    return this.profile.suggestedMixtureChange || {}
+  }
+
+  getSuggestedMixtureChangeUnits () {
+    return this.getSuggestedMixtureChange().units || ''
+  }
+
   // setters
 
   set (key, value) {

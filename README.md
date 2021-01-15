@@ -61,6 +61,7 @@ Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensiti
         // Column headers
         "columns": [ 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6550, 7000, 7500, 8000, 8500, 9000, 9500, 10000, 10500]
       },
+
       "units": {
         "mixture": "afr"
       },
@@ -129,6 +130,13 @@ Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensiti
       // Edit this in the app's target tab
       "fuelMixtureTarget": {
         "table": []
+      }
+
+      "suggestedMixtureChange": {
+        "unit": "%",
+        "suggestedValue": {
+          "result": "(loggedValue / targetValue - 1) * 100"
+        }
       }
     }
   ]

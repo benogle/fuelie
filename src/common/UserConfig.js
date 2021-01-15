@@ -118,5 +118,12 @@ const defaultConfig = {
       //   "condition": "accel > 15"
       // }]
     },
+
+    suggestedMixtureChange: {
+      units: '%',
+      suggestedValue: {
+        result: '(loggedValue / targetValue - 1) * 100',
+      },
+    },
   }],
 }
