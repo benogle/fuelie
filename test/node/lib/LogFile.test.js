@@ -1,6 +1,6 @@
 import path from 'path'
 import ConfigProfile from 'common/ConfigProfile'
-import LogFile from 'src/lib/LogFile'
+import LogFile, { sortColumnHeaders } from 'src/lib/LogFile'
 
 const logfilePathCSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.csv')
 const logfilePathTSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.tsv')
@@ -202,6 +202,23 @@ describe('LogFile', function () {
           expect(avgFuelMixtureTable[13][0].max).equal(11.12)
         })
       })
+    })
+  })
+
+  describe('sortColumnHeaders', function () {
+    let headers
+    beforeEach(async function () {
+      headers = ['two', 'one', 'three', 'four']
+    })
+
+    it('doesnt change when no order specified', async function () {
+      expect(sortColumnHeaders(headers, null)).to.eql(headers)
+      expect(sortColumnHeaders(headers, [])).to.eql(headers)
+    })
+
+    it('sorts specified columns, keeps the others in sorted order', async function () {
+      expect(sortColumnHeaders(headers, ['three'])).to.eql(['three', 'two', 'one', 'four'])
+      expect(sortColumnHeaders(headers, ['three', 'one'])).to.eql(['three', 'one', 'two', 'four'])
     })
   })
 })

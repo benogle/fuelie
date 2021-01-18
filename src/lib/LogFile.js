@@ -64,6 +64,10 @@ export default class LogFile {
     const rowV = parseFloat(logLine[row])
     const colV = parseFloat(logLine[column])
 
+    if (!this.headers) {
+      this.headers = Object.keys(logLine)
+    }
+
     const parsedLine = mapValues(logLine, (v, k) => (
       parseValue(v, k, columns, defaultType)
     ))
@@ -83,6 +87,8 @@ export default class LogFile {
     if (!separator) {
       throw new Error('Cannot detect separator')
     }
+    this.headers = null
+    this.sortedHeaders = null
     this.data = await new Promise((resolve, reject) => {
       const lines = []
       fs.createReadStream(this.filename, { encoding: 'utf8' })
@@ -105,6 +111,7 @@ export default class LogFile {
     // Build out second order things
     this.buildAvgFuelMixtureTable()
     this.buildTargetMixtureTable()
+    this.buildSortedColumnHeaders()
 
     return this.data
   }
@@ -162,6 +169,17 @@ export default class LogFile {
       seen.add(str)
       return true
     })
+  }
+
+  getSortedColumnHeaders () {
+    return this.sortedHeaders
+  }
+
+  buildSortedColumnHeaders () {
+    const headers = this.headers || []
+    const displayOrder = this.configProfile.getLogFileColumnDisplayOrder()
+    this.sortedHeaders = sortColumnHeaders(headers, displayOrder)
+    return this.sortedHeaders
   }
 
   // Returns an array of rows. Access via result[row][column]
@@ -444,4 +462,34 @@ function readFirstLine (path) {
       reject(err)
     })
   })
+}
+
+export function sortColumnHeaders (headers, displayOrder) {
+  if (!displayOrder || !displayOrder.length) return headers
+
+  const headersToIndex = invertArray(headers)
+  const displayOrderToIndex = invertArray(displayOrder)
+
+  const sortedHeaders = [...headers]
+  sortedHeaders.sort((a, b) => {
+    const aHasSort = displayOrderToIndex[a] != null
+    const bHasSort = displayOrderToIndex[b] != null
+    if (aHasSort && bHasSort) {
+      return displayOrderToIndex[a] - displayOrderToIndex[b]
+    } else if (aHasSort) {
+      return -1
+    } else if (bHasSort) {
+      return 1
+    }
+    return headersToIndex[a] - headersToIndex[b]
+  })
+  return sortedHeaders
+}
+
+function invertArray (arr) {
+  const res = {}
+  for (let i = 0; i < arr.length; i++) {
+    res[arr[i]] = i
+  }
+  return res
 }

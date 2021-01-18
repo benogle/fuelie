@@ -246,7 +246,8 @@ class LogFilePage extends React.Component {
       : logLine.rowI.index
 
     const values = []
-    const logParamValues = Object.keys(logParams).map((name) => name && ({
+    const sortedHeaders = this.logFile.getSortedColumnHeaders()
+    const logParamValues = sortedHeaders.map((name) => name && ({
       name,
       value: isNumber(logParams[name])
         ? logParams[name].toFixed(configProfile.getLogFileColumnDecimals(name))

@@ -44,12 +44,16 @@ export default class ConfigProfile {
     return this.profile.fuelMap.columns
   }
 
-  get (key) {
-    return get(this.profile, key)
+  get (key, defaultVal) {
+    return get(this.profile, key, defaultVal)
   }
 
   getLogFileColumnConfig (columnName) {
     return this.get(['logFile', 'columns', columnName])
+  }
+
+  getLogFileColumnDisplayOrder () {
+    return this.get(['logFile', 'columnDisplayOrder'], [])
   }
 
   getLogFileColumnDecimals (columnName) {
