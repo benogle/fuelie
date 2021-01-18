@@ -96,7 +96,20 @@ Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensiti
           "Fuel Pulse": {
             "decimals": 2
           },
-        }
+        },
+
+        // (optional) Specify the order to display log columns in the sidebar on
+        // playback. Any columns not specified in this list will be displayed
+        // after the specified columns in their original order.
+        "columnDisplayOrder": [
+          "Time/s",
+          "Engine Load",
+          "Engine Speed",
+          "Throttle",
+          "Vehicle Speed",
+          "O2 #1",
+          "O2 #2"
+        ]
       },
 
       // Settings for the average fuel mixture table(s)
