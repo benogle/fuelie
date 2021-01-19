@@ -32,7 +32,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "eject": "react-scripts eject",
-    "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
+    "dev": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm:electron\"",
     "electron": "wait-on tcp:3000 && electron-forge start",
     "package": "react-app-rewired build && electron-forge package",
     "make": "react-app-rewired build && electron-forge make",
