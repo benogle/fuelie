@@ -1,10 +1,16 @@
 {
   "name": "Fuelie",
   "productName": "Fuelie",
+  "description": "Data log analyzer for your favorite ECU",
   "version": "0.1.0",
   "main": "main/index.js",
   "homepage": ".",
   "license": "MIT",
+  "author": {
+    "name" : "Ben Ogle",
+    "email" : "ogle.ben@gmail.com",
+    "url" : "https://github.com/benogle"
+  },
   "dependencies": {
     "chroma-js": "^2.1.0",
     "csv-parser": "^3.0.0",
@@ -90,7 +96,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "afr_tools"
+            "name": "fuelie"
           }
         },
         {
