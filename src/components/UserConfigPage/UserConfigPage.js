@@ -42,6 +42,7 @@ class UserConfigPage extends React.Component {
     ipcRenderer.on('save', this.handleSave)
     this.editor.focus()
     this.editor.setCursorPosition(0, 0)
+    document.title = 'Edit Config - Fuelie'
   }
 
   async componentDidUpdate (prevProps) {

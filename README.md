@@ -199,7 +199,6 @@ Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensiti
 
 ## TODO
 
-* [ ] Make error better when user.json issue
 * [ ] Per-window profile selection
 * [ ] Make default target afr better
 * [ ] Cmd-z undo

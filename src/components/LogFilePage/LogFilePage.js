@@ -81,7 +81,7 @@ class LogFilePage extends React.Component {
 
   componentDidMount () {
     const { filename } = this.props
-    document.title = path.basename(filename)
+    document.title = `${path.basename(filename)} - Fuelie`
     this.loadFile()
   }
 
