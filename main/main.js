@@ -4,13 +4,16 @@ import { app, BrowserWindow, Menu } from 'electron'
 import isDev from 'electron-is-dev'
 import menuTemplate from './menu-template'
 import AppStateConfigStore from '../src/common/AppStateConfigStore'
+
 import { getFilesFromUser } from './helpers'
+import { USER_CONFIG_FILENAME } from '../src/common/helpers'
 
 const appStateConfig = new AppStateConfigStore()
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS // NEW!
 let mainWindow = null
+let globalMenu = null
 
 if (isDev) {
   const devTools = require('electron-devtools-installer')
@@ -22,10 +25,16 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-function createWindow (filename) {
+function createWindow ({
+  filename,
+  sizePrefName = 'windowSize',
+  onClosed,
+  onFocus,
+  onBlur,
+} = {}) {
   // Create the browser window.
   const win = new BrowserWindow({
-    ...appStateConfig.get('windowSize'),
+    ...appStateConfig.get(sizePrefName),
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -37,7 +46,19 @@ function createWindow (filename) {
     // the height, width, and x and y coordinates.
     const { width, height } = win.getBounds()
     // Now that we have them, save them using the `set` method.
-    appStateConfig.set('windowSize', { width, height })
+    appStateConfig.set(sizePrefName, { width, height })
+  })
+
+  win.on('closed', () => {
+    if (onClosed) onClosed()
+  })
+
+  win.on('focus', () => {
+    if (onFocus) onFocus()
+  })
+
+  win.on('blur', () => {
+    if (onBlur) onBlur()
   })
 
   const queryString = `?filename=${filename || ''}`
@@ -48,13 +69,17 @@ function createWindow (filename) {
   )
 
   // Open the DevTools.
-  if (isDev) {
-    win.webContents.openDevTools({ })
-  }
+  // if (isDev) {
+  //   win.webContents.openDevTools({ })
+  // }
 
-  // HACK: This is probably no bueno
-  win.hasFilename = !!filename
   return win
+}
+
+function setSaveItemVisibility (isVisible) {
+  const saveMenuItem = globalMenu.getMenuItemById('save')
+  saveMenuItem.visible = isVisible
+  saveMenuItem.enabled = isVisible
 }
 
 // This method will be called when Electron has finished
@@ -63,10 +88,17 @@ function createWindow (filename) {
 app.whenReady().then(() => {
   mainWindow = createWindow()
 
-  const menu = Menu.buildFromTemplate(menuTemplate({
+  globalMenu = Menu.buildFromTemplate(menuTemplate({
     onClickOpenFile: openFile,
+    onClickOpenUserConfig: openUserConfig,
+    onClickSave: () => {
+      const focusedWin = BrowserWindow.getFocusedWindow()
+      if (focusedWin) {
+        focusedWin.webContents.send('save')
+      }
+    },
   }))
-  Menu.setApplicationMenu(menu)
+  Menu.setApplicationMenu(globalMenu)
 
   if (isDev) {
     installExtension(REACT_DEVELOPER_TOOLS)
@@ -99,10 +131,32 @@ const openFile = exports.openFile = async () => {
   const filenames = await getFilesFromUser()
   if (!filenames) return
   for (const newWindowFilename of filenames) {
-    createWindow(newWindowFilename)
+    createWindow({ filename: newWindowFilename })
   }
-  if (mainWindow && !mainWindow.hasFilename) {
+  if (mainWindow) {
     mainWindow.destroy()
     mainWindow = null
+  }
+}
+
+let userConfigWindow
+const openUserConfig = exports.openUserConfig = async () => {
+  if (userConfigWindow) {
+    userConfigWindow.focus()
+  } else {
+    userConfigWindow = createWindow({
+      filename: USER_CONFIG_FILENAME,
+      sizePrefName: 'userConfigWindowSize',
+      onClosed: () => {
+        userConfigWindow = null
+        setSaveItemVisibility(false)
+      },
+      onFocus: () => {
+        setSaveItemVisibility(true)
+      },
+      onBlur: () => {
+        setSaveItemVisibility(false)
+      },
+    })
   }
 }

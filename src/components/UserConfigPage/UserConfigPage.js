@@ -3,8 +3,11 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import chroma from 'chroma-js'
 import theme from 'style/theme'
+import req from 'common/req'
 
 import JSONEditor from 'components/JSONEditor'
+
+const ipcRenderer = req('electron').ipcRenderer
 
 const Container = styled.div`
   display: flex;
@@ -46,10 +49,18 @@ class UserConfigPage extends React.Component {
     configValue: null,
   }
 
+  componentDidMount () {
+    ipcRenderer.on('save', this.handleSave)
+  }
+
   async componentDidUpdate (prevProps) {
     if (this.props.userConfig !== prevProps.userConfig) {
       this.handleChangeConfig()
     }
+  }
+
+  componentWillUnmount () {
+    ipcRenderer.removeListener('save', this.handleSave)
   }
 
   handleChangeConfig = () => {

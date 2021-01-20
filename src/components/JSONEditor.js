@@ -9,9 +9,6 @@ export default class JSONEditor extends React.Component {
   handleChange = (value) => {
     const { onChange } = this.props
     onChange(value)
-    // if (this.hasFocus && this.value) this.value = value
-    // const obj = JSON.parse(value)
-    // if (obj !== false) onChange(value)
   }
 
   render () {

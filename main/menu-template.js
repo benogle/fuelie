@@ -1,18 +1,17 @@
 import { app } from 'electron'
-import UserConfigStore from '../src/common/UserConfigStore'
 
 const isMac = process.platform === 'darwin'
 
-const userConfigStore = new UserConfigStore()
-
 export default ({
   onClickOpenFile,
+  onClickOpenUserConfig,
+  onClickSave,
 }) => {
   const configFileOpen = {
     label: 'Open Config File',
     accelerator: 'CmdOrCtrl+,',
     click () {
-      userConfigStore.openInEditor()
+      onClickOpenUserConfig()
     },
   }
   const winConfigFileOpenItems = isMac
@@ -49,6 +48,16 @@ export default ({
           accelerator: 'CmdOrCtrl+o',
           click () {
             onClickOpenFile()
+          },
+        },
+        {
+          id: 'save',
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+s',
+          visible: false,
+          enabled: false,
+          click () {
+            onClickSave()
           },
         },
         ...winConfigFileOpenItems,

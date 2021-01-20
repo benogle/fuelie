@@ -25,10 +25,16 @@ class Main extends React.Component {
     mainProcess.openFile()
   }
 
+  handleOpenUserConfig = () => {
+    const mainProcess = getMainProcess()
+    mainProcess.openUserConfig()
+  }
+
   renderWelcome () {
     return (
       <WelcomePage
-        onClick={this.handleOpenFile}
+        onClickOpenFile={this.handleOpenFile}
+        onClickOpenUserConfig={this.handleOpenUserConfig}
       />
     )
   }

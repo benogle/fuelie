@@ -9,6 +9,10 @@ export default class AppStateConfigStore extends Store {
           width: 1250,
           height: 700,
         },
+        userConfigWindowSize: {
+          width: 700,
+          height: 800,
+        },
       },
     })
   }

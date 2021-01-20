@@ -4,8 +4,6 @@ import styled from 'styled-components'
 import chroma from 'chroma-js'
 import theme from 'style/theme'
 
-import UserConfigStore from 'common/UserConfigStore'
-
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -53,17 +51,15 @@ const OrContainer = styled.div`
 
 class WelcomePage extends React.Component {
   render () {
-    const { onClick } = this.props
+    const { onClickOpenFile, onClickOpenUserConfig } = this.props
     return (
       <Container>
-        <Button onClick={onClick}>
+        <Button onClick={onClickOpenFile}>
           Open a CSV log file
         </Button>
         <OrContainer>or</OrContainer>
         <LinkButton
-          onClick={() => (
-            new UserConfigStore().openInEditor()
-          )}
+          onClick={onClickOpenUserConfig}
         >
           Open your config
         </LinkButton>
@@ -73,7 +69,8 @@ class WelcomePage extends React.Component {
 }
 
 WelcomePage.propTypes = {
-  onClick: PropTypes.func.isRequired,
+  onClickOpenFile: PropTypes.func.isRequired,
+  onClickOpenUserConfig: PropTypes.func.isRequired,
 }
 
 export default WelcomePage
