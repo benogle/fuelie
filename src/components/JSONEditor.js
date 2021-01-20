@@ -11,11 +11,25 @@ export default class JSONEditor extends React.Component {
     onChange(value)
   }
 
+  setCursorPosition (line, column) {
+    this.editor.editor.moveCursorTo(line, column)
+  }
+
+  focus () {
+    // Get to the actual ace editor
+    this.editor.editor.focus()
+  }
+
   render () {
-    const { value, height } = this.props
+    const { value, height, ...others } = this.props
     return (
       <AceEditor
+        {...others}
+        ref={(e) => { this.editor = e }}
+        tabSize={2}
+        cursorStart={1}
         value={value}
+        focus
         mode="json"
         theme="github"
         width="100%"

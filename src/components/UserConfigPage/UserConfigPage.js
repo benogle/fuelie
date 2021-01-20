@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import chroma from 'chroma-js'
 import theme from 'style/theme'
 import req from 'common/req'
 
+import Button from 'components/Button'
 import JSONEditor from 'components/JSONEditor'
 
 const ipcRenderer = req('electron').ipcRenderer
@@ -25,21 +25,10 @@ const ButtonContainer = styled.div`
   }
 `
 
-const Button = styled.button`
-  background: ${theme.colors.blue};
-  border: 0;
-  font-weight: bold;
-  padding: 10px 20px;
-  transition: background .2s ease;
-  cursor: pointer;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background: ${chroma(theme.colors.blue).saturate(0.5).hex()};
-    outline: none;
-  }
+const StyledJSONEditor = styled(JSONEditor)`
+  box-shadow: ${theme.boxShadows[50]};
 `
+
 const ErrorMessage = styled.div`
   color: red;
 `
@@ -51,6 +40,8 @@ class UserConfigPage extends React.Component {
 
   componentDidMount () {
     ipcRenderer.on('save', this.handleSave)
+    this.editor.focus()
+    this.editor.setCursorPosition(0, 0)
   }
 
   async componentDidUpdate (prevProps) {
@@ -80,6 +71,8 @@ class UserConfigPage extends React.Component {
     const { configValue } = this.state
     if (!configValue) return
 
+    this.editor.focus()
+
     try {
       const newStore = parseJSON(configValue)
       userConfig.replaceConfig(newStore)
@@ -95,11 +88,11 @@ class UserConfigPage extends React.Component {
   render () {
     const { userConfig } = this.props
     const { configValue, error } = this.state
-    console.log('render', !!configValue)
     const jsonString = configValue || JSON.stringify(userConfig.getConfig(), null, 2)
     return (
       <Container>
-        <JSONEditor
+        <StyledJSONEditor
+          ref={(e) => { this.editor = e }}
           value={jsonString}
           onChange={this.handleChange}
         />
