@@ -2,6 +2,9 @@
 
 import findIndex from 'lodash/findIndex'
 import defaultsDeep from 'lodash/defaultsDeep'
+import size from 'lodash/size'
+import isArray from 'lodash/isArray'
+import isObject from 'lodash/isObject'
 import ConfigProfile from './ConfigProfile'
 
 export default class UserConfig {
@@ -31,6 +34,16 @@ export default class UserConfig {
     if (!this.store) return
     const index = findIndex(this.config.profiles, (p) => p.name === profileName)
     return this.store.set(`profiles.${index}.${key}`, value)
+  }
+
+  getConfig () {
+    return this.store.store
+  }
+
+  replaceConfig (newConfig) {
+    if (this.store && size(newConfig) > 0 && !isArray(newConfig) && isObject(newConfig)) {
+      this.store.store = newConfig
+    }
   }
 }
 

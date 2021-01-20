@@ -5,6 +5,9 @@ import PropTypes from 'prop-types'
 import getMainProcess from 'lib/getMainProcess'
 import WelcomePage from 'components/WelcomePage'
 import LogFilePage from 'components/LogFilePage'
+import UserConfigPage from 'components/UserConfigPage'
+
+import { USER_CONFIG_FILENAME } from 'common/helpers'
 
 function getParams () {
   return qs.parse((global.location.search || '').slice(1))
@@ -30,6 +33,15 @@ class Main extends React.Component {
     )
   }
 
+  renderUserConfig () {
+    const { userConfig } = this.props
+    return (
+      <UserConfigPage
+        userConfig={userConfig}
+      />
+    )
+  }
+
   renderFile () {
     const { userConfig, prevUserConfig } = this.props
     return (
@@ -42,6 +54,9 @@ class Main extends React.Component {
   }
 
   render () {
+    if (this.filename === USER_CONFIG_FILENAME) {
+      return this.renderUserConfig()
+    }
     return this.filename
       ? this.renderFile()
       : this.renderWelcome()

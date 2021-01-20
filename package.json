@@ -7,11 +7,12 @@
   "homepage": ".",
   "license": "MIT",
   "author": {
-    "name" : "Ben Ogle",
-    "email" : "ogle.ben@gmail.com",
-    "url" : "https://github.com/benogle"
+    "name": "Ben Ogle",
+    "email": "ogle.ben@gmail.com",
+    "url": "https://github.com/benogle"
   },
   "dependencies": {
+    "ace-builds": "^1.4.12",
     "chroma-js": "^2.1.0",
     "csv-parser": "^3.0.0",
     "detect-csv": "^1.1.0",
@@ -23,6 +24,7 @@
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "react": "^17.0.1",
+    "react-ace": "^9.2.1",
     "react-datasheet": "^1.4.8",
     "react-dom": "^17.0.1",
     "react-scripts": "^4.0.1",

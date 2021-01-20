@@ -1,4 +1,6 @@
 
+export const USER_CONFIG_FILENAME = '__userconfig'
+
 export function round (value, decimals) {
   return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)
 }
