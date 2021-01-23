@@ -208,8 +208,19 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
 
 ## Dev
 
+If you don't have it already, install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) (or [nvm-windows](https://github.com/coreybutler/nvm-windows)). Then install node and yarn:
+
 ```sh
-nvm use # make sure you're on node 14
+nvm install 14.15
+nvm use 14.15 # make sure you're on node 14.x
+npm install --global yarn
+```
+
+Then get the app running
+
+```sh
 yarn install
 yarn dev # starts the app
 ```
+
+Once running, you can make changes and they should immediately be reflected in the running app.
