@@ -14,6 +14,8 @@ And it will offer percentage change suggestions:
 
 <img width="1108" alt="Screen Shot 2021-01-09 at 5 09 43 PM" src="https://user-images.githubusercontent.com/69169/104111968-8898f200-529d-11eb-9a1c-1207cb1f7bf3.png">
 
+You can even [configure](#configuration) the math behind the suggestion.
+
 ## Playback
 
 Play back your logfile:
@@ -41,6 +43,8 @@ Playback UI features
 Before you open a log file, you will probably need to configure the app to work with your setup.
 
 At this time, you set the app up for your car / ECU by editing a JSON config file. Open the app then open the file with `cmd+,` or `ctrl+,`
+
+Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheets/json/) for formatting rules. JSON is very strict: double quotes only, no stray commas, etc. If you see a not-very-descriptive error in the config editor, it's probably a JSON formatting problem. The JSON editor within the app attempts to paper over some of this (adding / converting quotes, removing trailing commas), but can't read your mind.
 
 ```js
 {
