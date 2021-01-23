@@ -42,8 +42,6 @@ Before you open a log file, you will probably need to configure the app to work 
 
 At this time, you set the app up for your car / ECU by editing a JSON config file. Open the app then open the file with `cmd+,` or `ctrl+,`
 
-Note: [JSON](https://cheatography.com/gaston/cheat-sheets/json/) is very sensitive: double quotes only, no stray commas, etc. If you see a complicated-but-not-very-descriptive error about user.json, it's probably a JSON formatting problem.
-
 ```js
 {
   // Matches the profile.name from the list of profiles
