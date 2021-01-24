@@ -224,3 +224,7 @@ yarn dev # starts the app
 ```
 
 Once running, you can make changes and they should immediately be reflected in the running app.
+
+## License
+
+MIT License
