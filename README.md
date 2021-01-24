@@ -172,7 +172,7 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
       // O2 sensor reading in the log file.
       "mixtureDifference": {
         // units are used for display only at this time
-	      "units": "",
+        "units": "",
 
         // Expression to calculate the difference in a single cell. Available
         // variables:
@@ -184,10 +184,10 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
         // * `colIndex` - The cell's column index
         // * `avgFuelMixtureTable0` - First O2 sensor's entire table
         // * `avgFuelMixtureTable1` - Second O2 sensor's entire table
-	      "difference": {
-	        "result": "mixture1 - mixture0"
-	      }
-	    }
+        "difference": {
+          "result": "mixture1 - mixture0"
+        }
+      }
 
       // Edit this in the app's target tab
       "fuelMixtureTarget": {
