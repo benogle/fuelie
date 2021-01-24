@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import theme from 'style/theme'
+
 const CellContainer = styled.div`
   display: flex;
   align-items: center;
@@ -12,6 +14,10 @@ const CellContainer = styled.div`
   border: 1px solid rgba(0,0,0,.5);
 
   text-align: center;
+
+  @media (max-width: ${theme.windowSizes.large}px) {
+    font-size: 12px;
+  }
 `
 
 class FloatingCell extends React.Component {

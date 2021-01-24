@@ -47,6 +47,7 @@ const GridContainer = styled.div`
   padding: 20px;
   background: white;
   box-shadow: ${theme.boxShadows[50]};
+  overflow: auto;
 
   .data-grid-container {
     height: 100%;

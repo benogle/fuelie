@@ -18,7 +18,12 @@ const red = '#ffaeae'
 const green = '#99ff99'
 const yellow = '#fbff18'
 
+const windowSizes = {
+  large: 1200,
+}
+
 export default {
+  windowSizes,
   colors: {
     blacks,
     black,

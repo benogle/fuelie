@@ -5,6 +5,11 @@ import styled from 'styled-components'
 import FloatingCell from './FloatingCell'
 import DataGridSheet from './DataGridSheet'
 
+const minCellSize = {
+  width: 34,
+  height: 20,
+}
+
 const InnerContaier = styled.div`
   height: 100%;
   position: relative;
@@ -28,8 +33,14 @@ class DataGrid extends React.Component {
 
   render () {
     const { floatingCellPosition, ...gridProps } = this.props
+    const { rowHeaders, columnHeaders } = this.props
+    const minWidth = (columnHeaders.length + 1) * minCellSize.width
+    const minHeight = (rowHeaders.length + 1) * minCellSize.height
+
     return (
-      <InnerContaier>
+      <InnerContaier
+        style={{ minWidth, minHeight }}
+      >
         <DataGridSheet
           {...gridProps}
         />

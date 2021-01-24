@@ -24,6 +24,15 @@ const GridContainer = styled.table`
   th {
     font-size: 12px;
   }
+
+  @media (max-width: ${theme.windowSizes.large}px) {
+    td {
+      font-size: 12px;
+    }
+    th {
+      font-size: 8px;
+    }
+  }
 `
 
 const CellContainer = styled.div`
