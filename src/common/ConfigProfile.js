@@ -1,5 +1,6 @@
 import get from 'lodash/get'
 import each from 'lodash/each'
+import find from 'lodash/find'
 import clone from 'lodash/clone'
 import isArray from 'lodash/isArray'
 import isEqual from 'lodash/isEqual'
@@ -55,7 +56,7 @@ export default class ConfigProfile {
       })
     } else if (columnConfig.valueTable) {
       columnConfig.convertValue = ({ value = 0 } = {}) => (
-        // TODO: sort the table outside of this func
+        // TODO: sort the table asc by item[0] outside of this func
         interpolate(value, columnConfig.valueTable)
       )
     }
@@ -79,7 +80,8 @@ export default class ConfigProfile {
   }
 
   getLogFileColumnConfig (columnName) {
-    return this.get(['logFile', 'columns', columnName])
+    const columns = this.get(['logFile', 'columns'])
+    return columns?.[columnName] || find(columns, (columnConfig) => columnConfig.name === columnName)
   }
 
   getLogFileColumnDisplayOrder () {

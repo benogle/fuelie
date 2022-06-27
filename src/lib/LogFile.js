@@ -79,7 +79,7 @@ export default class LogFile {
 
     const parsedLine = {}
     each(logLine, (v, k) => {
-      const newValueKV = parseValue(v, k, columns, defaultType)
+      const newValueKV = parseLineValue(v, k, columns, defaultType)
       Object.assign(parsedLine, newValueKV)
     })
 
@@ -444,20 +444,28 @@ function notNaNOrValue (parsedValue, originalValue) {
     : parsedValue
 }
 
-function parseValue (value, key, columns = {}, defaultType = 'float') {
+function parseValue (value, type) {
+  if (type === 'float') {
+    return notNaNOrValue(parseFloat(value) || 0, value)
+  } else if (type === 'integer') {
+    return notNaNOrValue(parseInt(value) || 0, value)
+  }
+  return value
+}
+
+function parseLineValue (value, key, columns = {}, defaultType = 'float') {
   const columnConfig = columns?.[key] || {}
   const type = columnConfig.type || defaultType
+  const rawType = columnConfig.rawType || defaultType
   let parsedValue = value
-  if (type === 'float') {
-    parsedValue = notNaNOrValue(parseFloat(value) || 0, value)
-  } else if (type === 'integer') {
-    parsedValue = notNaNOrValue(parseInt(value) || 0, value)
-  }
 
   // `columnConfig.convertValue` is built in ConfigProfile when there is a
   // valueFormula or valueTable on columnConfig
   if (columnConfig.convertValue) {
+    parsedValue = parseValue(value, rawType)
     parsedValue = columnConfig.convertValue({ value: parsedValue })
+  } else {
+    parsedValue = parseValue(value, type)
   }
 
   const valueKV = { [key]: parsedValue }

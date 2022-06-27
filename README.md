@@ -111,7 +111,8 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
           },
           "ADCR01": {
             "name": "Oil Temp (F)",
-            "decimals": 2,
+            "type": "integer" // the type displayed
+            "rawType": "float", // the type that feeds into value transform
             "valueTable": [
               [ 0.47, 290 ],
               [ 0.86, 240 ],
