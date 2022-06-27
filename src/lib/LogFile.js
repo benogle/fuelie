@@ -1,8 +1,9 @@
 import some from 'lodash/some'
 import last from 'lodash/last'
+import each from 'lodash/each'
 import times from 'lodash/times'
 import flatten from 'lodash/flatten'
-import mapValues from 'lodash/mapValues'
+import without from 'lodash/without'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
 
@@ -66,11 +67,22 @@ export default class LogFile {
 
     if (!this.headers) {
       this.headers = Object.keys(logLine)
+      each(columns, (columnConfig, columnKey) => {
+        if (columnConfig.name) {
+          this.headers.push(columnConfig.name)
+        }
+        if (columnConfig.name || columnConfig.visible === false) {
+          this.headers = without(this.headers, columnKey)
+        }
+      })
     }
 
-    const parsedLine = mapValues(logLine, (v, k) => (
-      parseValue(v, k, columns, defaultType)
-    ))
+    const parsedLine = {}
+    each(logLine, (v, k) => {
+      const newValueKV = parseValue(v, k, columns, defaultType)
+      Object.assign(parsedLine, newValueKV)
+    })
+
     return {
       ...parsedLine,
       t: parseFloat(logLine[time]),
@@ -181,6 +193,10 @@ export default class LogFile {
     this.sortedHeaders = sortColumnHeaders(headers, displayOrder)
     return this.sortedHeaders
   }
+
+  //
+  /// Mixture related activities
+  //
 
   // Returns an array of rows. Access via result[row][column]
   getAvgFuelMixtureTable (index) {
@@ -429,13 +445,20 @@ function notNaNOrValue (parsedValue, originalValue) {
 }
 
 function parseValue (value, key, columns = {}, defaultType = 'float') {
-  const type = (columns && columns[key] && columns[key].type) || defaultType
+  const columnConfig = columns?.[key] || {}
+  const type = columnConfig.type || defaultType
+  let parsedValue = value
   if (type === 'float') {
-    return notNaNOrValue(parseFloat(value) || 0, value)
+    parsedValue = notNaNOrValue(parseFloat(value) || 0, value)
   } else if (type === 'integer') {
-    return notNaNOrValue(parseInt(value) || 0, value)
+    parsedValue = notNaNOrValue(parseInt(value) || 0, value)
   }
-  return value
+
+  const valueKV = { [key]: parsedValue }
+  if (columnConfig.name) {
+    valueKV[columnConfig.name] = parsedValue
+  }
+  return valueKV
 }
 
 async function detectSeparator (filename) {

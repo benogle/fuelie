@@ -219,6 +219,7 @@ class LogFilePage extends React.Component {
     this.logFile = new LogFile(filename, configProfile)
     this.logFile.readFile().then(() => {
       this.setState({ loaded: true })
+      console.log('Loaded log file', this.logFile)
     })
   }
 
