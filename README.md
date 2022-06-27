@@ -90,7 +90,7 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
         // (optional) Set up specific columns for correct display in the sidebar
         "columns": {
           "Engine Speed": {
-            "type": "integer"
+            "type": "integer" // types can be "integer", "float", or "string"
           },
           "Coolant Temp": {
             "type": "integer"
