@@ -1,3 +1,13 @@
+// interpolate(1.39, [
+//   [ 0.47, 290 ],
+//   [ 0.86, 240 ],
+//   [ 1.39, 200 ],
+//   [ 2.42, 150 ],
+//   [ 3.64, 100 ],
+//   [ 4.52, 50 ],
+//   [ 4.88, 0 ]
+// ])
+// => 200
 export default function interpolate (value, table) {
   const tableLen = table.length
   if (value <= table[0][0]) return table[0][1]

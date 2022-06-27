@@ -98,6 +98,30 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
           "Fuel Pulse": {
             "decimals": 2
           },
+          "Dont Care": {
+            "visible": false,
+            "comment": "Not visible cause it is a dupe..."
+          },
+          "ADCR03": {
+            "name": "Oil Press (psi)",
+            "decimals": 1,
+            "valueFormula": {
+              "result": "value * 37.5 - 18.75"
+            }
+          },
+          "ADCR01": {
+            "name": "Oil Temp (F)",
+            "decimals": 2,
+            "valueTable": [
+              [ 0.47, 290 ],
+              [ 0.86, 240 ],
+              [ 1.39, 200 ],
+              [ 2.42, 150 ],
+              [ 3.64, 100 ],
+              [ 4.52, 50 ],
+              [ 4.88, 0 ]
+            ]
+          }
         },
 
         // (optional) Specify the order to display log columns in the sidebar on

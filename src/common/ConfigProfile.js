@@ -4,6 +4,9 @@ import clone from 'lodash/clone'
 import isArray from 'lodash/isArray'
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
+import mapValues from 'lodash/mapValues'
+import expressions from 'common/expressions'
+import interpolate from 'lib/interpolate'
 
 // {
 //   name: 'Default',
@@ -30,6 +33,33 @@ export default class ConfigProfile {
     if (!this.profile.fuelMixtureTarget) {
       this.profile.fuelMixtureTarget = this.getDefaultFuelMixtureTarget()
     }
+    this.parseColumnsConfig()
+  }
+
+  parseColumnsConfig () {
+    if (!this.profile.logFile.columns) {
+      this.profile.logFile.columns = {}
+    }
+    this.profile.logFile.columns = mapValues(this.profile.logFile.columns, (columnConfig, columnKey) => (
+      this.parseColumnConfig(columnConfig, columnKey)
+    ))
+  }
+
+  parseColumnConfig (columnConfig, columnKey) {
+    if (columnConfig.valueFormula) {
+      columnConfig.convertValue = expressions.buildEval({
+        expressionObj: columnConfig.valueFormula,
+        dataKey: 'result',
+        booleanOnly: false,
+        injectArgs: ['value'],
+      })
+    } else if (columnConfig.valueTable) {
+      columnConfig.convertValue = ({ value = 0 } = {}) => (
+        // TODO: sort the table outside of this func
+        interpolate(value, columnConfig.valueTable)
+      )
+    }
+    return columnConfig
   }
 
   getLogFileConfig () {

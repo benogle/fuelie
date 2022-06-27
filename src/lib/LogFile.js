@@ -454,6 +454,12 @@ function parseValue (value, key, columns = {}, defaultType = 'float') {
     parsedValue = notNaNOrValue(parseInt(value) || 0, value)
   }
 
+  // `columnConfig.convertValue` is built in ConfigProfile when there is a
+  // valueFormula or valueTable on columnConfig
+  if (columnConfig.convertValue) {
+    parsedValue = columnConfig.convertValue({ value: parsedValue })
+  }
+
   const valueKV = { [key]: parsedValue }
   if (columnConfig.name) {
     valueKV[columnConfig.name] = parsedValue
