@@ -9,6 +9,7 @@ import { millisecondsToTimeCode } from 'common/helpers'
 const DEFAULT_WIDTH = 10
 const DEFAULT_HEIGHT = 10
 const MIN_POINTS_IN_VIEW = 10
+const MAX_POINTS_IN_VIEW = 6000
 
 const InnerContaier = styled.div`
   height: 100%;
@@ -130,7 +131,7 @@ class LogFileChart extends React.Component {
 
     this.state = {
       // TODO: make this come in from the app state
-      zoomPointsInView: this.dataLength,
+      zoomPointsInView: Math.min(this.dataLength, MAX_POINTS_IN_VIEW),
     }
   }
 
@@ -139,14 +140,12 @@ class LogFileChart extends React.Component {
   }
 
   handleChangeRangeZoom = ({ target }) => {
-    const zoomPercent = 100 - target.value
-    const zoomPointsInView = Math.round(Math.max(this.dataLength * zoomPercent / 100, MIN_POINTS_IN_VIEW))
+    const zoomPointsInView = Math.max(MAX_POINTS_IN_VIEW - parseInt(target.value), MIN_POINTS_IN_VIEW)
     this.setState({ zoomPointsInView })
   }
 
-  getZoomPercent () {
-    const { zoomPointsInView } = this.state
-    return (1 - Math.min(zoomPointsInView, this.dataLength) / this.dataLength) * 100
+  getZoomRangeValue () {
+    return MAX_POINTS_IN_VIEW - Math.round(this.state.zoomPointsInView)
   }
 
   getZoomRange () {
@@ -254,10 +253,10 @@ class LogFileChart extends React.Component {
           )}
         </Resizable>
         <StyledRange
-          value={this.getZoomPercent()}
-          step="0.1"
+          value={this.getZoomRangeValue()}
+          step="1"
           min={0}
-          max={100}
+          max={MAX_POINTS_IN_VIEW}
           onChange={this.handleChangeRangeZoom}
         />
       </InnerContaier>
