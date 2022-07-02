@@ -128,11 +128,6 @@ class LogFileChart extends React.Component {
   constructor (props) {
     super(props)
     this.cacheData(props)
-
-    this.state = {
-      // TODO: make this come in from the app state
-      zoomPointsInView: Math.min(this.dataLength, MAX_POINTS_IN_VIEW),
-    }
   }
 
   handleChartCreate = (uPlot) => {
@@ -140,19 +135,33 @@ class LogFileChart extends React.Component {
   }
 
   handleChangeRangeZoom = ({ target }) => {
-    const zoomPointsInView = Math.max(MAX_POINTS_IN_VIEW - parseInt(target.value), MIN_POINTS_IN_VIEW)
-    this.setState({ zoomPointsInView })
+    const { onChangeZoom } = this.props
+    const pointsInView = Math.max(this.getMaxPointsInView() - parseInt(target.value), MIN_POINTS_IN_VIEW)
+    onChangeZoom({ pointsInView })
+  }
+
+  getPointsInView () {
+    return Math.round(Math.min(
+      this.props.zoomConfig?.pointsInView ||
+      this.props.zoomConfig?.maxPointsInView ||
+      MAX_POINTS_IN_VIEW,
+      this.dataLength,
+    ))
+  }
+
+  getMaxPointsInView () {
+    return this.props.zoomConfig?.maxPointsInView || MAX_POINTS_IN_VIEW
   }
 
   getZoomRangeValue () {
-    return MAX_POINTS_IN_VIEW - Math.round(this.state.zoomPointsInView)
+    return this.getMaxPointsInView() - this.getPointsInView()
   }
 
   getZoomRange () {
     const { replayIndex } = this.props
-    const { zoomPointsInView } = this.state
+    const pointsInView = this.getPointsInView()
 
-    const halfPoints = Math.round(zoomPointsInView / 2)
+    const halfPoints = Math.round(pointsInView / 2)
     const lastDataIndex = this.dataLength - 1
 
     // TODO: there is probably a oneliner here, but this works...
@@ -160,9 +169,9 @@ class LogFileChart extends React.Component {
     let max = replayIndex + halfPoints
     if (min < 0) {
       min = 0
-      max = Math.min(zoomPointsInView, lastDataIndex)
+      max = Math.min(pointsInView, lastDataIndex)
     } else if (max > lastDataIndex) {
-      min = Math.max(lastDataIndex - zoomPointsInView, 0)
+      min = Math.max(lastDataIndex - pointsInView, 0)
       max = lastDataIndex
     }
 
@@ -256,7 +265,7 @@ class LogFileChart extends React.Component {
           value={this.getZoomRangeValue()}
           step="1"
           min={0}
-          max={MAX_POINTS_IN_VIEW}
+          max={this.getMaxPointsInView()}
           onChange={this.handleChangeRangeZoom}
         />
       </InnerContaier>
@@ -271,6 +280,11 @@ LogFileChart.defaultProps = {
 LogFileChart.propTypes = {
   logFile: PropTypes.object.isRequired,
   replayIndex: PropTypes.number.isRequired,
+  onChangeZoom: PropTypes.func.isRequired,
+  zoomConfig: PropTypes.shape({
+    pointsInView: PropTypes.number,
+    maxPointsInView: PropTypes.number,
+  }),
 }
 
 export default LogFileChart

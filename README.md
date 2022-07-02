@@ -217,6 +217,30 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
       // Edit this in the app's target tab
       "fuelMixtureTarget": {
         "table": []
+      },
+
+      "charting": {
+        "zoom": {
+          "pointsInView": 1200,
+          "maxPointsInView": 6000
+        },
+        "charts": [{
+          "lines": [{
+            "column": "O2 #1",
+            "color": "red",
+          }, {
+            "column": "O2 #1",
+            "color": "green",
+          }]
+        }, {
+          "lines": [{
+            "column": "Air Temp",
+            "color": "pink",
+          }, {
+            "column": "Coolant Temp",
+            "color": "blue",
+          }]
+        }]
       }
     }
   ]

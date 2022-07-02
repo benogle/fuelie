@@ -124,5 +124,11 @@ const defaultConfig = {
         result: 'mixture1 - mixture0',
       },
     },
+    charting: {
+      zoom: {
+        pointsInView: 6000,
+        maxPointsInView: 6000,
+      },
+    },
   }],
 }

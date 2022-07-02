@@ -511,12 +511,15 @@ class LogFilePage extends React.Component {
   }
 
   renderCharts = () => {
+    const { configProfile } = this.props
     return (
       <TabContainer>
         <GridContainer>
           <LogFileChart
             logFile={this.logFile}
             replayIndex={this.state.replayIndex}
+            zoomConfig={configProfile.getChartZoom()}
+            onChangeZoom={({ pointsInView }) => configProfile.setChartZoomPointsInView(pointsInView)}
           />
         </GridContainer>
         {this.renderSidePanel({ })}

@@ -38,6 +38,7 @@ export default class ConfigProfile {
   }
 
   parseColumnsConfig () {
+    this.convertValueByColumnName = {}
     if (!this.profile.logFile.columns) {
       this.profile.logFile.columns = {}
     }
@@ -48,14 +49,14 @@ export default class ConfigProfile {
 
   parseColumnConfig (columnConfig, columnKey) {
     if (columnConfig.valueFormula) {
-      columnConfig.convertValue = expressions.buildEval({
+      this.convertValueByColumnName[columnKey] = expressions.buildEval({
         expressionObj: columnConfig.valueFormula,
         dataKey: 'result',
         booleanOnly: false,
         injectArgs: ['value'],
       })
     } else if (columnConfig.valueTable) {
-      columnConfig.convertValue = ({ value = 0 } = {}) => (
+      this.convertValueByColumnName[columnKey] = ({ value = 0 } = {}) => (
         // TODO: sort the table asc by item[0] outside of this func
         interpolate(value, columnConfig.valueTable)
       )
@@ -82,6 +83,10 @@ export default class ConfigProfile {
   getLogFileColumnConfig (columnName) {
     const columns = this.get(['logFile', 'columns'])
     return columns?.[columnName] || find(columns, (columnConfig) => columnConfig.name === columnName)
+  }
+
+  getConvertValueForColumn (columnName) {
+    return this.convertValueByColumnName[columnName]
   }
 
   getLogFileColumnDisplayOrder () {
@@ -150,6 +155,10 @@ export default class ConfigProfile {
     return this.getMixtureDifference().units || ''
   }
 
+  getChartZoom () {
+    return this.get(['charting', 'zoom'])
+  }
+
   // setters
 
   set (key, value) {
@@ -167,5 +176,9 @@ export default class ConfigProfile {
       newTarget.table[y][x] = value
     }
     return this.set('fuelMixtureTarget', newTarget)
+  }
+
+  setChartZoomPointsInView (pointsInView) {
+    return this.set('charting.zoom.pointsInView', pointsInView)
   }
 }

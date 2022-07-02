@@ -79,8 +79,8 @@ export default class LogFile {
     }
 
     const parsedLine = {}
-    each(logLine, (v, k) => {
-      const newValueKV = parseLineValue(v, k, columns, defaultType)
+    each(logLine, (value, key) => {
+      const newValueKV = parseLineValue({ key, value, columns, configProfile: this.configProfile, defaultType })
       Object.assign(parsedLine, newValueKV)
     })
 
@@ -479,17 +479,18 @@ function parseValue (value, type) {
   return value
 }
 
-function parseLineValue (value, key, columns = {}, defaultType = 'float') {
+function parseLineValue ({ value, key, columns = {}, configProfile, defaultType = 'float' } = {}) {
   const columnConfig = columns?.[key] || {}
   const type = columnConfig.type || defaultType
   const rawType = columnConfig.rawType || defaultType
+  const convertValue = configProfile.getConvertValueForColumn(key)
   let parsedValue = value
 
   // `columnConfig.convertValue` is built in ConfigProfile when there is a
   // valueFormula or valueTable on columnConfig
-  if (columnConfig.convertValue) {
+  if (convertValue) {
     parsedValue = parseValue(value, rawType)
-    parsedValue = columnConfig.convertValue({ value: parsedValue })
+    parsedValue = convertValue({ value: parsedValue })
   } else {
     parsedValue = parseValue(value, type)
   }
