@@ -514,7 +514,10 @@ class LogFilePage extends React.Component {
     return (
       <TabContainer>
         <GridContainer>
-          <LogFileChart logFile={this.logFile} />
+          <LogFileChart
+            logFile={this.logFile}
+            replayIndex={this.state.replayIndex}
+          />
         </GridContainer>
         {this.renderSidePanel({ })}
       </TabContainer>

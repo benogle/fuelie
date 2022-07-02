@@ -3,6 +3,7 @@ import last from 'lodash/last'
 import each from 'lodash/each'
 import times from 'lodash/times'
 import flatten from 'lodash/flatten'
+import fromPairs from 'lodash/fromPairs'
 import without from 'lodash/without'
 import intersection from 'lodash/intersection'
 import csv from 'csv-parser'
@@ -130,6 +131,22 @@ export default class LogFile {
 
   getData () {
     return this.data
+  }
+
+  getDataByColumnNames (columnNames) {
+    const logFileData = this.getData()
+    const dataObj = {
+      timeMS: [],
+      ...fromPairs(columnNames.map((columnName) => [columnName, []])),
+    }
+    for (let i = 0; i < logFileData.length; i++) {
+      const lineData = logFileData[i]
+      dataObj.timeMS.push(this.getTimeMSAtIndex(i))
+      columnNames.forEach((columnName) => {
+        dataObj[columnName].push(lineData[columnName])
+      })
+    }
+    return dataObj
   }
 
   getLineAtindex (index) {

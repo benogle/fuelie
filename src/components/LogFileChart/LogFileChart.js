@@ -1,17 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import fromPairs from 'lodash/fromPairs'
 import UplotReact from 'uplot-react'
 
 import Resizable from 'components/Resizable'
+import { millisecondsToTimeCode } from 'common/helpers'
 
 const DEFAULT_WIDTH = 10
 const DEFAULT_HEIGHT = 10
+const MIN_POINTS_IN_VIEW = 10
 
 const InnerContaier = styled.div`
   height: 100%;
   position: relative;
+  display: flex;
 
   .uplot,
   .uplot *,
@@ -51,6 +53,12 @@ const InnerContaier = styled.div`
 
   .u-legend {
     display: none;
+  }
+
+  .u-select {
+    background: rgba(0,0,0,0.07);
+    position: absolute;
+    pointer-events: none;
   }
 
   .u-series > * {
@@ -105,32 +113,106 @@ const InnerContaier = styled.div`
 }
 `
 
+const StyledRange = styled.input.attrs({ type: 'range' })`
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  height: 100%;
+  width: auto;
+`
+
 class LogFileChart extends React.Component {
-  render () {
-    const { logFile } = this.props
-    console.log('render chart')
+  constructor (props) {
+    super(props)
+    this.cacheData(props)
+
+    this.state = {
+      // TODO: make this come in from the app state
+      zoomPointsInView: this.dataLength,
+    }
+  }
+
+  handleChartCreate = (uPlot) => {
+    this.uPlot = uPlot
+  }
+
+  handleChangeRangeZoom = ({ target }) => {
+    const zoomPercent = 100 - target.value
+    const zoomPointsInView = Math.round(Math.max(this.dataLength * zoomPercent / 100, MIN_POINTS_IN_VIEW))
+    this.setState({ zoomPointsInView })
+  }
+
+  getZoomPercent () {
+    const { zoomPointsInView } = this.state
+    return (1 - Math.min(zoomPointsInView, this.dataLength) / this.dataLength) * 100
+  }
+
+  getZoomRange () {
+    const { replayIndex } = this.props
+    const { zoomPointsInView } = this.state
+
+    const halfPoints = Math.round(zoomPointsInView / 2)
+    const lastDataIndex = this.dataLength - 1
+
+    // TODO: there is probably a oneliner here, but this works...
+    let min = replayIndex - halfPoints
+    let max = replayIndex + halfPoints
+    if (min < 0) {
+      min = 0
+      max = Math.min(zoomPointsInView, lastDataIndex)
+    } else if (max > lastDataIndex) {
+      min = Math.max(lastDataIndex - zoomPointsInView, 0)
+      max = lastDataIndex
+    }
+
+    return [this.cachedData[0][min], this.cachedData[0][max]]
+  }
+
+  cacheData (props) {
+    const { logFile } = props
     const columnNames = ['O2 #1', 'O2 #2']
-    const logFileData = logFile.getData()
-    const dataObj = {
-      timeMS: [],
-      ...fromPairs(columnNames.map((columnName) => [columnName, []])),
-    }
-    for (let i = 0; i < logFileData.length; i++) {
-      const lineData = logFileData[i]
-      dataObj.timeMS.push(logFile.getTimeMSAtIndex(i))
-      columnNames.forEach((columnName) => {
-        dataObj[columnName].push(lineData[columnName])
-      })
-    }
-    const data = [
+    const dataObj = logFile.getDataByColumnNames(columnNames)
+
+    this.dataLength = dataObj.timeMS.length
+    this.cachedData = [
       dataObj.timeMS,
       ...columnNames.map((columnName) => dataObj[columnName]),
     ]
+  }
+
+  render () {
+    // function cursorMove (uPlot, left, top) {
+    //   console.log('MOVE', left, top, uPlot)
+    //   return [left, top]
+    // }
 
     const options = {
       legend: false,
+      cursor: {
+        y: false,
+        // move: cursorMove,
+        bind: {
+          mousedown: function (uPlot, target, handler) {
+            return (event) => {
+              handler(event)
+              console.log('mousedown', event)
+            }
+          },
+        },
+      },
+      hooks: {
+        setScale: [
+          (uPlot, scaleKey) => {
+            // console.log('CHANGED SCALE', scaleKey, uPlot.scales)
+          },
+        ],
+      },
       series: [
-        {},
+        {
+          value: (self, rawValue) => millisecondsToTimeCode(rawValue),
+        },
         {
           show: true,
           stroke: 'red',
@@ -142,16 +224,22 @@ class LogFileChart extends React.Component {
           width: 1,
         },
       ],
+      axes: [
+        {
+          values: (self, ticks) => ticks.map((rawValue) => millisecondsToTimeCode(rawValue)),
+        },
+      ],
       scales: {
         x: {
           time: false,
+          range: this.getZoomRange(),
         },
       },
     }
     return (
       <InnerContaier>
         <Resizable
-          style={{ height: '100%' }}
+          style={{ height: '100%', flex: 1 }}
         >
           {({ width, height }) => (
             <UplotReact
@@ -160,20 +248,30 @@ class LogFileChart extends React.Component {
                 width: width || DEFAULT_WIDTH,
                 height: height || DEFAULT_HEIGHT,
               }}
-              data={data}
+              data={this.cachedData}
+              onCreate={this.handleChartCreate}
             />
           )}
         </Resizable>
+        <StyledRange
+          value={this.getZoomPercent()}
+          step="0.1"
+          min={0}
+          max={100}
+          onChange={this.handleChangeRangeZoom}
+        />
       </InnerContaier>
     )
   }
 }
 
 LogFileChart.defaultProps = {
+  replayIndex: 0,
 }
 
 LogFileChart.propTypes = {
   logFile: PropTypes.object.isRequired,
+  replayIndex: PropTypes.number.isRequired,
 }
 
 export default LogFileChart
