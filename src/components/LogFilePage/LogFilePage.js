@@ -13,6 +13,7 @@ import theme from 'style/theme'
 
 import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
+import LogFileChart from 'components/LogFileChart'
 import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
 
@@ -509,6 +510,17 @@ class LogFilePage extends React.Component {
     )
   }
 
+  renderCharts = () => {
+    return (
+      <TabContainer>
+        <GridContainer>
+          <LogFileChart logFile={this.logFile} />
+        </GridContainer>
+        {this.renderSidePanel({ })}
+      </TabContainer>
+    )
+  }
+
   renderTabs () {
     const { tabIndex } = this.state
 
@@ -538,6 +550,10 @@ class LogFilePage extends React.Component {
       {
         name: 'Target',
         render: this.renderTargetMixture,
+      },
+      {
+        name: 'Charts',
+        render: this.renderCharts,
       },
       ...suggestionTabs,
     ]

@@ -128,6 +128,10 @@ export default class LogFile {
     return this.data
   }
 
+  getData () {
+    return this.data
+  }
+
   getLineAtindex (index) {
     return this.data[index] || null
   }
@@ -147,6 +151,7 @@ export default class LogFile {
     return Math.round((nextLine.t - currentLine.t) * 1000 * (1 / speedFactor))
   }
 
+  // Total time in ms from the beginning
   getTimeMS (index) {
     const firstLine = this.data[0]
     const lastLine = this.data[index]
@@ -157,6 +162,10 @@ export default class LogFile {
 
   getTotalTimeMS () {
     return this.getTimeMS(this.getLastIndex())
+  }
+
+  getTimeMSAtIndex (index) {
+    return this.data[index].t * 1000
   }
 
   getLineRanges ({ minX, maxX, minY, maxY }) {
