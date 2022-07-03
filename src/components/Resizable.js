@@ -45,6 +45,7 @@ class Resizable extends React.Component {
   }, RESIZE_DEBOUNCE_MS)
 
   updateWidth = () => {
+    const { onChangeSize } = this.props
     if (!this.element) return
     const { offsetWidth, offsetHeight } = this.element
     const width = offsetWidth
@@ -52,11 +53,13 @@ class Resizable extends React.Component {
     if (width === 0) {
       this.setState({ isHidden: true })
     } else if (width !== this.state.width || height !== this.state.height) {
-      this.setState({
+      const newState = {
         isHidden: false,
         width,
         height,
-      })
+      }
+      onChangeSize(newState)
+      this.setState(newState)
     }
   }
 
@@ -86,12 +89,14 @@ class Resizable extends React.Component {
 
 Resizable.defaultProps = {
   component: 'div',
+  onChangeSize: () => {},
 }
 
 Resizable.propTypes = {
   component: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   children: PropTypes.func.isRequired,
   innerRef: PropTypes.func,
+  onChangeSize: PropTypes.func,
 }
 
 export default Resizable
