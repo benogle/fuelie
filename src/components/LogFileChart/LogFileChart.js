@@ -223,7 +223,7 @@ class LogFileChart extends React.Component {
 
   cacheData (props) {
     const { logFile } = props
-    const columnNames = ['O2 #1', 'O2 #2']
+    const columnNames = ['O2 #1', 'O2 #2', 'Engine Load', 'Throttle', 'Engine Speed']
     const dataObj = logFile.getDataByColumnNames(columnNames)
 
     this.dataLength = dataObj.timeMS.length
@@ -278,6 +278,24 @@ class LogFileChart extends React.Component {
           width: 1,
           scale: 'afr',
         },
+        {
+          show: true,
+          stroke: 'green',
+          width: 1,
+          scale: 'psi',
+        },
+        {
+          show: true,
+          stroke: 'magenta',
+          width: 1,
+          scale: '%',
+        },
+        {
+          show: true,
+          stroke: '#888',
+          width: 1,
+          scale: 'rpm',
+        },
       ],
       axes: [
         {
@@ -285,6 +303,24 @@ class LogFileChart extends React.Component {
         },
         {
           scale: 'afr',
+          labelGap: 0,
+        },
+        {
+          scale: 'psi',
+          labelGap: 0,
+          ticks: { show: false },
+          grid: { show: false },
+          stroke: 'green',
+        },
+        {
+          show: false,
+          scale: '%',
+          labelGap: 0,
+        },
+        {
+          show: false,
+          scale: 'rpm',
+          labelGap: 0,
         },
       ],
       scales: {
@@ -293,6 +329,15 @@ class LogFileChart extends React.Component {
         },
         afr: {
           range: [8, 20],
+        },
+        psi: {
+          range: [-14, 11],
+        },
+        '%': {
+          range: [0, 100],
+        },
+        rpm: {
+          range: [0, 8000],
         },
       },
     }
