@@ -9,13 +9,11 @@ import { millisecondsToTimeCode } from 'common/helpers'
 
 const DEFAULT_WIDTH = 10
 const DEFAULT_HEIGHT = 10
-const MIN_POINTS_IN_VIEW = 10
+// const MIN_POINTS_IN_VIEW = 10
 const MAX_POINTS_IN_VIEW = 6000
 
-const InnerContaier = styled.div`
-  height: 100%;
-  position: relative;
-  display: flex;
+const StyledResizable = styled(Resizable)`
+  flex: 1;
 
   .uplot,
   .uplot *,
@@ -115,22 +113,11 @@ const InnerContaier = styled.div`
 }
 `
 
-const StyledRange = styled.input.attrs({ type: 'range' })`
-  position: relative;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  height: 100%;
-  width: 20px;
-  -webkit-appearance: slider-vertical;
-`
-
 class LogFileChart extends React.Component {
   constructor (props) {
     super(props)
     this.cacheData(props)
-    this.cacheOptions()
+    this.cacheOptions(props)
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -147,12 +134,6 @@ class LogFileChart extends React.Component {
     setTimeout(() => this.redrawChart(), 0)
   }
 
-  handleChangeRangeZoom = ({ target }) => {
-    const { onChangeZoom } = this.props
-    const pointsInView = Math.max(this.getMaxPointsInView() - parseInt(target.value), MIN_POINTS_IN_VIEW)
-    onChangeZoom({ pointsInView })
-  }
-
   handleMouseNop = function (uPlot, target, handler) {
     return (event) => {
       // handler(event)
@@ -161,7 +142,7 @@ class LogFileChart extends React.Component {
   }
 
   handleChangeSize = (newSize) => {
-    this.cacheOptions(newSize)
+    this.cacheOptions(this.props, newSize)
   }
 
   getPointsInView () {
@@ -171,14 +152,6 @@ class LogFileChart extends React.Component {
       MAX_POINTS_IN_VIEW,
       this.dataLength,
     ))
-  }
-
-  getMaxPointsInView () {
-    return this.props.zoomConfig?.maxPointsInView || MAX_POINTS_IN_VIEW
-  }
-
-  getZoomRangeValue () {
-    return this.getMaxPointsInView() - this.getPointsInView()
   }
 
   getZoomRange () {
@@ -214,16 +187,17 @@ class LogFileChart extends React.Component {
   }
 
   redrawChart () {
-    const [min, max] = this.getZoomRange()
-    this.uPlot.setScale('x', { min, max })
     requestAnimationFrame(() => {
-      this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
+      const [min, max] = this.getZoomRange()
+      this.uPlot.setScale('x', { min, max })
+      requestAnimationFrame(() => {
+        this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
+      })
     })
   }
 
   cacheData (props) {
-    const { logFile } = props
-    const columnNames = ['O2 #1', 'O2 #2', 'Engine Load', 'Throttle', 'Engine Speed', 'Oil Press (psi)']
+    const { logFile, columnNames } = props
     const dataObj = logFile.getDataByColumnNames(columnNames)
 
     this.dataLength = dataObj.timeMS.length
@@ -233,7 +207,8 @@ class LogFileChart extends React.Component {
     ]
   }
 
-  cacheOptions ({ width, height } = {}) {
+  cacheOptions (props, { width, height } = {}) {
+    const { config, showTimeSeries } = props
     this.cachedOptions = {
       width: width || DEFAULT_WIDTH,
       height: height || DEFAULT_HEIGHT,
@@ -266,93 +241,25 @@ class LogFileChart extends React.Component {
         {
           value: (self, rawValue) => millisecondsToTimeCode(rawValue),
         },
-        {
-          show: true,
-          stroke: 'red',
-          width: 1,
-          scale: 'afr',
-        },
-        {
-          show: true,
-          stroke: 'blue',
-          width: 1,
-          scale: 'afr',
-        },
-        {
-          show: true,
-          stroke: 'green',
-          width: 1,
-          scale: 'mapPsi',
-        },
-        {
-          show: true,
-          stroke: 'magenta',
-          width: 1,
-          scale: '%',
-        },
-        {
-          show: true,
-          stroke: '#888',
-          width: 1,
-          scale: 'rpm',
-        },
-        {
-          show: true,
-          stroke: 'brown',
-          width: 1,
-          scale: 'oilPsi',
-        },
+        ...config.series,
       ],
       axes: [
         {
-          values: (self, ticks) => ticks.map((rawValue) => millisecondsToTimeCode(rawValue)),
+          values: showTimeSeries
+            ? (self, ticks) => ticks.map((rawValue) => millisecondsToTimeCode(rawValue))
+            : (self, ticks) => ticks.map((rawValue) => ''),
+          ticks: { show: showTimeSeries },
+          // : (self, ticks) => ticks.map((rawValue) => 'a'),
+          // stroke: showTimeSeries ? 'black' : 'transparent',
+          // show: showTimeSeries,
         },
-        {
-          scale: 'afr',
-          labelGap: 0,
-        },
-        {
-          scale: 'mapPsi',
-          labelGap: 0,
-          ticks: { show: false },
-          grid: { show: false },
-          stroke: 'green',
-        },
-        {
-          show: false,
-          scale: '%',
-          labelGap: 0,
-        },
-        {
-          show: false,
-          scale: 'rpm',
-          labelGap: 0,
-        },
-        {
-          show: false,
-          scale: 'oilPsi',
-          labelGap: 0,
-        },
+        ...config.axes,
       ],
       scales: {
         x: {
           time: false,
         },
-        afr: {
-          range: [8, 20],
-        },
-        mapPsi: {
-          range: [-14, 11],
-        },
-        '%': {
-          range: [0, 100],
-        },
-        rpm: {
-          range: [0, 8000],
-        },
-        oilPsi: {
-          range: [0, 100],
-        },
+        ...config.scales,
       },
     }
   }
@@ -364,45 +271,47 @@ class LogFileChart extends React.Component {
     // }
     console.log('render')
 
+    const { paddingLeft, showTimeSeries } = this.props
+
     return (
-      <InnerContaier>
-        <Resizable
-          style={{ height: '100%', flex: 1 }}
-          onChangeSize={this.handleChangeSize}
-        >
-          {({ width, height }) => (
-            <UplotReact
-              options={this.cachedOptions}
-              data={this.cachedData}
-              onCreate={this.handleChartCreate}
-              onDelete={() => console.log('delete')}
-            />
-          )}
-        </Resizable>
-        <StyledRange
-          value={this.getZoomRangeValue()}
-          step="1"
-          min={0}
-          max={this.getMaxPointsInView()}
-          onChange={this.handleChangeRangeZoom}
-        />
-      </InnerContaier>
+      <StyledResizable
+        style={{
+          marginLeft: paddingLeft,
+          marginBottom: showTimeSeries ? 0 : -50,
+        }}
+        onChangeSize={this.handleChangeSize}
+      >
+        {({ width, height }) => (
+          <UplotReact
+            options={this.cachedOptions}
+            data={this.cachedData}
+            onCreate={this.handleChartCreate}
+            onDelete={() => console.log('delete')}
+          />
+        )}
+      </StyledResizable>
     )
   }
 }
 
 LogFileChart.defaultProps = {
   replayIndex: 0,
+  paddingLeft: 0,
+  showTimeSeries: true,
 }
 
 LogFileChart.propTypes = {
   logFile: PropTypes.object.isRequired,
   replayIndex: PropTypes.number.isRequired,
-  onChangeZoom: PropTypes.func.isRequired,
+  columnNames: PropTypes.array,
+  config: PropTypes.object,
   zoomConfig: PropTypes.shape({
     pointsInView: PropTypes.number,
     maxPointsInView: PropTypes.number,
   }),
+
+  paddingLeft: PropTypes.number.isRequired,
+  showTimeSeries: PropTypes.bool,
 }
 
 export default LogFileChart

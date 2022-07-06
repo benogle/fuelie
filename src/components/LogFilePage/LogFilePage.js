@@ -13,7 +13,7 @@ import theme from 'style/theme'
 
 import LogFile from 'lib/LogFile'
 import DataGrid from 'components/DataGrid'
-import LogFileChart from 'components/LogFileChart'
+import LogFileCharts from 'components/LogFileCharts'
 import Tabs from 'components/Tabs'
 import { round } from 'common/helpers'
 
@@ -515,7 +515,7 @@ class LogFilePage extends React.Component {
     return (
       <TabContainer>
         <GridContainer>
-          <LogFileChart
+          <LogFileCharts
             logFile={this.logFile}
             replayIndex={this.state.replayIndex}
             zoomConfig={configProfile.getChartZoom()}
