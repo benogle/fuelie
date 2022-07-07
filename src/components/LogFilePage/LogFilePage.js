@@ -520,6 +520,7 @@ class LogFilePage extends React.Component {
             replayIndex={this.state.replayIndex}
             zoomConfig={configProfile.getChartZoom()}
             onChangeZoom={({ pointsInView }) => configProfile.setChartZoomPointsInView(pointsInView)}
+            onChangeReplayIndex={this.handleChangeReplayIndex}
           />
         </GridContainer>
         {this.renderSidePanel({ })}

@@ -62,12 +62,13 @@ class LogFileCharts extends React.Component {
   }
 
   renderChart (chartProps) {
-    const { logFile, zoomConfig, replayIndex } = this.props
+    const { logFile, zoomConfig, replayIndex, onChangeReplayIndex } = this.props
     return (
       <LogFileChart
         logFile={logFile}
         replayIndex={replayIndex}
         zoomConfig={zoomConfig}
+        onChangeReplayIndex={onChangeReplayIndex}
         {...chartProps}
       />
     )
@@ -234,11 +235,13 @@ LogFileCharts.defaultProps = {
 LogFileCharts.propTypes = {
   logFile: PropTypes.object.isRequired,
   replayIndex: PropTypes.number.isRequired,
-  onChangeZoom: PropTypes.func.isRequired,
   zoomConfig: PropTypes.shape({
     pointsInView: PropTypes.number,
     maxPointsInView: PropTypes.number,
   }),
+
+  onChangeZoom: PropTypes.func.isRequired,
+  onChangeReplayIndex: PropTypes.func.isRequired,
 }
 
 export default LogFileCharts

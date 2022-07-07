@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import UplotReact from 'uplot-react'
 import isEqual from 'lodash/isEqual'
+import clamp from 'lodash/clamp'
 
 import Resizable from 'components/Resizable'
 import { millisecondsToTimeCode, debounceRequestAnimationFrame } from 'common/helpers'
@@ -134,6 +135,62 @@ class LogFileChart extends React.Component {
     setTimeout(() => this.redrawChart(), 0)
   }
 
+  handleClick (mouseStartPosition) {
+    const { onChangeReplayIndex } = this.props
+    onChangeReplayIndex(mouseStartPosition.index)
+  }
+
+  handleDrag (mouseStartPosition, event) {
+    const { replayIndex, onChangeReplayIndex } = this.props
+
+    // const index = this.uPlot.posToIdx(event.offsetX)
+    // const indicesToShift = index - mouseStartPosition.index
+
+    const indicesToShift = this.uPlot.posToIdx(event.offsetX) - this.uPlot.posToIdx(this.lastMoveEvent?.x || mouseStartPosition.x)
+
+    this.lastMoveEvent = {
+      x: event.offsetX,
+      y: event.offsetY,
+    }
+
+    const newReplayIndex = clamp(replayIndex + indicesToShift, 0, this.dataLength - 1)
+    onChangeReplayIndex(newReplayIndex)
+  }
+
+  handleMouseDown = (event) => {
+    const index = this.uPlot.posToIdx(event.offsetX)
+    console.log(event)
+    this.mouseStartPosition = {
+      index,
+      x: event.offsetX,
+      y: event.offsetY,
+    }
+  }
+
+  handleMouseMove = (event) => {
+    if (this.mouseStartPosition) {
+      if (!this.dragging && Math.abs(this.mouseStartPosition.x - event.offsetX) >= 3) {
+        this.dragging = true
+      }
+
+      if (this.dragging) {
+        this.handleDrag(this.mouseStartPosition, event)
+      }
+    }
+  }
+
+  handleMouseUp = (event) => {
+    if (this.mouseStartPosition && !this.dragging) {
+      this.handleClick(this.mouseStartPosition)
+      const { onChangeReplayIndex } = this.props
+      onChangeReplayIndex(this.mouseStartPosition.index)
+    }
+
+    this.mouseStartPosition = null
+    this.dragging = false
+    this.lastMoveEvent = null
+  }
+
   handleMouseNop = function (uPlot, target, handler) {
     return (event) => {
       // handler(event)
@@ -221,14 +278,16 @@ class LogFileChart extends React.Component {
         left: this.getCursorPosition() || 0,
         // move: cursorMove,
         bind: {
-          mousedown: this.handleMouseNop,
-          mouseup: this.handleMouseNop,
-          click: this.handleMouseNop,
           dblclick: this.handleMouseNop,
-
-          mousemove: this.handleMouseNop,
           mouseleave: this.handleMouseNop,
           mouseenter: this.handleMouseNop,
+
+          // Dont really work?
+          click: this.handleMouseNop,
+          mouseup: this.handleMouseNop,
+
+          mousemove: () => this.handleMouseMove,
+          mousedown: () => this.handleMouseDown,
         },
       },
       hooks: {
@@ -270,8 +329,6 @@ class LogFileChart extends React.Component {
     //   console.log('MOVE', left, top, uPlot)
     //   return [left, top]
     // }
-    console.log('render')
-
     const { paddingLeft, showTimeSeries } = this.props
 
     return (
@@ -281,13 +338,14 @@ class LogFileChart extends React.Component {
           marginBottom: showTimeSeries ? 0 : -50,
         }}
         onChangeSize={this.handleChangeSize}
+        onMouseUp={this.handleMouseUp}
       >
         {({ width, height }) => (
           <UplotReact
             options={this.cachedOptions}
             data={this.cachedData}
             onCreate={this.handleChartCreate}
-            onDelete={() => console.log('delete')}
+            // onDelete={() => console.log('delete')}
           />
         )}
       </StyledResizable>
@@ -299,6 +357,7 @@ LogFileChart.defaultProps = {
   replayIndex: 0,
   paddingLeft: 0,
   showTimeSeries: true,
+  onChangeReplayIndex: () => {},
 }
 
 LogFileChart.propTypes = {
@@ -313,6 +372,8 @@ LogFileChart.propTypes = {
 
   paddingLeft: PropTypes.number.isRequired,
   showTimeSeries: PropTypes.bool,
+
+  onChangeReplayIndex: PropTypes.func.isRequired,
 }
 
 export default LogFileChart
