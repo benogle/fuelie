@@ -131,9 +131,10 @@ class LogFileChart extends React.Component {
   }
 
   handleScrollWheel = (event) => {
-    const { replayIndex, onChangeReplayIndex } = this.props
+    const { replayIndex, reverseScroll, onChangeReplayIndex } = this.props
     const indicesToShift = Math.round(this.getPointsPerPixel() * event.deltaX)
-    onChangeReplayIndex(clamp(replayIndex - indicesToShift, 0, this.dataLength - 1))
+    const direction = reverseScroll ? -1 : 1
+    onChangeReplayIndex(clamp(replayIndex + direction * indicesToShift, 0, this.dataLength - 1))
   }
 
   handleChartCreate = (uPlot) => {
@@ -357,6 +358,7 @@ LogFileChart.defaultProps = {
   paddingLeft: 0,
   showTimeSeries: true,
   clickOnMouseDown: true,
+  reverseScroll: false,
   onChangeReplayIndex: () => {},
 }
 
@@ -373,6 +375,7 @@ LogFileChart.propTypes = {
   paddingLeft: PropTypes.number.isRequired,
   showTimeSeries: PropTypes.bool,
   clickOnMouseDown: PropTypes.bool,
+  reverseScroll: PropTypes.bool,
 
   onChangeReplayIndex: PropTypes.func.isRequired,
 }
