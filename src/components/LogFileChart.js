@@ -130,6 +130,12 @@ class LogFileChart extends React.Component {
     this.redrawChart()
   }
 
+  handleScrollWheel = (event) => {
+    const { replayIndex, onChangeReplayIndex } = this.props
+    const indicesToShift = Math.round(this.getPointsPerPixel() * event.deltaX)
+    onChangeReplayIndex(clamp(replayIndex - indicesToShift, 0, this.dataLength - 1))
+  }
+
   handleChartCreate = (uPlot) => {
     this.uPlot = uPlot
     setTimeout(() => this.redrawChart(), 0)
@@ -141,29 +147,18 @@ class LogFileChart extends React.Component {
   }
 
   handleDrag (mouseStartPosition, event) {
-    const { replayIndex, onChangeReplayIndex } = this.props
-
-    // const index = this.uPlot.posToIdx(event.offsetX)
-    // const indicesToShift = index - mouseStartPosition.index
-
-    const indicesToShift = this.uPlot.posToIdx(event.offsetX) - this.uPlot.posToIdx(this.lastMoveEvent?.x || mouseStartPosition.x)
-
-    this.lastMoveEvent = {
-      x: event.offsetX,
-      y: event.offsetY,
-    }
-
-    const newReplayIndex = clamp(replayIndex + indicesToShift, 0, this.dataLength - 1)
-    onChangeReplayIndex(newReplayIndex)
+    // TODO: make this cool?
   }
 
   handleMouseDown = (event) => {
     const index = this.uPlot.posToIdx(event.offsetX)
-    console.log(event)
     this.mouseStartPosition = {
       index,
       x: event.offsetX,
       y: event.offsetY,
+    }
+    if (this.props.clickOnMouseDown) {
+      this.handleClick(this.mouseStartPosition)
     }
   }
 
@@ -180,15 +175,12 @@ class LogFileChart extends React.Component {
   }
 
   handleMouseUp = (event) => {
-    if (this.mouseStartPosition && !this.dragging) {
+    if (this.mouseStartPosition && !this.dragging && !this.props.clickOnMouseDown) {
       this.handleClick(this.mouseStartPosition)
-      const { onChangeReplayIndex } = this.props
-      onChangeReplayIndex(this.mouseStartPosition.index)
     }
 
     this.mouseStartPosition = null
     this.dragging = false
-    this.lastMoveEvent = null
   }
 
   handleMouseNop = function (uPlot, target, handler) {
@@ -199,7 +191,13 @@ class LogFileChart extends React.Component {
   }
 
   handleChangeSize = (newSize) => {
+    this.size = newSize
     this.cacheOptions(this.props, newSize)
+  }
+
+  getPointsPerPixel () {
+    // TODO: make gutter (50) size removal auto
+    return this.getPointsInView() / (this.size.width - 50)
   }
 
   getPointsInView () {
@@ -339,6 +337,7 @@ class LogFileChart extends React.Component {
         }}
         onChangeSize={this.handleChangeSize}
         onMouseUp={this.handleMouseUp}
+        onWheel={this.handleScrollWheel}
       >
         {({ width, height }) => (
           <UplotReact
@@ -357,6 +356,7 @@ LogFileChart.defaultProps = {
   replayIndex: 0,
   paddingLeft: 0,
   showTimeSeries: true,
+  clickOnMouseDown: true,
   onChangeReplayIndex: () => {},
 }
 
@@ -372,6 +372,7 @@ LogFileChart.propTypes = {
 
   paddingLeft: PropTypes.number.isRequired,
   showTimeSeries: PropTypes.bool,
+  clickOnMouseDown: PropTypes.bool,
 
   onChangeReplayIndex: PropTypes.func.isRequired,
 }
