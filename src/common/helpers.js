@@ -25,3 +25,24 @@ export function millisecondsToTimeCode (t, showHours) {
 export function pad (num, zeros = 2) {
   return ('00' + num).slice(-zeros)
 }
+
+// From:
+// https://stackoverflow.com/questions/29359177/is-it-a-good-idea-to-use-requestanimationframe-within-a-debounce-function
+export function debounceRequestAnimationFrame (func) {
+  let timeout
+
+  return function debounced () {
+    const obj = this
+    const args = arguments
+    function delayed () {
+      func.apply(obj, args)
+      timeout = null
+    }
+
+    if (timeout) {
+      cancelAnimationFrame(timeout)
+    }
+
+    timeout = requestAnimationFrame(delayed)
+  }
+}

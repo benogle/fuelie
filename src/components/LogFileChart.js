@@ -5,7 +5,7 @@ import UplotReact from 'uplot-react'
 import isEqual from 'lodash/isEqual'
 
 import Resizable from 'components/Resizable'
-import { millisecondsToTimeCode } from 'common/helpers'
+import { millisecondsToTimeCode, debounceRequestAnimationFrame } from 'common/helpers'
 
 const DEFAULT_WIDTH = 10
 const DEFAULT_HEIGHT = 10
@@ -186,15 +186,16 @@ class LogFileChart extends React.Component {
     return this.uPlot?.valToPos?.(xValue, 'x', false) || 0
   }
 
-  redrawChart () {
-    requestAnimationFrame(() => {
-      const [min, max] = this.getZoomRange()
-      this.uPlot.setScale('x', { min, max })
-      requestAnimationFrame(() => {
-        this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
-      })
-    })
-  }
+  redrawChart = debounceRequestAnimationFrame(() => { // eslint-disable-line react/sort-comp
+    const [min, max] = this.getZoomRange()
+    this.uPlot.setScale('x', { min, max })
+    this.redrawCursor()
+  })
+
+  // Redrawing the cursor in the next animation frame keeps the cursor in the center of the chart
+  redrawCursor = debounceRequestAnimationFrame(() => {
+    this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
+  })
 
   cacheData (props) {
     const { logFile, columnNames } = props
