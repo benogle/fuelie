@@ -20,6 +20,7 @@ const ChartContainer = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: 25px;
 
   > * {
     height: 50%;
@@ -102,6 +103,7 @@ class LogFileCharts extends React.Component {
       config: renderChartConfig,
       showTimeSeries,
       key,
+      height: chartConfig.height,
     })
   }
 

@@ -14,8 +14,6 @@ const DEFAULT_HEIGHT = 10
 const MAX_POINTS_IN_VIEW = 6000
 
 const StyledResizable = styled(Resizable)`
-  flex: 1;
-
   .uplot,
   .uplot *,
   .uplot *::before,
@@ -138,6 +136,7 @@ class LogFileChart extends React.Component {
   }
 
   handleChartCreate = (uPlot) => {
+    // console.log('create')
     this.uPlot = uPlot
     setTimeout(() => this.redrawChart(), 0)
   }
@@ -328,14 +327,21 @@ class LogFileChart extends React.Component {
     //   console.log('MOVE', left, top, uPlot)
     //   return [left, top]
     // }
-    const { paddingLeft, showTimeSeries } = this.props
+    const { paddingLeft, showTimeSeries, height } = this.props
+    const style = {
+      marginLeft: paddingLeft,
+      marginBottom: showTimeSeries ? 0 : -50,
+    }
+
+    if (height) {
+      style.height = height
+    } else {
+      style.flex = 1
+    }
 
     return (
       <StyledResizable
-        style={{
-          marginLeft: paddingLeft,
-          marginBottom: showTimeSeries ? 0 : -50,
-        }}
+        style={style}
         onChangeSize={this.handleChangeSize}
         onMouseUp={this.handleMouseUp}
         onWheel={this.handleScrollWheel}
@@ -372,6 +378,7 @@ LogFileChart.propTypes = {
     maxPointsInView: PropTypes.number,
   }),
 
+  height: PropTypes.string,
   paddingLeft: PropTypes.number.isRequired,
   showTimeSeries: PropTypes.bool,
   clickOnMouseDown: PropTypes.bool,
