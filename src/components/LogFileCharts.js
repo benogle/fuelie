@@ -74,147 +74,52 @@ class LogFileCharts extends React.Component {
     )
   }
 
-  renderChart1 (props) {
-    const columnNames = ['O2 #1', 'O2 #2', 'Engine Load', 'Throttle', 'Engine Speed', 'Oil Press (psi)']
-    const config = {
-      series: [
-        {
-          show: true,
-          stroke: 'red',
-          width: 1,
-          scale: 'afr',
-        },
-        {
-          show: true,
-          stroke: 'blue',
-          width: 1,
-          scale: 'afr',
-        },
-        {
-          show: true,
-          stroke: 'green',
-          width: 1,
-          scale: 'mapPsi',
-        },
-        {
-          show: true,
-          stroke: 'magenta',
-          width: 1,
-          scale: '%',
-        },
-        {
-          show: true,
-          stroke: '#888',
-          width: 1,
-          scale: 'rpm',
-        },
-        {
-          show: true,
-          stroke: 'brown',
-          width: 1,
-          scale: 'oilPsi',
-        },
-      ],
-      axes: [
-        {
-          scale: 'afr',
-          labelGap: 0,
-        },
-        {
-          scale: 'mapPsi',
-          labelGap: 0,
-          ticks: { show: false },
-          grid: { show: false },
-          stroke: 'green',
-        },
-        {
-          show: false,
-          scale: '%',
-          labelGap: 0,
-        },
-        {
-          show: false,
-          scale: 'rpm',
-          labelGap: 0,
-        },
-        {
-          show: false,
-          scale: 'oilPsi',
-          labelGap: 0,
-        },
-      ],
-      scales: {
-        afr: {
-          range: [8, 20],
-        },
-        mapPsi: {
-          range: [-14, 11],
-        },
-        '%': {
-          range: [0, 100],
-        },
-        rpm: {
-          range: [0, 8000],
-        },
-        oilPsi: {
-          range: [0, 100],
-        },
-      },
+  renderChartConfig ({ chartConfig, showTimeSeries, key }) {
+    const { scalesConfig } = this.props
+    const columnNames = []
+    const renderChartConfig = {
+      series: [],
+      axes: [],
+      scales: scalesConfig,
     }
-    return this.renderChart({ columnNames, config, showTimeSeries: false })
+    for (let i = 0; i < chartConfig.lines.length; i++) {
+      const line = chartConfig.lines[i]
+      columnNames.push(line.column)
+      renderChartConfig.axes.push({
+        show: i === 0,
+        scale: line.scale,
+        labelGap: 0,
+      })
+      renderChartConfig.series.push({
+        show: true,
+        width: 1,
+        stroke: line.color,
+        scale: line.scale,
+      })
+    }
+    return this.renderChart({
+      columnNames,
+      config: renderChartConfig,
+      showTimeSeries,
+      key,
+    })
   }
 
-  renderChart2 (props) {
-    const columnNames = ['Air Temp', 'Coolant Temp', 'Oil Temp (F)']
-    const config = {
-      hooks: {
-        // setScale: [
-        //   (uPlot, scaleKey) => {
-        //     // console.log('CHANGED SCALE', scaleKey, uPlot.scales)
-        //   },
-        // ],
-      },
-      series: [
-        {
-          show: true,
-          stroke: 'red',
-          width: 1,
-          scale: 'F',
-        },
-        {
-          show: true,
-          stroke: 'blue',
-          width: 1,
-          scale: 'F',
-        },
-        {
-          show: true,
-          stroke: 'green',
-          width: 1,
-          scale: 'F',
-        },
-      ],
-      axes: [
-        {
-          scale: 'F',
-          labelGap: 0,
-        },
-      ],
-      scales: {
-        F: {
-          range: [100, 250],
-        },
-      },
-    }
-    return this.renderChart({ columnNames, config, paddingLeft: 50 })
+  renderCharts () {
+    const { pageConfig } = this.props
+    const charts = pageConfig.charts || []
+    return charts.map((chartConfig, index) => this.renderChartConfig({
+      chartConfig,
+      showTimeSeries: index === charts.length - 1,
+      key: `chart${index}`,
+    }))
   }
 
   render () {
     return (
       <InnerContaier>
         <ChartContainer>
-          {this.renderChart1()}
-          {this.renderChart2()}
+          {this.renderCharts()}
         </ChartContainer>
         <StyledRange
           value={this.getZoomRangeValue()}
@@ -235,6 +140,13 @@ LogFileCharts.defaultProps = {
 LogFileCharts.propTypes = {
   logFile: PropTypes.object.isRequired,
   replayIndex: PropTypes.number.isRequired,
+  scalesConfig: PropTypes.object,
+  pageConfig: PropTypes.shape({
+    name: PropTypes.string,
+    charts: PropTypes.arrayOf(PropTypes.shape({
+      lines: PropTypes.array,
+    })),
+  }),
   zoomConfig: PropTypes.shape({
     pointsInView: PropTypes.number,
     maxPointsInView: PropTypes.number,

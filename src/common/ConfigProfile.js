@@ -159,6 +159,10 @@ export default class ConfigProfile {
     return this.get(['charting', 'zoom'])
   }
 
+  getChartingConfig () {
+    return this.get(['charting'])
+  }
+
   // setters
 
   set (key, value) {

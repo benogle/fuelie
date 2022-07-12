@@ -510,8 +510,19 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderCharts = () => {
+  renderChartTabs = () => {
     const { configProfile } = this.props
+    const chartingConfig = configProfile.getChartingConfig()
+    const pages = chartingConfig.pages || []
+    return pages.map((page, index) => ({
+      name: page.name,
+      render: () => this.renderChartPage({ chartPageIndex: index }),
+    }))
+  }
+
+  renderChartPage = ({ chartPageIndex }) => {
+    const { configProfile } = this.props
+    const chartingConfig = configProfile.getChartingConfig()
     return (
       <TabContainer>
         <GridContainer>
@@ -519,6 +530,8 @@ class LogFilePage extends React.Component {
             logFile={this.logFile}
             replayIndex={this.state.replayIndex}
             zoomConfig={configProfile.getChartZoom()}
+            pageConfig={chartingConfig.pages[chartPageIndex]}
+            scalesConfig={chartingConfig.scales}
             onChangeZoom={({ pointsInView }) => configProfile.setChartZoomPointsInView(pointsInView)}
             onChangeReplayIndex={this.handleChangeReplayIndex}
           />
@@ -558,11 +571,8 @@ class LogFilePage extends React.Component {
         name: 'Target',
         render: this.renderTargetMixture,
       },
-      {
-        name: 'Charts',
-        render: this.renderCharts,
-      },
       ...suggestionTabs,
+      ...this.renderChartTabs(),
     ]
 
     // HACK: it's fine, you'll get over it
