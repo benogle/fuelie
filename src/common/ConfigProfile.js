@@ -4,10 +4,12 @@ import find from 'lodash/find'
 import clone from 'lodash/clone'
 import isArray from 'lodash/isArray'
 import isEqual from 'lodash/isEqual'
+import map from 'lodash/map'
 import isNumber from 'lodash/isNumber'
 import mapValues from 'lodash/mapValues'
 import expressions from 'common/expressions'
 import interpolate from 'lib/interpolate'
+import { CHART_COLOR_PALETTE, hexToRGBA } from 'lib/color'
 
 // {
 //   name: 'Default',
@@ -160,7 +162,27 @@ export default class ConfigProfile {
   }
 
   getChartingConfig () {
-    return this.get(['charting'])
+    const chartingConfig = this.get(['charting'])
+    const newConfig = { ...chartingConfig }
+
+    let colorIndex = 0
+    function getNextColor () {
+      const nextColor = hexToRGBA(CHART_COLOR_PALETTE[colorIndex], 0.8)
+      colorIndex = (colorIndex + 1) % CHART_COLOR_PALETTE.length
+      return nextColor
+    }
+
+    newConfig.pages = map(newConfig.pages, (page) => ({
+      ...page,
+      charts: map(page.charts, (chart) => ({
+        ...chart,
+        lines: map(chart.lines, (line) => ({
+          ...line,
+          color: line.color ? line.color : getNextColor(),
+        })),
+      })),
+    }))
+    return newConfig
   }
 
   // setters

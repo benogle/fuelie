@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-const PADDING = 20
+export const PADDING = 20
 
 const PanelContainer = styled.div`
   display: flex;
@@ -58,7 +58,7 @@ const Value = styled.div`
 
 class StatusPanel extends React.Component {
   render () {
-    const { mainValue, subValue, values } = this.props
+    const { mainValue, subValue, values, children } = this.props
 
     const content = []
     if (mainValue || subValue) {
@@ -83,6 +83,14 @@ class StatusPanel extends React.Component {
       )
     }
 
+    if (children) {
+      content.push(
+        <PanelScroller key="scroller">
+          {children}
+        </PanelScroller>,
+      )
+    }
+
     return (
       <PanelContainer>
         {content}
@@ -94,6 +102,7 @@ class StatusPanel extends React.Component {
 StatusPanel.propTypes = {
   mainValue: PropTypes.node,
   subValue: PropTypes.node,
+  children: PropTypes.node,
   values: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.node,
     value: PropTypes.node,

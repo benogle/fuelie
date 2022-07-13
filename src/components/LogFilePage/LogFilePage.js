@@ -20,7 +20,8 @@ import { round } from 'common/helpers'
 import PlaybackBar from 'components/PlaybackBar'
 import KeyboardTool from 'components/KeyboardTool'
 
-import StatusPanel from './StatusPanel'
+import StatusPanel from 'components/StatusPanel'
+import ChartStatusPanel from 'components/ChartStatusPanel'
 
 import req from 'common/req'
 const path = req('path')
@@ -194,6 +195,19 @@ class LogFilePage extends React.Component {
     return this.logFile.getLineRanges({ minX, maxX, minY, maxY })
   }
 
+  getLogReplayValues () {
+    const { configProfile } = this.props
+    const { replayIndex } = this.state
+    const logLine = this.logFile.getLineAtindex(replayIndex)
+    const sortedHeaders = this.logFile.getSortedColumnHeaders()
+    return sortedHeaders.map((name) => name && ({
+      name,
+      value: isNumber(logLine[name])
+        ? logLine[name].toFixed(configProfile.getLogFileColumnDecimals(name))
+        : logLine[name],
+    }))
+  }
+
   playFrom = (index) => {
     const nextMS = this.logFile.getMSTilNextLine(index, this.state.replaySpeedFactor)
     if (!nextMS) return this.handlePause()
@@ -233,14 +247,13 @@ class LogFilePage extends React.Component {
   }
 
   renderReplaySidePanel () {
-    const { configProfile } = this.props
     const { isReplayMode, replayIndex } = this.state
     if (!isReplayMode) return null
 
     const logLine = this.logFile.getLineAtindex(replayIndex)
-    const { t, rowV, rowI, colV, colI, m, ...logParams } = logLine
+    const { m } = logLine
 
-    const mainValue = m[0].toFixed(2) // FIXME
+    const mainValue = m[0].toFixed(2) // FIXME: this is only the first mixture
     const x = logLine.colI.weight > 0.5
       ? logLine.colI.index + 2
       : logLine.colI.index + 1
@@ -249,14 +262,8 @@ class LogFilePage extends React.Component {
       : logLine.rowI.index
 
     const values = []
-    const sortedHeaders = this.logFile.getSortedColumnHeaders()
-    const logParamValues = sortedHeaders.map((name) => name && ({
-      name,
-      value: isNumber(logParams[name])
-        ? logParams[name].toFixed(configProfile.getLogFileColumnDecimals(name))
-        : logParams[name],
-    }))
-    values.push(...compact(logParamValues))
+    const logReplayValues = this.getLogReplayValues()
+    values.push(...compact(logReplayValues))
 
     const subValue = (
       <span title="Table Location">
@@ -536,7 +543,10 @@ class LogFilePage extends React.Component {
             onChangeReplayIndex={this.handleChangeReplayIndex}
           />
         </GridContainer>
-        {this.renderSidePanel({ })}
+        <ChartStatusPanel
+          pageConfig={chartingConfig.pages[chartPageIndex]}
+          values={this.getLogReplayValues()}
+        />
       </TabContainer>
     )
   }
