@@ -1,7 +1,6 @@
 // Optimized palette
 // http://tsitsul.in/blog/coloropt/
 export const CHART_COLOR_PALETTE = [
-  '#ebac23',
   '#b80058',
   '#008cf9',
   '#006e00',
@@ -14,6 +13,7 @@ export const CHART_COLOR_PALETTE = [
   '#878500',
   '#00a76c',
   '#bdbdbd',
+  '#ebac23',
 ]
 
 // https://gist.github.com/danieliser/b4b24c9f772066bcf0a6
