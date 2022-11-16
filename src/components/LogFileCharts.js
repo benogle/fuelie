@@ -92,7 +92,7 @@ class LogFileCharts extends React.Component {
         labelGap: 0,
       })
       renderChartConfig.series.push({
-        show: true,
+        show: line.show != null ? !!line.show : true,
         width: 1,
         stroke: line.color,
         scale: line.scale,
