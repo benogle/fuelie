@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 import LogFileChart from './LogFileChart'
+import ZoomSlider from './ZoomSlider'
 
 // const DEFAULT_WIDTH = 10
 // const DEFAULT_HEIGHT = 10
@@ -25,17 +26,6 @@ const ChartContainer = styled.div`
   > * {
     height: 50%;
   }
-`
-
-const StyledRange = styled.input.attrs({ type: 'range' })`
-  position: relative;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  height: 100%;
-  width: 20px;
-  -webkit-appearance: slider-vertical;
 `
 
 class LogFileCharts extends React.Component {
@@ -122,10 +112,8 @@ class LogFileCharts extends React.Component {
         <ChartContainer>
           {this.renderCharts()}
         </ChartContainer>
-        <StyledRange
+        <ZoomSlider
           value={this.getZoomRangeValue()}
-          step="1"
-          min={0}
           max={this.getMaxPointsInView()}
           onChange={this.handleChangeRangeZoom}
         />
