@@ -106,17 +106,28 @@ class LogFileCharts extends React.Component {
     }))
   }
 
+  renderZoom () {
+    const { logFile } = this.props
+    const zoomValue = this.getZoomRangeValue()
+    const max = this.getMaxPointsInView()
+    const msShown = logFile.getTimeMS(max - zoomValue - 1)
+    return (
+      <ZoomSlider
+        value={zoomValue}
+        max={this.getMaxPointsInView()}
+        msShown={msShown}
+        onChange={this.handleChangeRangeZoom}
+      />
+    )
+  }
+
   render () {
     return (
       <InnerContaier>
         <ChartContainer>
           {this.renderCharts()}
         </ChartContainer>
-        <ZoomSlider
-          value={this.getZoomRangeValue()}
-          max={this.getMaxPointsInView()}
-          onChange={this.handleChangeRangeZoom}
-        />
+        {this.renderZoom()}
       </InnerContaier>
     )
   }

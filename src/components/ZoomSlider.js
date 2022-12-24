@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import { millisecondsToTimeCode } from 'common/helpers'
+
 const Container = styled.div`
   position: absolute;
   top: 16px;
@@ -12,9 +14,9 @@ const Container = styled.div`
 
 const TriggerContainer = styled.div`
   background: rgba(230, 230, 230, 1);
+  padding: 0 10px;
   height: 30px;
   line-height: 30px;
-  width: 30px;
   text-align: center;
 `
 
@@ -71,10 +73,11 @@ class ZoomSlider extends React.Component {
   }
 
   render () {
+    const { msShown } = this.props
     return (
       <Container>
         <TriggerContainer onClick={this.handleToggle}>
-          Z
+          Z {millisecondsToTimeCode(msShown)}
         </TriggerContainer>
         {this.renderRange()}
       </Container>
@@ -88,6 +91,7 @@ ZoomSlider.defaultProps = {
 ZoomSlider.propTypes = {
   max: PropTypes.number,
   value: PropTypes.number,
+  msShown: PropTypes.number,
   onChange: PropTypes.func.isRequired,
 }
 
