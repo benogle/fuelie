@@ -30,7 +30,7 @@ export default class LogFile {
     this.configProfile = newConfigProfile
     const changedKeys = this.configProfile.getChangedKeys(prevConfigProfile)
     if (!changedKeys) {
-      console.log('No changed keys, not updating LogFile state')
+      // console.log('No changed keys, not updating LogFile state')
       return
     }
 

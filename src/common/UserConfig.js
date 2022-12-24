@@ -37,12 +37,12 @@ export default class UserConfig {
   }
 
   getConfig () {
-    return this.store.store
+    return this.store.getStore()
   }
 
   replaceConfig (newConfig) {
     if (this.store && size(newConfig) > 0 && !isArray(newConfig) && isObject(newConfig)) {
-      this.store.store = newConfig
+      this.store.setStore(newConfig, { writeImmediately: true })
     }
   }
 }

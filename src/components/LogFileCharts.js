@@ -50,7 +50,6 @@ class LogFileCharts extends React.Component {
       this.props.zoomConfig?.pointsInView ||
       this.props.zoomConfig?.maxPointsInView ||
       MAX_POINTS_IN_VIEW,
-      this.dataLength,
     ))
   }
 
