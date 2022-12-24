@@ -46,13 +46,15 @@ class ChartStatusPanel extends React.Component {
   render () {
     const { values } = this.props
     const columnDataByName = this.getColumnDataByColumnName()
-    const content = values.map(({ name, value }, i) => (
-      <ValueContainer key={`v${name}${i}`}>
-        <Color style={{ background: columnDataByName[name]?.color }} />
-        <ValueName>{name}</ValueName>
-        <Value>{value}</Value>
-      </ValueContainer>
-    ))
+    const content = values.map(({ name, value }, i) => name != null
+      ? (
+        <ValueContainer key={`v${name}${i}`}>
+          <Color style={{ background: columnDataByName[name]?.color }} />
+          <ValueName>{name}</ValueName>
+          <Value>{value}</Value>
+        </ValueContainer>
+        )
+      : null)
 
     return (
       <StatusPanel>
