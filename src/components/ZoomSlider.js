@@ -4,16 +4,23 @@ import styled from 'styled-components'
 
 import { millisecondsToTimeCode } from 'common/helpers'
 
+const ZOOM_SLIDER_CLASSNAME = 'zoom-slider'
+
 const Container = styled.div`
+  background: rgba(230, 230, 230, 1);
   position: absolute;
   top: 16px;
   right: 20px;
   cursor: default;
   user-select: none;
+
+  ${({ isOpen }) => isOpen && `
+    background: white;
+    box-shadow: 0 1px 6px 0 rgba(0,0,0,0.1);
+  `}
 `
 
 const TriggerContainer = styled.div`
-  background: rgba(230, 230, 230, 1);
   padding: 0 10px;
   height: 30px;
   line-height: 30px;
@@ -21,18 +28,21 @@ const TriggerContainer = styled.div`
 `
 
 const RangeContainer = styled.div`
-  padding: 10px 0;
+  padding: 20px 15px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 30px;
-  right: 0;
-  width: 30px;
+  justify-content: space-between;
+  width: 100%;
   height: 250px;
+`
 
-  background: white;
-  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.1);
+const RangeTicks = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  justify-content: space-between;
+  font-family: monospace;
 `
 
 const StyledRange = styled.input.attrs({ type: 'range' })`
@@ -51,8 +61,17 @@ class ZoomSlider extends React.Component {
     isOpen: false,
   }
 
+  handleWindowClose = (event) => {
+    const isInSlider = !!event.target.closest(`.${ZOOM_SLIDER_CLASSNAME}`)
+    if (!isInSlider && this.state.isOpen) {
+      this.handleToggle()
+    }
+  }
+
   handleToggle = () => {
-    this.setState({ isOpen: !this.state.isOpen })
+    const newIsOpen = !this.state.isOpen
+    this.setState({ isOpen: newIsOpen })
+    window[newIsOpen ? 'addEventListener' : 'removeEventListener']('mousedown', this.handleWindowClose)
   }
 
   renderRange () {
@@ -61,6 +80,10 @@ class ZoomSlider extends React.Component {
     const { value, max, onChange } = this.props
     return (
       <RangeContainer>
+        <RangeTicks>
+          <div>+</div>
+          <div>-</div>
+        </RangeTicks>
         <StyledRange
           value={value}
           step="1"
@@ -74,8 +97,9 @@ class ZoomSlider extends React.Component {
 
   render () {
     const { msShown } = this.props
+    const { isOpen } = this.state
     return (
-      <Container>
+      <Container isOpen={isOpen} className={ZOOM_SLIDER_CLASSNAME}>
         <TriggerContainer onClick={this.handleToggle}>
           Z {millisecondsToTimeCode(msShown)}
         </TriggerContainer>
