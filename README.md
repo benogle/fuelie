@@ -65,7 +65,11 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
       },
 
       "units": {
-        "mixture": "afr"
+        "mixture": "afr",
+        "temp": "f",
+        "speed": "mph",
+        "manifoldPressure": "psi",
+        "manifoldPressure": "psi",
       },
 
       // Set up how the app should read your logfile
@@ -224,23 +228,34 @@ Note: Check out a [JSON cheat sheet](https://cheatography.com/gaston/cheat-sheet
           "pointsInView": 1200,
           "maxPointsInView": 6000
         },
-        "charts": [{
-          "lines": [{
-            "column": "O2 #1",
-            "color": "red",
-          }, {
-            "column": "O2 #1",
-            "color": "green",
-          }]
-        }, {
-          "lines": [{
-            "column": "Air Temp",
-            "color": "pink",
-          }, {
-            "column": "Coolant Temp",
-            "color": "blue",
-          }]
-        }]
+        "scales": {
+
+        },
+        "pages": [
+          {
+            "name": "Custom Charts",
+            "charts": [
+              {
+                "lines": [{
+                  "column": "O2 #1",
+                  "color": "red",
+                }, {
+                  "column": "O2 #1",
+                  "color": "green",
+                }]
+              },
+              {
+                "lines": [{
+                  "column": "Air Temp",
+                  "color": "pink",
+                }, {
+                  "column": "Coolant Temp",
+                  "color": "blue",
+                }]
+              }
+            ]
+          }
+        ] // end tabs
       }
     }
   ]
