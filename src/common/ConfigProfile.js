@@ -207,4 +207,8 @@ export default class ConfigProfile {
   setChartZoomPointsInView (pointsInView) {
     return this.set('charting.zoom.pointsInView', pointsInView)
   }
+
+  setChartLineVisibility ({ pageIndex, chartIndex, lineIndex, visible }) {
+    return this.set(`charting.pages.${pageIndex}.charts.${chartIndex}.lines.${lineIndex}.show`, !!visible)
+  }
 }

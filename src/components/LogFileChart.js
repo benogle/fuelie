@@ -123,10 +123,35 @@ class LogFileChart extends React.Component {
   shouldComponentUpdate (nextProps, nextState) {
     return nextProps.replayIndex !== this.props.replayIndex ||
       nextProps.selectedLineIndex !== this.props.selectedLineIndex ||
-      !isEqual(nextProps.zoomConfig, this.props.zoomConfig)
+      !isEqual(nextProps.zoomConfig, this.props.zoomConfig) ||
+      !isEqual(nextProps.config.series, this.props.config.series)
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
+    const prevSeriesLength = prevProps.config?.series?.length
+    if (prevSeriesLength != null && prevSeriesLength === this.props.config?.series?.length) {
+      const prevSeries = prevProps.config?.series
+      const newSeries = this.props.config?.series
+      for (let i = 0; i < newSeries.length; i++) {
+        if (newSeries[i].show !== prevSeries[i].show) {
+          // series i + 1 because the x axis is at index 0, shifting all up 1
+          this.uPlot.setSeries(i + 1, {
+            show: !!newSeries[i].show, // always a boolean, never null/undefined
+          }, false)
+        }
+      }
+    }
+
+    if (prevProps.selectedLineIndex !== this.props.selectedLineIndex) {
+      this.uPlot.setSeries(prevProps.selectedLineIndex + 1, {
+        focus: false,
+      }, false)
+
+      this.uPlot.setSeries(this.props.selectedLineIndex + 1, {
+        focus: true,
+      }, false)
+    }
+
     this.redrawChart()
   }
 

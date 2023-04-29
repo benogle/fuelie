@@ -553,6 +553,11 @@ class LogFilePage extends React.Component {
           values={this.getLogReplayValues()}
           selectedColumnName={selectedColumnName}
           onChangeSelectedColumn={({ selectedColumnName }) => this.setState({ selectedColumnName })}
+          onChangeColumnVisibility={({ visible, columnName, lineIndices }) => {
+            for (const { chartIndex, lineIndex } of lineIndices) {
+              configProfile.setChartLineVisibility({ pageIndex: chartPageIndex, chartIndex, lineIndex, visible })
+            }
+          }}
         />
       </TabContainer>
     )
