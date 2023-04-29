@@ -4,19 +4,7 @@ import styled from 'styled-components'
 
 import StatusPanel, { PADDING as STATUS_PANEL_PADDING } from 'components/StatusPanel'
 
-const ValueContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 5px ${STATUS_PANEL_PADDING}px;
-
-  &:hover {
-    background: white;
-  }
-
-  ${({ isSelected }) => isSelected && `
-    background: white;
-  `}
-`
+const HIDDEN_LINE_COLOR = '#BBB'
 
 const Color = styled.div`
   cursor: default;
@@ -38,6 +26,37 @@ const Value = styled.div`
 const Checkbox = styled.input.attrs({
   type: 'checkbox',
 })`
+  display: none;
+  margin: 0 -1px;
+  padding: 0;
+`
+
+const ValueContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5px ${STATUS_PANEL_PADDING}px;
+
+  &.hide-chart-line {
+    ${Color} {
+      background: ${HIDDEN_LINE_COLOR} !important;
+    }
+  }
+
+  &.has-chart-line:hover {
+    background: white;
+
+    ${Checkbox} {
+      display: block;
+    }
+
+    ${Color} {
+      display: none;
+    }
+  }
+
+  ${({ isSelected }) => isSelected && `
+    background: white;
+  `}
 `
 
 class ChartStatusPanel extends React.Component {
@@ -84,17 +103,23 @@ class ChartStatusPanel extends React.Component {
   renderValue ({ name, value, index, columnData }) {
     const { selectedColumnName } = this.props
     const color = columnData?.color
-    const show = !!columnData && (columnData.show != null ? !!columnData.show : true)
+    const hasChartLine = !!columnData
+    const showChartLine = !!columnData && (columnData.show != null ? !!columnData.show : true)
+    const classNames = [
+      hasChartLine ? 'has-chart-line' : '',
+      hasChartLine ? (showChartLine ? 'show-chart-line' : 'hide-chart-line') : '',
+    ].join(' ')
     return (
       <ValueContainer
+        className={classNames}
         key={`v${name}${index}`}
         isSelected={name === selectedColumnName}
-        onClick={(event) => this.handleChangeSelectedColumn({ event, selectedColumnName: name })}
+        onClick={(event) => hasChartLine && this.handleChangeSelectedColumn({ event, selectedColumnName: name })}
       >
         <Color style={{ background: color }} />
         <Checkbox
-          checked={show}
-          disabled={!color}
+          checked={showChartLine}
+          disabled={!hasChartLine}
           onChange={(event) => this.handleChangeColumnVisibility({ event, columnName: name, index })}
         />
         <ValueName>{name}</ValueName>
