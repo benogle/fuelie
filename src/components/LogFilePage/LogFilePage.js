@@ -80,6 +80,9 @@ class LogFilePage extends React.Component {
     isPlaying: false,
     replayIndex: 0,
     replaySpeedFactor: 1,
+
+    // Chart things
+    selectedColumnName: null,
   }
 
   componentDidMount () {
@@ -529,23 +532,27 @@ class LogFilePage extends React.Component {
 
   renderChartPage = ({ chartPageIndex }) => {
     const { configProfile } = this.props
+    const { selectedColumnName, replayIndex } = this.state
     const chartingConfig = configProfile.getChartingConfig()
     return (
       <TabContainer>
         <GridContainer>
           <LogFileCharts
             logFile={this.logFile}
-            replayIndex={this.state.replayIndex}
+            replayIndex={replayIndex}
             zoomConfig={configProfile.getChartZoom()}
             pageConfig={chartingConfig.pages[chartPageIndex]}
             scalesConfig={chartingConfig.scales}
             onChangeZoom={({ pointsInView }) => configProfile.setChartZoomPointsInView(pointsInView)}
             onChangeReplayIndex={this.handleChangeReplayIndex}
+            selectedColumnName={selectedColumnName}
           />
         </GridContainer>
         <ChartStatusPanel
           pageConfig={chartingConfig.pages[chartPageIndex]}
           values={this.getLogReplayValues()}
+          selectedColumnName={selectedColumnName}
+          onChangeSelectedColumn={({ selectedColumnName }) => this.setState({ selectedColumnName })}
         />
       </TabContainer>
     )

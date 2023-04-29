@@ -113,6 +113,7 @@ const StyledResizable = styled(Resizable)`
 `
 
 class LogFileChart extends React.Component {
+  state = {}
   constructor (props) {
     super(props)
     this.cacheData(props)
@@ -121,6 +122,7 @@ class LogFileChart extends React.Component {
 
   shouldComponentUpdate (nextProps, nextState) {
     return nextProps.replayIndex !== this.props.replayIndex ||
+      nextProps.selectedLineIndex !== this.props.selectedLineIndex ||
       !isEqual(nextProps.zoomConfig, this.props.zoomConfig)
   }
 
@@ -252,6 +254,13 @@ class LogFileChart extends React.Component {
     this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
   })
 
+  UNSAFE_componentWillReceiveProps (nextProps) { // eslint-disable-line react/sort-comp
+    if (this.props.selectedLineIndex !== nextProps.selectedLineIndex) {
+      // Cache them now and it will use them on the next render
+      this.cacheOptions(nextProps, this.size)
+    }
+  }
+
   cacheData (props) {
     const { logFile, columnNames } = props
     const dataObj = logFile.getDataByColumnNames(columnNames)
@@ -361,6 +370,7 @@ class LogFileChart extends React.Component {
 
 LogFileChart.defaultProps = {
   replayIndex: 0,
+  selectedLineIndex: 0,
   paddingLeft: 0,
   showTimeSeries: true,
   clickOnMouseDown: true,
@@ -371,6 +381,7 @@ LogFileChart.defaultProps = {
 LogFileChart.propTypes = {
   logFile: PropTypes.object.isRequired,
   replayIndex: PropTypes.number.isRequired,
+  selectedLineIndex: PropTypes.number.isRequired,
   columnNames: PropTypes.array,
   config: PropTypes.object,
   zoomConfig: PropTypes.shape({

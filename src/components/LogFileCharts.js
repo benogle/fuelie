@@ -65,18 +65,24 @@ class LogFileCharts extends React.Component {
   }
 
   renderChartConfig ({ chartConfig, showTimeSeries, key }) {
-    const { scalesConfig } = this.props
+    const { scalesConfig, selectedColumnName } = this.props
     const columnNames = []
     const renderChartConfig = {
       series: [],
       axes: [],
       scales: scalesConfig,
     }
+    let selectedLineIndex = 0
     for (let i = 0; i < chartConfig.lines.length; i++) {
       const line = chartConfig.lines[i]
       columnNames.push(line.column)
+
+      if (line.column === selectedColumnName) {
+        selectedLineIndex = i
+      }
+
       renderChartConfig.axes.push({
-        show: i === 0,
+        show: false,
         scale: line.scale,
         labelGap: 0,
       })
@@ -87,12 +93,14 @@ class LogFileCharts extends React.Component {
         scale: line.scale,
       })
     }
+    renderChartConfig.axes[selectedLineIndex].show = true
     return this.renderChart({
       columnNames,
       config: renderChartConfig,
       showTimeSeries,
       key,
       height: chartConfig.height,
+      selectedLineIndex,
     })
   }
 
@@ -154,6 +162,8 @@ LogFileCharts.propTypes = {
 
   onChangeZoom: PropTypes.func.isRequired,
   onChangeReplayIndex: PropTypes.func.isRequired,
+
+  selectedColumnName: PropTypes.string,
 }
 
 export default LogFileCharts

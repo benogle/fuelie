@@ -10,8 +10,12 @@ const ValueContainer = styled.div`
   padding: 5px ${STATUS_PANEL_PADDING}px;
 
   &:hover {
-    background: #f2f2f2;
+    background: white;
   }
+
+  ${({ isSelected }) => isSelected && `
+    background: white;
+  `}
 `
 
 const Color = styled.div`
@@ -44,11 +48,15 @@ class ChartStatusPanel extends React.Component {
   }
 
   render () {
-    const { values } = this.props
+    const { values, selectedColumnName, onChangeSelectedColumn } = this.props
     const columnDataByName = this.getColumnDataByColumnName()
     const content = values.map(({ name, value }, i) => name != null
       ? (
-        <ValueContainer key={`v${name}${i}`}>
+        <ValueContainer
+          key={`v${name}${i}`}
+          isSelected={name === selectedColumnName}
+          onClick={() => onChangeSelectedColumn({ selectedColumnName: name })}
+        >
           <Color style={{ background: columnDataByName[name]?.color }} />
           <ValueName>{name}</ValueName>
           <Value>{value}</Value>
@@ -64,6 +72,10 @@ class ChartStatusPanel extends React.Component {
   }
 }
 
+ChartStatusPanel.defaultProps = {
+  onChangeSelectedIndex: () => {},
+}
+
 ChartStatusPanel.propTypes = {
   pageConfig: PropTypes.arrayOf(
     PropTypes.shape({
@@ -77,6 +89,9 @@ ChartStatusPanel.propTypes = {
     name: PropTypes.node,
     value: PropTypes.node,
   })),
+
+  selectedColumnName: PropTypes.string,
+  onChangeSelectedColumn: PropTypes.func,
 }
 
 export default ChartStatusPanel
