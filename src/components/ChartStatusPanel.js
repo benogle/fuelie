@@ -114,7 +114,11 @@ class ChartStatusPanel extends React.Component {
         className={classNames}
         key={`v${name}${index}`}
         isSelected={name === selectedColumnName}
-        onClick={(event) => hasChartLine && this.handleChangeSelectedColumn({ event, selectedColumnName: name })}
+        onClick={(event) => hasChartLine && this.handleChangeSelectedColumn({
+          event,
+          // Unset when clicking the existing selected column
+          selectedColumnName: selectedColumnName === name ? undefined : name,
+        })}
       >
         <Color style={{ background: color }} />
         <Checkbox
