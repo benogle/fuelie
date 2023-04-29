@@ -89,7 +89,7 @@ class ChartStatusPanel extends React.Component {
       <ValueContainer
         key={`v${name}${index}`}
         isSelected={name === selectedColumnName}
-        onClick={(event) => this.handleChangeSelectedColumn({ event, selectedColumnName })}
+        onClick={(event) => this.handleChangeSelectedColumn({ event, selectedColumnName: name })}
       >
         <Color style={{ background: color }} />
         <Checkbox
