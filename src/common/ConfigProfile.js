@@ -78,6 +78,14 @@ export default class ConfigProfile {
     return this.profile.fuelMap.columns
   }
 
+  shouldAllowColumn (columnName) {
+    if (!this.profile.logFile.showSpecifiedColumnsOnly) return true
+    if (!this.allowedColumns) {
+      this.allowedColumns = new Set(this.getLogFileColumnDisplayOrder())
+    }
+    return this.allowedColumns.has(columnName)
+  }
+
   get (key, defaultVal) {
     return get(this.profile, key, defaultVal)
   }

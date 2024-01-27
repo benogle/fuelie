@@ -76,6 +76,7 @@ export default class LogFile {
           this.headers = without(this.headers, columnKey)
         }
       })
+      this.headers = this.headers.filter((header) => this.configProfile.shouldAllowColumn(header))
     }
 
     const parsedLine = {}
@@ -171,7 +172,7 @@ export default class LogFile {
   // Total time in ms from the beginning
   getTimeMS (index) {
     const firstLine = this.data[0]
-    const lastLine = this.data[index]
+    const lastLine = this.data[Math.min(this.getLastIndex(), index)]
 
     // TODO: Make this time thing configurable
     return Math.round((lastLine.t - firstLine.t) * 1000)
@@ -480,6 +481,8 @@ function parseValue (value, type) {
 }
 
 function parseLineValue ({ value, key, columns = {}, configProfile, defaultType = 'float' } = {}) {
+  if (!configProfile.shouldAllowColumn(key)) return {}
+
   const columnConfig = columns?.[key] || {}
   const type = columnConfig.type || defaultType
   const rawType = columnConfig.rawType || defaultType
