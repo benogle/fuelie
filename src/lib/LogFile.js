@@ -481,8 +481,6 @@ function parseValue (value, type) {
 }
 
 function parseLineValue ({ value, key, columns = {}, configProfile, defaultType = 'float' } = {}) {
-  if (!configProfile.shouldAllowColumn(key)) return {}
-
   const columnConfig = columns?.[key] || {}
   const type = columnConfig.type || defaultType
   const rawType = columnConfig.rawType || defaultType
@@ -498,8 +496,11 @@ function parseLineValue ({ value, key, columns = {}, configProfile, defaultType 
     parsedValue = parseValue(value, type)
   }
 
-  const valueKV = { [key]: parsedValue }
-  if (columnConfig.name) {
+  const valueKV = { }
+  if (configProfile.shouldAllowColumn(key)) {
+    valueKV[key] = parsedValue
+  }
+  if (columnConfig.name && configProfile.shouldAllowColumn(columnConfig.name)) {
     valueKV[columnConfig.name] = parsedValue
   }
   return valueKV
