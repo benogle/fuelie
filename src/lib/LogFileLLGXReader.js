@@ -11,6 +11,28 @@ import { round } from 'common/helpers'
 import getInterpolatedIndex from 'lib/getInterpolatedIndex'
 import interpolate from 'lib/interpolate'
 
+import {
+  UNITS_MIXTURE_LAMBDA,
+  UNITS_TEMP_C,
+  UNITS_SPEED_KPH,
+  UNITS_PRESSURE_KPA,
+  UNIT_TYPE_MIXTURE,
+  UNIT_TYPE_TEMPERATURE,
+  UNIT_TYPE_PRESSURE,
+  UNIT_TYPE_SPEED,
+} from 'common/constants'
+
+const UNIT_TYPE_MAP = {
+  lambda: UNIT_TYPE_MIXTURE,
+}
+
+const DEFAULT_UNIT_MAP = {
+  [UNIT_TYPE_MIXTURE]: UNITS_MIXTURE_LAMBDA,
+  [UNIT_TYPE_TEMPERATURE]: UNITS_TEMP_C,
+  [UNIT_TYPE_PRESSURE]: UNITS_PRESSURE_KPA,
+  [UNIT_TYPE_SPEED]: UNITS_SPEED_KPH,
+}
+
 const fs = req('fs')
 
 const BLOCK_LENGTH_LENGTH = 4
@@ -123,8 +145,11 @@ export default class LogFileCSVReader {
     nameAndUnits.shift()
     nameAndUnits.pop()
     const paramName = nameAndUnits[0]
-    const paramUnits = nameAndUnits[1] || ''
+    const paramUnits = (nameAndUnits[1] || '').toLowerCase()
     console.log(timeValuePairsCount, paramName, paramUnits)
+
+    const unitType = UNIT_TYPE_MAP[paramUnits] || paramUnits
+    const defaultUnit = DEFAULT_UNIT_MAP[unitType]
 
     // So we read extra here beyond the ds3 block to get the actual data
     // Data in pairs of 8 bytes.
@@ -137,10 +162,14 @@ export default class LogFileCSVReader {
     const dataByTime = {}
     for (let valueIndex = 0; valueIndex < timeValuePairsCount; valueIndex++) {
       const fileIndex = valuesStartIndex + (valueIndex * 8)
-      const timeS = round(fileBuffer.readFloatLE(fileIndex), 4)
-      const value = fileBuffer.readFloatLE(fileIndex + 4) // value
-      data.push([timeS, value])
-      dataByTime[timeS] = value
+      const timeInSeconds = round(fileBuffer.readFloatLE(fileIndex), 4)
+      const value = this.configProfile.convertValueToUnits(
+        unitType,
+        fileBuffer.readFloatLE(fileIndex + 4),
+        defaultUnit,
+      )
+      data.push([timeInSeconds, value])
+      dataByTime[timeInSeconds] = value
     }
 
     return {
@@ -185,5 +214,5 @@ export default class LogFileCSVReader {
 
 function parseUTF16Strings (buffer, start, end) {
   const stringBlock = buffer.toString('utf16le', start, end)
-  return stringBlock.split('\0').filter((str) => str.length > 0)
+  return stringBlock.split('\0').filter((str) => str.length > 0).map((str) => str.trim())
 }

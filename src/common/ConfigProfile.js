@@ -11,6 +11,24 @@ import expressions from 'common/expressions'
 import interpolate from 'lib/interpolate'
 import { CHART_COLOR_PALETTE, hexToRGBA } from 'lib/color'
 
+import {
+  UNITS_MIXTURE_LAMBDA,
+  UNITS_MIXTURE_AFR,
+  UNITS_TEMP_C,
+  UNITS_TEMP_F,
+  UNITS_SPEED_KPH,
+  UNITS_SPEED_MPH,
+  UNITS_PRESSURE_KPA,
+  UNITS_PRESSURE_PSI,
+  PRESSURE_KPA_PER_PSI,
+  SPEED_KPH_PER_MPH,
+  MIXTURE_AFR_PER_LAMBDA_GAS,
+  UNIT_TYPE_MIXTURE,
+  UNIT_TYPE_TEMPERATURE,
+  UNIT_TYPE_PRESSURE,
+  UNIT_TYPE_SPEED,
+} from 'common/constants'
+
 // {
 //   name: 'Default',
 //   suggestCalc: 'afr',
@@ -163,6 +181,86 @@ export default class ConfigProfile {
 
   getMixtureDifferenceUnits () {
     return this.getMixtureDifference().units || ''
+  }
+
+  getUnits () {
+    return this.profile.units || {}
+  }
+
+  getTemperatureUnits () {
+    return this.getUnits().temperature || UNITS_TEMP_F
+  }
+
+  getPressureUnits () {
+    return this.getUnits().pressure || UNITS_PRESSURE_PSI
+  }
+
+  getSpeedUnits () {
+    return this.getUnits().speed || UNITS_SPEED_MPH
+  }
+
+  getMitureUnits () {
+    return this.getUnits().mixture || UNITS_MIXTURE_AFR
+  }
+
+  convertValueToUnits (unitType, value, currentUnits) {
+    const funcs = {
+      [UNIT_TYPE_MIXTURE]: this.convertMixtureToUnits,
+      [UNIT_TYPE_TEMPERATURE]: this.convertTemperatureToUnits,
+      [UNIT_TYPE_PRESSURE]: this.convertPressureToUnits,
+      [UNIT_TYPE_SPEED]: this.convertSpeedToUnits,
+    }
+    return funcs[unitType]
+      ? funcs[unitType].call(this, value, currentUnits)
+      : value
+  }
+
+  // currentUnits can be one of UNITS_TEMP_*
+  convertTemperatureToUnits (value, currentUnits = UNITS_TEMP_C) {
+    const desiredUnits = this.getTemperatureUnits()
+    currentUnits = currentUnits.toLowerCase()
+    if (currentUnits === UNITS_TEMP_C && desiredUnits === UNITS_TEMP_F) {
+      return (value * 9 / 5) + 32
+    } else if (currentUnits === UNITS_TEMP_F && desiredUnits === UNITS_TEMP_C) {
+      return (value - 32) * 5 / 9
+    }
+    return value
+  }
+
+  // currentUnits can be one of UNITS_PRESSURE_*
+  convertPressureToUnits (value, currentUnits = UNITS_PRESSURE_KPA) {
+    const desiredUnits = this.getPressureUnits()
+    currentUnits = currentUnits.toLowerCase()
+    if (currentUnits === UNITS_PRESSURE_KPA && desiredUnits === UNITS_PRESSURE_PSI) {
+      return value / PRESSURE_KPA_PER_PSI
+    } else if (currentUnits === UNITS_PRESSURE_PSI && desiredUnits === UNITS_PRESSURE_KPA) {
+      return value * PRESSURE_KPA_PER_PSI
+    }
+    return value
+  }
+
+  // currentUnits can be one of UNITS_SPEED_*
+  convertSpeedToUnits (value, currentUnits = UNITS_SPEED_KPH) {
+    const desiredUnits = this.getSpeedUnits()
+    currentUnits = currentUnits.toLowerCase()
+    if (currentUnits === UNITS_SPEED_KPH && desiredUnits === UNITS_SPEED_MPH) {
+      return value / SPEED_KPH_PER_MPH
+    } else if (currentUnits === UNITS_SPEED_MPH && desiredUnits === UNITS_SPEED_KPH) {
+      return value * SPEED_KPH_PER_MPH
+    }
+    return value
+  }
+
+  // currentUnits can be one of UNITS_MIXTURE_*
+  convertMixtureToUnits (value, currentUnits = UNITS_MIXTURE_AFR) {
+    const desiredUnits = this.getMitureUnits()
+    currentUnits = currentUnits.toLowerCase()
+    if (currentUnits === UNITS_MIXTURE_LAMBDA && desiredUnits === UNITS_MIXTURE_AFR) {
+      return value * MIXTURE_AFR_PER_LAMBDA_GAS
+    } else if (currentUnits === UNITS_MIXTURE_AFR && desiredUnits === UNITS_MIXTURE_LAMBDA) {
+      return value / MIXTURE_AFR_PER_LAMBDA_GAS
+    }
+    return value
   }
 
   getChartZoom () {
