@@ -2,8 +2,6 @@
 //
 //
 // TODO
-// * Make sure all samples have correct values
-// * Parse values to standard
 // * Move column conversion / filtering out from CSV
 
 import req from 'common/req'
@@ -46,7 +44,16 @@ export default class LogFileCSVReader {
   }
 
   async readFile () {
-    const fileBuffer = fs.readFileSync(this.filename, { encoding: null })
+    // TODO: read the file chunk by chunk
+    const fileBuffer = await new Promise((resolve, reject) => {
+      fs.readFile(this.filename, { encoding: null }, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data)
+        }
+      })
+    })
 
     let description = null
     const headers = []
@@ -55,6 +62,19 @@ export default class LogFileCSVReader {
 
     let currentIndex = 0
     const fileLength = fileBuffer.length
+
+    // The LinkECU logfile format is broken into a bunch of blocks. Roughly:
+    //
+    // [UINT32: block size][Three ascii chars for block type][block data]
+    //
+    // * Block size is byte count including the block size bytes, 3 ascii chars, and block data
+    // * Block types can be lf3, ld2, lm1, ds3, and probably more
+    //
+    // The only section that does not follow this format is the actual log data,
+    // which is appended onto the end of the 'ds3' block. The 'ds3' block has
+    // counts, though, to allow reading the values
+    //
+    // LLGX files are in little endian
 
     while (currentIndex < fileLength) {
       const blockLength = fileBuffer.readInt32LE(currentIndex)
@@ -87,6 +107,8 @@ export default class LogFileCSVReader {
           description = newDescription
         }
 
+        console.debug({ blockLength, blockName, blockIndex: currentIndex })
+
         if (parameter) {
           if (parameter.data.length > parameterTimeData) {
             parameterTimeData = parameter.data
@@ -94,9 +116,8 @@ export default class LogFileCSVReader {
           headers.push(parameter.name)
           parameters.push(parameter)
         }
-        console.log({ blockLength, blockName, description, parameter })
       } else {
-        console.log('No block handler for', blockName, { blockLength, blockName })
+        console.warning('No block handler for', blockName, { blockLength, blockName })
       }
 
       currentIndex += (blockLength + extraBlockReadCount)
@@ -119,14 +140,30 @@ export default class LogFileCSVReader {
   }
 
   // lf3: Root block
+  // * Format: [UINT32 - RootBlockSize][RootBlockData]
+  // * Not sure what's actually in this block
   parseLF3 () {
     return {}
   }
 
-  // ld2 block: File Description
+  // ld2: File Description
+  // * Has things like firmware version and all that
+  // e.g.
+  //
+  // G4X Xtreme
+  // 6.25.5
+  // 7.2.3411
+  // 516111
+  // ECU Internal Datalog - some date...
   parseLD2 ({ blockBuffer }) {
-    // Text in 'utf16le'
+    // All text here is in 'utf16le' encoding
+
+    // There probably is a smarter way to detect where strings start and end,
+    // but don't know which bytes specify that...
     const descriptionStrings = parseUTF16Strings(blockBuffer)
+
+    console.log('File description:')
+    console.log(descriptionStrings.join('\n'))
     return {
       description: descriptionStrings,
     }
@@ -137,16 +174,33 @@ export default class LogFileCSVReader {
     return {}
   }
 
+  // ds3: The actual values for a single parameter. That is, this will hold all
+  // time + value pairs for, say, 'Engine Speed'
+  //
+  // Format:
+  //
+  // [UINT32: blockLength]["ds3": blockName][UINT32: timeValuePairsCount][paramName][paramUnits]
+  //
+  // The blockLength only counts the metadata bits: name, units, counts, not the
+  // actual values. The values are specified in 8 byte time/value pairs directly
+  // after the ds3 block count.
+  //
+  // [4 byte float: time of value][4 byte float: value] * timeValuePairsCount
+  //
   parseDS3 ({ blockLength, blockBuffer, fileBuffer, blockIndex }) {
     // The block length on the ds3 only includes the name, units, and counts,
     // but NOT the values
     const timeValuePairsCount = blockBuffer.readInt32LE(0)
     const nameAndUnits = parseUTF16Strings(blockBuffer, 4)
+
+    // There are probably counts on either side of the descriptions, but I dont
+    // know what they are, so I'm just ignoring them...
     nameAndUnits.shift()
     nameAndUnits.pop()
+
     const paramName = nameAndUnits[0]
     const paramUnits = (nameAndUnits[1] || '').toLowerCase()
-    console.log(timeValuePairsCount, paramName, paramUnits)
+    console.debug(timeValuePairsCount, paramName, paramUnits)
 
     const unitType = UNIT_TYPE_MAP[paramUnits] || paramUnits
     const defaultUnit = DEFAULT_UNIT_MAP[unitType]
@@ -172,15 +226,18 @@ export default class LogFileCSVReader {
       dataByTime[timeInSeconds] = value
     }
 
+    const parameter = {
+      name: paramName,
+      units: paramUnits,
+      count: timeValuePairsCount,
+      data,
+      dataByTime,
+    }
+    console.debug(blockLength, { blockLength, valueCount: timeValuePairsCount }, parameter)
+
     return {
       extraReadCount,
-      parameter: {
-        name: paramName,
-        units: paramUnits,
-        count: timeValuePairsCount,
-        data,
-        dataByTime,
-      },
+      parameter,
     }
   }
 

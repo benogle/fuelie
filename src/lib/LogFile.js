@@ -263,7 +263,7 @@ export default class LogFile {
       const { rowI, colI, m } = line
       const newLineValue = m[mixtureIndex]
       if (!rowI || !colI || !newLineValue) {
-        console.log('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
+        console.debug('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
       }
 
