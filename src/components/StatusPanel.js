@@ -8,7 +8,7 @@ const PanelContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  min-width: 250px;
+  min-width: 300px;
   padding: ${PADDING}px;
   padding-top: 0;
 
