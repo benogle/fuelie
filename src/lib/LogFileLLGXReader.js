@@ -6,8 +6,9 @@
 
 import req from 'common/req'
 import { round } from 'common/helpers'
-import getInterpolatedIndex from 'lib/getInterpolatedIndex'
 import interpolate from 'lib/interpolate'
+
+import LogFileBaseReader from './LogFileBaseReader'
 
 import {
   UNITS_MIXTURE_LAMBDA,
@@ -37,12 +38,7 @@ const BLOCK_LENGTH_LENGTH = 4
 const BLOCK_NAME_LENGTH = 3
 const BLOCK_META_LENGTH = BLOCK_LENGTH_LENGTH + BLOCK_NAME_LENGTH
 
-export default class LogFileCSVReader {
-  constructor (filename, configProfile) {
-    this.filename = filename
-    this.configProfile = configProfile
-  }
-
+export default class LogFileCSVReader extends LogFileBaseReader {
   async readFile () {
     // TODO: read the file chunk by chunk
     const fileBuffer = await new Promise((resolve, reject) => {
@@ -134,7 +130,7 @@ export default class LogFileCSVReader {
     return {
       description,
       data,
-      headers,
+      headers: this.buildDisplayableParameterNameArray(headers),
       length: data.length,
     }
   }
@@ -249,29 +245,20 @@ export default class LogFileCSVReader {
   }
 
   composeRow (timeInSeconds, parameters) {
-    const { row, column } = this.configProfile.getLogFileConfig()
-    const mixtureColumns = this.configProfile.getMixtureColumns()
-    const fuelRows = this.configProfile.getFuelMapRows()
-    const fuelColumns = this.configProfile.getFuelMapColumns()
-
     const parameterValues = {}
     for (const param of parameters) {
       const { name, data, dataByTime } = param
       const value = dataByTime[timeInSeconds] ?? interpolate(timeInSeconds, data)
-      parameterValues[name] = value
+      Object.assign(parameterValues, this.convertValueFromConfig({
+        key: name,
+        value,
+      }))
     }
-
-    const rowV = parameterValues[row]
-    const colV = parameterValues[column]
 
     return {
       ...parameterValues,
+      ...this.getTableLocations(parameterValues),
       t: timeInSeconds,
-      rowV,
-      rowI: getInterpolatedIndex(rowV, fuelRows),
-      colV,
-      colI: getInterpolatedIndex(colV, fuelColumns),
-      m: mixtureColumns.map((mixCol) => parameterValues[mixCol]),
     }
   }
 }

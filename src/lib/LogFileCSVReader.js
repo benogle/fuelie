@@ -1,19 +1,13 @@
 import each from 'lodash/each'
-import without from 'lodash/without'
 import csv from 'csv-parser'
-
-import req from 'common/req'
-import getInterpolatedIndex from 'lib/getInterpolatedIndex'
 import detectCSV from 'detect-csv'
+import req from 'common/req'
+
+import LogFileBaseReader from './LogFileBaseReader'
 
 const fs = req('fs')
 
-export default class LogFileCSVReader {
-  constructor (filename, configProfile) {
-    this.filename = filename
-    this.configProfile = configProfile
-  }
-
+export default class LogFileCSVReader extends LogFileBaseReader {
   async readFile () {
     const separator = await detectSeparator(this.filename)
     if (!separator) {
@@ -46,83 +40,24 @@ export default class LogFileCSVReader {
   }
 
   readLine (logLine) {
-    const { time, row, column, columns, defaultType } = this.configProfile.getLogFileConfig()
-    const mixtureColumns = this.configProfile.getMixtureColumns()
-    const fuelRows = this.configProfile.getFuelMapRows()
-    const fuelColumns = this.configProfile.getFuelMapColumns()
-    const rowV = parseFloat(logLine[row])
-    const colV = parseFloat(logLine[column])
+    const { time } = this.configProfile.getLogFileConfig()
 
     if (!this.headers) {
-      this.headers = Object.keys(logLine)
-      each(columns, (columnConfig, columnKey) => {
-        if (columnConfig.name) {
-          this.headers.push(columnConfig.name)
-        }
-        if (columnConfig.name || columnConfig.visible === false) {
-          this.headers = without(this.headers, columnKey)
-        }
-      })
-      this.headers = this.headers.filter((header) => this.configProfile.shouldAllowColumn(header))
+      this.headers = this.buildDisplayableParameterNameArray(Object.keys(logLine))
     }
 
     const parsedLine = {}
     each(logLine, (value, key) => {
-      const newValueKV = parseLineValue({ key, value, columns, configProfile: this.configProfile, defaultType })
+      const newValueKV = this.convertValueFromConfig({ key, value })
       Object.assign(parsedLine, newValueKV)
     })
 
     return {
       ...parsedLine,
+      ...this.getTableLocations(parsedLine),
       t: parseFloat(logLine[time]),
-      rowV,
-      rowI: getInterpolatedIndex(rowV, fuelRows),
-      colV,
-      colI: getInterpolatedIndex(colV, fuelColumns),
-      m: mixtureColumns.map((mixCol) => parseFloat(logLine[mixCol])),
     }
   }
-}
-
-function notNaNOrValue (parsedValue, originalValue) {
-  return isNaN(parsedValue)
-    ? originalValue
-    : parsedValue
-}
-
-function parseValue (value, type) {
-  if (type === 'float') {
-    return notNaNOrValue(parseFloat(value) || 0, value)
-  } else if (type === 'integer') {
-    return notNaNOrValue(parseInt(value) || 0, value)
-  }
-  return value
-}
-
-function parseLineValue ({ value, key, columns = {}, configProfile, defaultType = 'float' } = {}) {
-  const columnConfig = columns?.[key] || {}
-  const type = columnConfig.type || defaultType
-  const rawType = columnConfig.rawType || defaultType
-  const convertValue = configProfile.getConvertValueForColumn(key)
-  let parsedValue = value
-
-  // `columnConfig.convertValue` is built in ConfigProfile when there is a
-  // valueFormula or valueTable on columnConfig
-  if (convertValue) {
-    parsedValue = parseValue(value, rawType)
-    parsedValue = convertValue({ value: parsedValue })
-  } else {
-    parsedValue = parseValue(value, type)
-  }
-
-  const valueKV = { }
-  if (configProfile.shouldAllowColumn(key)) {
-    valueKV[key] = parsedValue
-  }
-  if (columnConfig.name && configProfile.shouldAllowColumn(columnConfig.name)) {
-    valueKV[columnConfig.name] = parsedValue
-  }
-  return valueKV
 }
 
 async function detectSeparator (filename) {
