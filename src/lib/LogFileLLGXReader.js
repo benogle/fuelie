@@ -147,7 +147,9 @@ export default class LogFileCSVReader {
   }
 
   // ld2: File Description
-  // * Has things like firmware version and all that
+  //
+  // Has things like firmware version and all that
+  //
   // e.g.
   //
   // G4X Xtreme
@@ -186,6 +188,11 @@ export default class LogFileCSVReader {
   // after the ds3 block count.
   //
   // [4 byte float: time of value][4 byte float: value] * timeValuePairsCount
+  //
+  // Other notes
+  //
+  // * paramName and paramUnits are in the 'utf16le' text encoding
+  // * I am unsure what a couple fields around the paramName and paramUnits do...
   //
   parseDS3 ({ blockLength, blockBuffer, fileBuffer, blockIndex }) {
     // The block length on the ds3 only includes the name, units, and counts,
