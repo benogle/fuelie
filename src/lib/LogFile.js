@@ -66,11 +66,13 @@ export default class LogFile {
     this.headers = null
     this.sortedHeaders = null
 
+    const startTime = new Date().getTime()
     const {
       headers,
       data,
       length,
     } = await this.fileReader.readFile()
+    console.log('File loaded in', round((new Date().getTime() - startTime) / 1000, 2), 'seconds')
 
     this.headers = headers
     this.length = length

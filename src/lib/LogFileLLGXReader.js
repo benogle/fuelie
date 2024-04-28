@@ -1,8 +1,4 @@
 // Reading logfiles in the LinkECU LLGX format
-//
-//
-// TODO
-// * Move column conversion / filtering out from CSV
 
 import req from 'common/req'
 import { round } from 'common/helpers'
@@ -214,6 +210,13 @@ export default class LogFileCSVReader extends LogFileBaseReader {
 
     const extraReadCount = timeValuePairsCount * 8
     const valuesStartIndex = blockIndex + blockLength
+
+    // This cuts load time in half. Possible issue is if a column derives from
+    // an ignored column
+    if (!this.configProfile.shouldAllowColumn(paramName)) {
+      console.debug('Ignoring', paramName)
+      return { extraReadCount }
+    }
 
     const data = []
     const dataByTime = {}
