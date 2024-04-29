@@ -30,7 +30,7 @@ export default class LogFileBaseReader {
         headers = without(headers, columnKey)
       }
     })
-    headers = headers.filter((header) => this.configProfile.shouldAllowColumn(header))
+    headers = headers.filter((header) => this.configProfile.shouldShowColumn(header))
     return headers
   }
 
@@ -60,10 +60,10 @@ export default class LogFileBaseReader {
     }
 
     const valueKV = { }
-    if (this.configProfile.shouldAllowColumn(key)) {
+    if (this.configProfile.shouldShowColumn(key)) {
       valueKV[key] = convertedValue
     }
-    if (columnConfig.name && this.configProfile.shouldAllowColumn(columnConfig.name)) {
+    if (columnConfig.name && this.configProfile.shouldShowColumn(columnConfig.name)) {
       valueKV[columnConfig.name] = convertedValue
     }
     return valueKV

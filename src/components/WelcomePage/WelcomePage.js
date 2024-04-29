@@ -40,7 +40,7 @@ class WelcomePage extends React.Component {
     return (
       <Container>
         <Button onClick={onClickOpenFile}>
-          Open a CSV log file
+          Open a log file (CSV, LLGX)
         </Button>
         <OrContainer>or</OrContainer>
         <LinkButton
