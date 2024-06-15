@@ -602,7 +602,7 @@ class LogFilePage extends React.Component {
       render: () => this.renderAverageMixture(index, 'correctionValue'),
     }))
     const suggestionTabs = allTables.map((table, index) => ({
-      name: `Sug. Change ${getIndexDisplay(allTables, index)}`,
+      name: `Sug. ${getIndexDisplay(allTables, index)}`,
       render: () => this.renderSuggestedMixtureChange(index),
     }))
 
