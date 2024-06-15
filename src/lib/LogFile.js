@@ -217,11 +217,9 @@ export default class LogFile {
       table[rowI].fill(getEmptyValue())
     }
 
-    function addSample ({ mixtureValue, mixtureCorrectionValue }, lineIndex, rowIndex, colIndex, weight) {
+    function addSample ({ mixtureValue, mixtureCorrectionValue, correctedMixtureValue }, lineIndex, rowIndex, colIndex, weight) {
       if (!(weight > (minWeight || 0))) return
       if (mixtureValue < minValue || mixtureValue > maxValue) return
-
-      const correctedMixtureValue = mixtureValue * (1 + mixtureCorrectionValue / 100)
 
       let cell = table[rowIndex][colIndex]
       if (cell && cell.value) {
@@ -280,9 +278,10 @@ export default class LogFile {
 
     for (let lineIndex = 0; lineIndex < this.data.length; lineIndex++) {
       const line = this.data[lineIndex]
-      const { rowI, colI, m, mCorr } = line
+      const { rowI, colI, m, corr, mCorr } = line
       const mixtureValue = m[mixtureIndex]
-      const mixtureCorrectionValue = mCorr[mixtureIndex] || 0
+      const mixtureCorrectionValue = corr[mixtureIndex] || 0
+      const correctedMixtureValue = mCorr[mixtureIndex] || mixtureValue
       if (!rowI || !colI || !mixtureValue) {
         console.debug('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
@@ -300,7 +299,7 @@ export default class LogFile {
 
       const { index: rowIndex, weight: rowWeight } = rowI
       const { index: colIndex, weight: colWeight } = colI
-      const newLineValue = { mixtureValue, mixtureCorrectionValue }
+      const newLineValue = { mixtureValue, mixtureCorrectionValue, correctedMixtureValue }
       addSample(newLineValue, lineIndex, rowIndex, colIndex, rowWeight * colWeight) // top reft
       addSample(newLineValue, lineIndex, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
       addSample(newLineValue, lineIndex, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left
@@ -345,7 +344,7 @@ export default class LogFile {
     // actualAir / actualFuel = targetAir / targetFuel
     // targetFuel = actualAir / targetAir
     const defaultExpression = {
-      result: '(loggedValue / targetValue - 1) * 100',
+      result: '(loggedCorrectedValue / targetValue - 1) * 100',
     }
 
     const suggestedValueExpression = this.configProfile.getSuggestedMixtureChange().suggestedValue ||
@@ -357,6 +356,7 @@ export default class LogFile {
       booleanOnly: false,
       injectArgs: [
         'loggedValue',
+        'loggedCorrectedValue',
         'targetValue',
         'rowIndex',
         'colIndex',
@@ -367,11 +367,12 @@ export default class LogFile {
     const buildSuggestionsForMixtureIndex = (mixtureIndex) => (
       this.targetMixtureTable.map((row, rowIndex) => (
         row.map(({ value: targetValue }, colIndex) => {
-          const { value: loggedValue } = this.avgFuelMixtureTable[mixtureIndex][rowIndex][colIndex]
+          const { value: loggedValue, correctedValue: loggedCorrectedValue } = this.avgFuelMixtureTable[mixtureIndex][rowIndex][colIndex]
           let suggestedValue = null
           if (loggedValue != null) {
             const res = suggestedValueFn({
               loggedValue,
+              loggedCorrectedValue,
               targetValue,
               rowIndex,
               colIndex,

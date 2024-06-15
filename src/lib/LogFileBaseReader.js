@@ -78,13 +78,19 @@ export default class LogFileBaseReader {
     const rowValue = parseFloat(valuesObject[row])
     const columnValue = parseFloat(valuesObject[column])
 
+    const mixtureValues = mixtureColumns.map((mixCol) => parseFloat(valuesObject[mixCol]))
+    const correctionValues = mixtureCorrectionColumns.map((mixCorrCol) => parseFloat(valuesObject[mixCorrCol]) || 0)
     return {
       rowV: rowValue,
       rowI: getInterpolatedIndex(rowValue, fuelRows),
       colV: columnValue,
       colI: getInterpolatedIndex(columnValue, fuelColumns),
-      m: mixtureColumns.map((mixCol) => parseFloat(valuesObject[mixCol])),
-      mCorr: mixtureCorrectionColumns.map((mixCorrCol) => parseFloat(valuesObject[mixCorrCol])),
+      m: mixtureValues,
+      corr: correctionValues,
+      // Corrected afr based on correction applied at ecu and current afr
+      mCorr: mixtureValues.map((mixtureValue, index) => (
+        mixtureValue * (1 + (correctionValues[index]) / 100)
+      )),
     }
   }
 }
