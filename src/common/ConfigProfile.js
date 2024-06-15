@@ -149,6 +149,13 @@ export default class ConfigProfile {
     return isArray(mixture) ? mixture : [mixture]
   }
 
+  getMixtureCorrectionColumns () {
+    const { mixtureCorrection } = this.getLogFileConfig()
+    return mixtureCorrection
+      ? (isArray(mixtureCorrection) ? mixtureCorrection : [mixtureCorrection])
+      : []
+  }
+
   getNumberMixtureColumns () {
     const { mixture } = this.getLogFileConfig()
     return isArray(mixture) ? mixture.length : 1

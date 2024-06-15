@@ -217,20 +217,32 @@ export default class LogFile {
       table[rowI].fill(getEmptyValue())
     }
 
-    function addSample (value, lineIndex, rowIndex, colIndex, weight) {
+    function addSample ({ mixtureValue, mixtureCorrectionValue }, lineIndex, rowIndex, colIndex, weight) {
       if (!(weight > (minWeight || 0))) return
-      if (value < minValue || value > maxValue) return
+      if (mixtureValue < minValue || mixtureValue > maxValue) return
+
+      const correctedMixtureValue = mixtureValue * (1 + mixtureCorrectionValue / 100)
 
       let cell = table[rowIndex][colIndex]
       if (cell && cell.value) {
         const newCellLength = cell.length + 1
         const newCellWeight = cell.weight + weight
-        cell.rawValue = (cell.rawValue * cell.weight + value * weight) / newCellWeight
+
+        function runningAvg (currentValue, newValue) {
+          return (currentValue * cell.weight + newValue * weight) / newCellWeight
+        }
+
+        cell.rawValue = runningAvg(cell.rawValue, mixtureValue)
         cell.value = round(cell.rawValue, 2)
+        cell.correctionRawValue = runningAvg(cell.correctionRawValue, mixtureCorrectionValue)
+        cell.correctionRawValue = round(cell.correctionRawValue, 2)
+        cell.correctedRawValue = runningAvg(cell.correctedRawValue, correctedMixtureValue)
+        cell.correctedRawValue = round(cell.correctedRawValue, 2)
+
         cell.length = newCellLength
         cell.weight = newCellWeight
-        cell.min = Math.min(cell.min, value)
-        cell.max = Math.max(cell.max, value)
+        cell.min = Math.min(cell.min, mixtureValue)
+        cell.max = Math.max(cell.max, mixtureValue)
 
         const lastRange = last(cell.lineRanges)
         if (lineIndex - lastRange.end <= MAX_LINE_RANGE_GAP) {
@@ -239,7 +251,7 @@ export default class LogFile {
           cell.lineRanges.push({ start: lineIndex, end: lineIndex })
         }
 
-        const vCountValue = round(value, 1)
+        const vCountValue = round(mixtureValue, 1)
         if (cell.vCount[vCountValue]) {
           cell.vCount[vCountValue]++
         } else {
@@ -249,12 +261,18 @@ export default class LogFile {
         cell = {
           weight,
           length: 1,
-          rawValue: value,
-          value: round(value, 2),
-          min: value,
-          max: value,
+          rawValue: mixtureValue,
+          value: round(mixtureValue, 2),
+          min: mixtureValue,
+          max: mixtureValue,
           lineRanges: [{ start: lineIndex, end: lineIndex }],
-          vCount: { [round(value, 1)]: 1 },
+          vCount: { [round(mixtureValue, 1)]: 1 },
+
+          correctionRawValue: mixtureCorrectionValue,
+          correctionValue: round(mixtureCorrectionValue, 2),
+
+          correctedRawValue: correctedMixtureValue,
+          correctedValue: round(correctedMixtureValue, 2),
         }
       }
       table[rowIndex][colIndex] = cell
@@ -262,9 +280,10 @@ export default class LogFile {
 
     for (let lineIndex = 0; lineIndex < this.data.length; lineIndex++) {
       const line = this.data[lineIndex]
-      const { rowI, colI, m } = line
-      const newLineValue = m[mixtureIndex]
-      if (!rowI || !colI || !newLineValue) {
+      const { rowI, colI, m, mCorr } = line
+      const mixtureValue = m[mixtureIndex]
+      const mixtureCorrectionValue = mCorr[mixtureIndex] || 0
+      if (!rowI || !colI || !mixtureValue) {
         console.debug('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
       }
@@ -281,6 +300,7 @@ export default class LogFile {
 
       const { index: rowIndex, weight: rowWeight } = rowI
       const { index: colIndex, weight: colWeight } = colI
+      const newLineValue = { mixtureValue, mixtureCorrectionValue }
       addSample(newLineValue, lineIndex, rowIndex, colIndex, rowWeight * colWeight) // top reft
       addSample(newLineValue, lineIndex, rowIndex, colIndex + 1, rowWeight * (1 - colWeight)) // top right
       addSample(newLineValue, lineIndex, rowIndex + 1, colIndex, (1 - rowWeight) * colWeight) // bottom left

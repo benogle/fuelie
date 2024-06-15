@@ -336,7 +336,15 @@ class LogFilePage extends React.Component {
             return [
               {
                 name: `${indexDisplay} Avg. Mixture`,
-                value: round(afrCell.value, 2),
+                value: afrCell.value,
+              },
+              {
+                name: `${indexDisplay} Avg. Correction %`,
+                value: afrCell.correctionValue,
+              },
+              {
+                name: `${indexDisplay} Avg. Corrected`,
+                value: afrCell.correctedValue,
               },
               {
                 name: `${indexDisplay} Mix. Range`,
@@ -395,18 +403,30 @@ class LogFilePage extends React.Component {
     )
   }
 
-  renderAverageMixture = (mixtureIndex) => {
+  renderAverageMixture = (mixtureIndex, cellValueProperty = 'value') => {
     const { configProfile } = this.props
     const table = this.logFile.getAvgFuelMixtureTable(mixtureIndex)
     const rowHeaders = configProfile.getFuelMapRows()
     const columnHeaders = configProfile.getFuelMapColumns()
+    const colorScales = {
+      correctionValue: [
+        { color: 'red', value: -8 },
+        { color: 'yellow', value: -4 },
+        { color: 'green', value: 0 },
+        { color: 'yellow', value: 4 },
+        { color: 'red', value: 8 },
+      ],
+    }
     return (
       <TabContainer>
         <GridContainer>
           <DataGrid
+            key={cellValueProperty}
             data={table}
             rowHeaders={rowHeaders}
             columnHeaders={columnHeaders}
+            cellValueProperty={cellValueProperty}
+            colorScale={colorScales[cellValueProperty]}
             readOnly
             onSelect={this.handleSelect}
             onFocus={this.handleTableFocus}
@@ -570,8 +590,16 @@ class LogFilePage extends React.Component {
     const mixtureDifferenceTable = this.logFile.getMixtureDifferenceTable()
 
     const mixtureTabs = allTables.map((table, index) => ({
-      name: `Avg. AFR ${getIndexDisplay(allTables, index)}`,
+      name: `AFR ${getIndexDisplay(allTables, index)}`,
       render: () => this.renderAverageMixture(index),
+    }))
+    const correctedMixtureTabs = allTables.map((table, index) => ({
+      name: `Corr AFR ${getIndexDisplay(allTables, index)}`,
+      render: () => this.renderAverageMixture(index, 'correctedValue'),
+    }))
+    const mixtureCorrectionTabs = allTables.map((table, index) => ({
+      name: `Corr ${getIndexDisplay(allTables, index)}`,
+      render: () => this.renderAverageMixture(index, 'correctionValue'),
     }))
     const suggestionTabs = allTables.map((table, index) => ({
       name: `Sug. Change ${getIndexDisplay(allTables, index)}`,
@@ -588,6 +616,8 @@ class LogFilePage extends React.Component {
 
     const tabs = [
       ...mixtureTabs,
+      ...correctedMixtureTabs,
+      ...mixtureCorrectionTabs,
       ...diffTabs,
       {
         name: 'Target',

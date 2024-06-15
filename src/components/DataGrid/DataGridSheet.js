@@ -133,10 +133,10 @@ class DataGridSheet extends React.Component {
   }
 
   getRow (rowValues) {
-    const { readOnly } = this.props
+    const { readOnly, cellValueProperty } = this.props
     const getColor = this.getColorScaleFunc()
     return rowValues.map((v) => {
-      const { value } = v
+      const value = v[cellValueProperty]
       const background = value ? getColor(value) : null
       return {
         ...v,
@@ -161,8 +161,9 @@ class DataGridSheet extends React.Component {
   }
 
   buildHeaderCellData (text, options) {
+    const { cellValueProperty } = this.props
     return {
-      value: text,
+      [cellValueProperty]: text,
       readOnly: true,
       isHeader: true,
       ...options,
@@ -207,6 +208,7 @@ class DataGridSheet extends React.Component {
   }
 
   render () {
+    const { cellValueProperty } = this.props
     return (
       <ReactDataSheet
         ref={(el) => { this.grid = el }}
@@ -218,7 +220,7 @@ class DataGridSheet extends React.Component {
         onCellsChanged={this.handleCellsChanged}
         rowRenderer={this.renderRow}
         cellRenderer={this.renderCell}
-        valueRenderer={(cell) => cell.value}
+        valueRenderer={(cell) => cell[cellValueProperty]}
         sheetRenderer={(props) => (
           <GridContainer className={props.className}>
             <tbody>
@@ -234,6 +236,7 @@ class DataGridSheet extends React.Component {
 DataGridSheet.defaultProps = {
   rowSigFigs: 2,
   columnSigFigs: 0,
+  cellValueProperty: 'value',
   colorScale: [
     { color: 'red', value: 9.5 },
     { color: 'blue', value: 11.5 },
@@ -261,6 +264,7 @@ DataGridSheet.propTypes = {
     value: PropTypes.number,
   })).isRequired,
 
+  cellValueProperty: PropTypes.string,
   renderHoverTip: PropTypes.func,
   onSelect: PropTypes.func,
   onCellsChanged: PropTypes.func,

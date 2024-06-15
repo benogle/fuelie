@@ -72,6 +72,7 @@ export default class LogFileBaseReader {
   getTableLocations (valuesObject) {
     const { row, column } = this.configProfile.getLogFileConfig()
     const mixtureColumns = this.configProfile.getMixtureColumns()
+    const mixtureCorrectionColumns = this.configProfile.getMixtureCorrectionColumns()
     const fuelRows = this.configProfile.getFuelMapRows()
     const fuelColumns = this.configProfile.getFuelMapColumns()
     const rowValue = parseFloat(valuesObject[row])
@@ -83,6 +84,7 @@ export default class LogFileBaseReader {
       colV: columnValue,
       colI: getInterpolatedIndex(columnValue, fuelColumns),
       m: mixtureColumns.map((mixCol) => parseFloat(valuesObject[mixCol])),
+      mCorr: mixtureCorrectionColumns.map((mixCorrCol) => parseFloat(valuesObject[mixCorrCol])),
     }
   }
 }
