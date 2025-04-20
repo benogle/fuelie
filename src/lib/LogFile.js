@@ -233,9 +233,9 @@ export default class LogFile {
         cell.rawValue = runningAvg(cell.rawValue, mixtureValue)
         cell.value = round(cell.rawValue, 2)
         cell.correctionRawValue = runningAvg(cell.correctionRawValue, mixtureCorrectionValue)
-        cell.correctionRawValue = round(cell.correctionRawValue, 2)
+        cell.correctionValue = round(cell.correctionRawValue, 2)
         cell.correctedRawValue = runningAvg(cell.correctedRawValue, correctedMixtureValue)
-        cell.correctedRawValue = round(cell.correctedRawValue, 2)
+        cell.correctedValue = round(cell.correctedRawValue, 2)
 
         cell.length = newCellLength
         cell.weight = newCellWeight
@@ -273,6 +273,7 @@ export default class LogFile {
           correctedValue: round(correctedMixtureValue, 2),
         }
       }
+
       table[rowIndex][colIndex] = cell
     }
 
@@ -280,8 +281,8 @@ export default class LogFile {
       const line = this.data[lineIndex]
       const { rowI, colI, m, corr, mCorr } = line
       const mixtureValue = m[mixtureIndex]
-      const mixtureCorrectionValue = corr[mixtureIndex] || 0
-      const correctedMixtureValue = mCorr[mixtureIndex] || mixtureValue
+      const mixtureCorrectionValue = corr[mixtureIndex] ?? 0
+      const correctedMixtureValue = mCorr[mixtureIndex] ?? mixtureValue
       if (!rowI || !colI || !mixtureValue) {
         console.debug('problem with interpolate', rowI, colI, line, fuelRows, fuelColumns)
         continue
