@@ -2,12 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import theme from 'style/theme'
-import req from 'common/req'
 
 import Button from 'components/Button'
 import JSONEditor from 'components/JSONEditor'
-
-const ipcRenderer = req('electron').ipcRenderer
 
 const Container = styled.div`
   display: flex;
@@ -36,10 +33,11 @@ const ErrorMessage = styled.div`
 class UserConfigPage extends React.Component {
   state = {
     configValue: null,
+    error: null,
   }
 
   componentDidMount () {
-    ipcRenderer.on('save', this.handleSave)
+    window.electron.on('save', this.handleSave)
     this.editor.focus()
     this.editor.setCursorPosition(0, 0)
     document.title = 'Edit Config - Fuelie'
@@ -52,7 +50,7 @@ class UserConfigPage extends React.Component {
   }
 
   componentWillUnmount () {
-    ipcRenderer.removeListener('save', this.handleSave)
+    window.electron.removeListener('save', this.handleSave)
   }
 
   handleChangeConfig = () => {
@@ -67,15 +65,17 @@ class UserConfigPage extends React.Component {
     })
   }
 
-  handleSave = (value) => {
+  handleSave = () => {
     const { userConfig } = this.props
     const { configValue } = this.state
     if (!configValue) return
 
     this.editor.focus()
 
+    console.log('SAving')
+
     try {
-      const newStore = parseJSON(configValue)
+      const newStore = JSON.parse(configValue)
       userConfig.replaceConfig(newStore)
       // No need to update the state here. After setting the config, it will
       // trigger a change and ultimately call handleChangeConfig
@@ -96,6 +96,8 @@ class UserConfigPage extends React.Component {
           ref={(e) => { this.editor = e }}
           value={jsonString}
           onChange={this.handleChange}
+          mode="code"
+          theme="ace/theme/monokai"
         />
         <ButtonContainer>
           <Button onClick={this.handleSave} disabled={!configValue}>
@@ -106,12 +108,6 @@ class UserConfigPage extends React.Component {
       </Container>
     )
   }
-}
-
-function parseJSON (jsonStr) {
-  // HACK: Welll, this is not so safe
-  const func = new Function(`return ((${jsonStr}))`) // eslint-disable-line
-  return func()
 }
 
 UserConfigPage.propTypes = {

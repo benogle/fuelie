@@ -6,8 +6,11 @@ import getMainProcess from 'lib/getMainProcess'
 import WelcomePage from 'components/WelcomePage'
 import LogFilePage from 'components/LogFilePage'
 import UserConfigPage from 'components/UserConfigPage'
+import withConfig from 'hoc/withConfig'
 
 import { USER_CONFIG_FILENAME } from 'common/helpers'
+
+const UserConfigPageWithConfig = withConfig()(UserConfigPage)
 
 function getParams () {
   return qs.parse((global.location.search || '').slice(1))
@@ -40,12 +43,7 @@ class Main extends React.Component {
   }
 
   renderUserConfig () {
-    const { userConfig } = this.props
-    return (
-      <UserConfigPage
-        userConfig={userConfig}
-      />
-    )
+    return <UserConfigPageWithConfig />
   }
 
   renderFile () {

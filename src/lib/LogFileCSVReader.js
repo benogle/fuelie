@@ -1,11 +1,7 @@
 import each from 'lodash/each'
 import csv from 'csv-parser'
 import detectCSV from 'detect-csv'
-import req from 'common/req'
-
 import LogFileBaseReader from './LogFileBaseReader'
-
-const fs = req('fs')
 
 export default class LogFileCSVReader extends LogFileBaseReader {
   async readFile () {
@@ -14,28 +10,34 @@ export default class LogFileCSVReader extends LogFileBaseReader {
       throw new Error('Cannot detect separator')
     }
     this.headers = null
-    const data = await new Promise((resolve, reject) => {
-      const lines = []
-      fs.createReadStream(this.filename, { encoding: 'utf8' })
-        .pipe(csv({
-          separator,
-          mapHeaders: ({ header }) => header.trim(),
-        }))
-        .on('data', (data) => {
-          // console.log(data)
-          lines.push(this.readLine(data))
-        })
-        .on('error', (error) => {
-          console.log('readerror', error)
-          reject(error)
-        })
-        .on('end', () => resolve(lines))
+
+    const fileContent = await window.electron.fs.readFile(this.filename, 'utf8')
+
+    // Convert the file content to lines
+    const lines = []
+    const parser = csv({
+      separator,
+      mapHeaders: ({ header }) => header.trim(),
     })
 
+    // Process each line
+    for (const line of fileContent.split('\n')) {
+      if (line.trim()) {
+        const parsedData = await new Promise((resolve, reject) => {
+          const chunks = []
+          parser.write(line + '\n')
+          parser.on('data', data => chunks.push(data))
+          parser.on('end', () => resolve(chunks[0]))
+          parser.on('error', reject)
+        })
+        lines.push(this.readLine(parsedData))
+      }
+    }
+
     return {
-      data,
+      data: lines,
       headers: this.headers,
-      length: data.length,
+      length: lines.length,
     }
   }
 
@@ -61,27 +63,10 @@ export default class LogFileCSVReader extends LogFileBaseReader {
 }
 
 async function detectSeparator (filename) {
-  const firstLine = await readFirstLine(filename)
+  const fileContent = await window.electron.fs.readFile(filename, 'utf8')
+  const firstLine = fileContent.split('\n')[0]
   const csvInfo = detectCSV(firstLine)
   return csvInfo && csvInfo.delimiter
     ? csvInfo.delimiter
     : null
-}
-
-function readFirstLine (path) {
-  return new Promise(function (resolve, reject) {
-    const rs = fs.createReadStream(path, { encoding: 'utf8' })
-    let acc = ''
-    let pos = 0
-    let index
-    rs.on('data', function (chunk) {
-      index = chunk.indexOf('\n')
-      acc += chunk
-      index !== -1 ? rs.close() : pos += chunk.length
-    }).on('close', function () {
-      resolve(acc.slice(0, pos + index))
-    }).on('error', function (err) {
-      reject(err)
-    })
-  })
 }

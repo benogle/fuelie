@@ -1,17 +1,18 @@
-import get from 'lodash/get'
-import each from 'lodash/each'
-import find from 'lodash/find'
-import clone from 'lodash/clone'
-import isArray from 'lodash/isArray'
-import isEqual from 'lodash/isEqual'
-import map from 'lodash/map'
-import isNumber from 'lodash/isNumber'
-import mapValues from 'lodash/mapValues'
-import expressions from 'common/expressions'
-import interpolate from 'lib/interpolate'
-import { CHART_COLOR_PALETTE, hexToRGBA } from 'lib/color'
+const defaultsDeep = require('lodash/defaultsDeep')
+const get = require('lodash/get')
+const each = require('lodash/each')
+const find = require('lodash/find')
+const clone = require('lodash/clone')
+const isArray = require('lodash/isArray')
+const isEqual = require('lodash/isEqual')
+const map = require('lodash/map')
+const isNumber = require('lodash/isNumber')
+const mapValues = require('lodash/mapValues')
+const expressions = require('common/expressions')
+const interpolate = require('lib/interpolate')
+const { CHART_COLOR_PALETTE, hexToRGBA } = require('lib/color')
 
-import {
+const {
   UNITS_MIXTURE_LAMBDA,
   UNITS_MIXTURE_AFR,
   UNITS_TEMP_C,
@@ -27,7 +28,7 @@ import {
   UNIT_TYPE_TEMPERATURE,
   UNIT_TYPE_PRESSURE,
   UNIT_TYPE_SPEED,
-} from 'common/constants'
+} = require('common/constants')
 
 // {
 //   name: 'Default',
@@ -47,10 +48,10 @@ import {
 //   },
 // }
 
-export default class ConfigProfile {
+class ConfigProfile {
   constructor (profile, { userConfig } = {}) {
-    this.profile = profile
-    this.userConfig = userConfig // reference to the main userConfig for sets
+    this.userConfig = userConfig
+    this.profile = defaultsDeep(profile, ConfigProfile.getDefaultProfile())
     if (!this.profile.fuelMixtureTarget) {
       this.profile.fuelMixtureTarget = this.getDefaultFuelMixtureTarget()
     }
@@ -328,4 +329,14 @@ export default class ConfigProfile {
   setChartLineVisibility ({ pageIndex, chartIndex, lineIndex, visible }) {
     return this.set(`charting.pages.${pageIndex}.charts.${chartIndex}.lines.${lineIndex}.show`, !!visible)
   }
+
+  static getDefaultProfile () {
+    return {
+      name: 'Default',
+      suggestCalc: 'afr',
+      // ... existing code ...
+    }
+  }
 }
+
+module.exports = ConfigProfile

@@ -1,9 +1,10 @@
-
 let mainProcess = null
 export default function getMainProcess () {
   if (!mainProcess) {
-    const { remote } = window.require('electron')
-    mainProcess = remote.require('./index.js')
+    mainProcess = {
+      openFile: () => window.electron.send('open-file'),
+      openUserConfig: () => window.electron.send('open-user-config'),
+    }
   }
   return mainProcess
 }

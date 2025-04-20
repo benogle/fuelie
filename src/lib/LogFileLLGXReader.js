@@ -1,6 +1,5 @@
 // Reading logfiles in the LinkECU LLGX format
 
-import req from 'common/req'
 import { round } from 'common/helpers'
 import interpolate from 'lib/interpolate'
 
@@ -28,24 +27,14 @@ const DEFAULT_UNIT_MAP = {
   [UNIT_TYPE_SPEED]: UNITS_SPEED_KPH,
 }
 
-const fs = req('fs')
-
 const BLOCK_LENGTH_LENGTH = 4
 const BLOCK_NAME_LENGTH = 3
 const BLOCK_META_LENGTH = BLOCK_LENGTH_LENGTH + BLOCK_NAME_LENGTH
 
-export default class LogFileCSVReader extends LogFileBaseReader {
+export default class LogFileLLGXReader extends LogFileBaseReader {
   async readFile () {
-    // TODO: read the file chunk by chunk
-    const fileBuffer = await new Promise((resolve, reject) => {
-      fs.readFile(this.filename, { encoding: null }, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(data)
-        }
-      })
-    })
+    const rawData = await window.electron.fs.readFile(this.filename, { encoding: null })
+    const fileBuffer = Buffer.from(rawData)
 
     let description = null
     const headers = []

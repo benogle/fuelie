@@ -5,13 +5,10 @@ import flatten from 'lodash/flatten'
 import fromPairs from 'lodash/fromPairs'
 import intersection from 'lodash/intersection'
 
-import req from 'common/req'
 import { round } from 'common/helpers'
 import expressions from 'common/expressions'
 import LogFileCSVReader from './LogFileCSVReader'
 import LogFileLLGXReader from './LogFileLLGXReader'
-
-const path = req('path')
 
 const RELOAD_KEYS = ['fuelMap', 'logFile', 'units']
 const MAX_LINE_RANGE_GAP = 5
@@ -22,7 +19,8 @@ export default class LogFile {
     this.filename = filename
     this.configProfile = configProfile
 
-    const filenameExtension = path.extname(filename.toLowerCase())
+    console.log('window.electron', window.electron)
+    const filenameExtension = window.electron.path.extname(filename.toLowerCase())
 
     this.fileReader = filenameExtension === LINK_LOG_EXTENSION
       ? new LogFileLLGXReader(filename, configProfile)

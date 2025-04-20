@@ -23,9 +23,6 @@ import KeyboardTool from 'components/KeyboardTool'
 import StatusPanel from 'components/StatusPanel'
 import ChartStatusPanel from 'components/ChartStatusPanel'
 
-import req from 'common/req'
-const path = req('path')
-
 // FIXME: This is stupid but I am fighting flexbox
 const CHROME_HEIGHT = 94
 
@@ -87,7 +84,7 @@ class LogFilePage extends React.Component {
 
   componentDidMount () {
     const { filename } = this.props
-    document.title = `${path.basename(filename)} - Fuelie`
+    document.title = `${window.electron.path.basename(filename)} - Fuelie`
     this.loadFile()
   }
 

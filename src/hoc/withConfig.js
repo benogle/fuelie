@@ -14,6 +14,7 @@ const withConfig = (options) => (Component) => {
       super(props)
       this.userConfigStore = new UserConfigStore({
         onChange: this.handleConfigChange,
+        store: window.electron.store,
       })
       this.state = {
         userConfig: this.userConfigStore.getUserConfig(),
