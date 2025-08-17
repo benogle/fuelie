@@ -1,5 +1,63 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
+import { vi } from 'vitest'
+
+// Mock fileService before importing LogFile
+vi.mock('../../../src/lib/fileService.js', () => ({
+  default: {
+    async readCSVFile(filename) {
+      try {
+        // Read the actual fixture files and parse them
+        const csvContent = fs.readFileSync(filename, 'utf8')
+        const lines = csvContent.trim().split('\n')
+
+        // Handle both CSV and TSV files
+        const delimiter = filename.endsWith('.tsv') ? '\t' : ','
+        const headers = lines[0].split(delimiter).map(h => h.trim())
+
+        const data = lines.slice(1).map(line => {
+          const values = line.split(delimiter).map(v => v.trim())
+          const row = {}
+          headers.forEach((header, index) => {
+            const value = values[index]
+            // Convert numeric values
+            const numValue = parseFloat(value)
+            row[header] = isNaN(numValue) ? value : numValue
+          })
+          return row
+        })
+
+        return {
+          data,
+          headers,
+          length: data.length
+        }
+      } catch (error) {
+        console.error('Mock fileService error:', error)
+        throw error
+      }
+    },
+
+    async readBinaryFile(filename) {
+      return fs.readFileSync(filename)
+    },
+
+    async fileExists(filename) {
+      try {
+        fs.accessSync(filename)
+        return true
+      } catch {
+        return false
+      }
+    },
+
+    async getFileStats(filename) {
+      return fs.statSync(filename)
+    }
+  }
+}))
+
 import ConfigProfile from '../../../src/common/ConfigProfile.js'
 import LogFile, { sortColumnHeaders } from '../../../src/lib/LogFile.js'
 
@@ -53,6 +111,8 @@ describe('LogFile', function () {
         colV: 911.32813,
         colI: { index: 0, weight: 0.17734 },
         m: [1.2],
+        corr: [],
+        mCorr: [NaN],
 
         'Engine Load': -10.78696,
         'Engine Speed': 911.32813,
@@ -92,6 +152,8 @@ describe('LogFile', function () {
         colV: 911.32813,
         colI: { index: 0, weight: 0.17734 },
         m: [1.2],
+        corr: [],
+        mCorr: [NaN],
 
         'Engine Load': -10.78696,
         'Engine Speed': 911.32813,
