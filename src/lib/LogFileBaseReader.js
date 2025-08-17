@@ -1,5 +1,5 @@
-import each from 'lodash/each'
-import without from 'lodash/without'
+import each from 'lodash/each.js'
+import without from 'lodash/without.js'
 import getInterpolatedIndex from 'lib/getInterpolatedIndex'
 
 export default class LogFileBaseReader {

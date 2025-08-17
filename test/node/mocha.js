@@ -1,6 +1,4 @@
-'use strict'
-
-module.exports = {
+export default {
   diff: true,
   delay: false,
   extension: ['js'],
@@ -11,8 +9,6 @@ module.exports = {
   spec: './test/node/**/*.test.js',
   require: [
     // https://mochajs.org/#-require-module-r-module
-    // '@babel/register',
-    'esm',
     './test/node/environment.js',
   ],
   'watch-files': [

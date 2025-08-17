@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import chroma from 'chroma-js'
-import isEqual from 'lodash/isEqual'
+import isEqual from 'lodash/isEqual.js'
 import theme from 'style/theme'
 
 import ReactDataSheet from 'react-datasheet'

@@ -1,10 +1,10 @@
 // Reading logfiles in the LinkECU LLGX format
 
-import req from 'common/req'
 import { round } from 'common/helpers'
 import interpolate from 'lib/interpolate'
+import fileService from './fileService.js'
 
-import LogFileBaseReader from './LogFileBaseReader'
+import LogFileBaseReader from './LogFileBaseReader.js'
 
 import {
   UNITS_MIXTURE_LAMBDA,
@@ -28,8 +28,6 @@ const DEFAULT_UNIT_MAP = {
   [UNIT_TYPE_SPEED]: UNITS_SPEED_KPH,
 }
 
-const fs = req('fs')
-
 const BLOCK_LENGTH_LENGTH = 4
 const BLOCK_NAME_LENGTH = 3
 const BLOCK_META_LENGTH = BLOCK_LENGTH_LENGTH + BLOCK_NAME_LENGTH
@@ -37,15 +35,7 @@ const BLOCK_META_LENGTH = BLOCK_LENGTH_LENGTH + BLOCK_NAME_LENGTH
 export default class LogFileCSVReader extends LogFileBaseReader {
   async readFile () {
     // TODO: read the file chunk by chunk
-    const fileBuffer = await new Promise((resolve, reject) => {
-      fs.readFile(this.filename, { encoding: null }, (err, data) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(data)
-        }
-      })
-    })
+    const fileBuffer = await fileService.readBinaryFile(this.filename)
 
     let description = null
     const headers = []

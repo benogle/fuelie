@@ -5,9 +5,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import flatten from 'lodash/flatten'
-import compact from 'lodash/compact'
-import isNumber from 'lodash/isNumber'
+import flatten from 'lodash/flatten.js'
+import compact from 'lodash/compact.js'
+import isNumber from 'lodash/isNumber.js'
 
 import theme from 'style/theme'
 
@@ -22,9 +22,6 @@ import KeyboardTool from 'components/KeyboardTool'
 
 import StatusPanel from 'components/StatusPanel'
 import ChartStatusPanel from 'components/ChartStatusPanel'
-
-import req from 'common/req'
-const path = req('path')
 
 // FIXME: This is stupid but I am fighting flexbox
 const CHROME_HEIGHT = 94
@@ -87,7 +84,9 @@ class LogFilePage extends React.Component {
 
   componentDidMount () {
     const { filename } = this.props
-    document.title = `${path.basename(filename)} - Fuelie`
+    // Extract filename from path using browser-compatible approach
+    const basename = filename ? filename.split(/[\\/]/).pop() : 'Unknown'
+    document.title = `${basename} - Fuelie`
     this.loadFile()
   }
 

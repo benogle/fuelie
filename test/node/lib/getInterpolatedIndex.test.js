@@ -1,4 +1,4 @@
-import getInterpolatedIndex from 'lib/getInterpolatedIndex'
+import getInterpolatedIndex from '../../../src/lib/getInterpolatedIndex.js'
 
 describe('getInterpolatedIndex', function () {
   describe('when ascending order', function () {

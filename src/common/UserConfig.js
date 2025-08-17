@@ -1,11 +1,11 @@
 // The thing that reads and makes sense of the user's config
 
-import findIndex from 'lodash/findIndex'
-import defaultsDeep from 'lodash/defaultsDeep'
-import size from 'lodash/size'
-import isArray from 'lodash/isArray'
-import isObject from 'lodash/isObject'
-import ConfigProfile from './ConfigProfile'
+import findIndex from 'lodash/findIndex.js'
+import defaultsDeep from 'lodash/defaultsDeep.js'
+import size from 'lodash/size.js'
+import isArray from 'lodash/isArray.js'
+import isObject from 'lodash/isObject.js'
+import ConfigProfile from './ConfigProfile.js'
 
 export default class UserConfig {
   static getDefaultConfig () {

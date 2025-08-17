@@ -1,6 +1,6 @@
-import omit from 'lodash/omit'
-import mapValues from 'lodash/mapValues'
-import fromPairs from 'lodash/fromPairs'
+import omit from 'lodash/omit.js'
+import mapValues from 'lodash/mapValues.js'
+import fromPairs from 'lodash/fromPairs.js'
 
 // HACK: this is basically eval. Don't use anyone's sketchy config file.
 // This is setup to slot into using jailed in the future...

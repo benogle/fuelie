@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import LogFileChart from './LogFileChart'
-import ZoomSlider from './ZoomSlider'
+import LogFileChart from './LogFileChart.js'
+import ZoomSlider from './ZoomSlider.js'
 
 // const DEFAULT_WIDTH = 10
 // const DEFAULT_HEIGHT = 10

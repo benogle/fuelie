@@ -1,6 +1,6 @@
 // Webpack is annoying as usual: https://github.com/electron/electron/issues/7300
 
-import req from './req'
+import req from './req.js'
 import _ from 'lodash'
 
 const fs = req('fs')

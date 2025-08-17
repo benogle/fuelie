@@ -1,2 +1,2 @@
-import LogFilePage from './LogFilePage'
+import LogFilePage from './LogFilePage.js'
 export default LogFilePage

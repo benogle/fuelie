@@ -1,4 +1,4 @@
-import expressions from 'src/common/expressions'
+import expressions from '../../../src/common/expressions.js'
 
 describe('expressions', function () {
   let fn, data, res, expressionObj

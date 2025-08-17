@@ -2,12 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import theme from 'style/theme'
-import req from 'common/req'
-
 import Button from 'components/Button'
 import JSONEditor from 'components/JSONEditor'
 
-const ipcRenderer = req('electron').ipcRenderer
+const ipcRenderer = window.ipcRenderer
 
 const Container = styled.div`
   display: flex;

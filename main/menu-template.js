@@ -1,8 +1,8 @@
-const { app } = require('electron')
+import { app } from 'electron'
 
 const isMac = process.platform === 'darwin'
 
-module.exports = ({
+export default ({
   onClickOpenFile,
   onClickOpenUserConfig,
   onClickSave,
@@ -135,7 +135,7 @@ module.exports = ({
         {
           label: 'Learn More',
           click: async () => {
-            const { shell } = require('electron')
+            const { shell } = await import('electron')
             await shell.openExternal('https://electronjs.org')
           },
         },

@@ -1,1 +1,1 @@
-module.exports = require('./main.js')
+export { default } from './main.js'

@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import GlobalStyles from './style/global'
-import Main from './Main'
-import withConfig from './hoc/withConfig'
+import GlobalStyles from './style/global.js'
+import Main from './Main.js'
+import withConfig from './hoc/withConfig.js'
 
 const MainWithConfig = withConfig()(Main)
 

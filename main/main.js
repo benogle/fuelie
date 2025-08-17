@@ -1,12 +1,16 @@
-const path = require('path')
+import path from 'path'
+import { createRequire } from 'module'
 
-const { app, BrowserWindow, Menu, ipcMain } = require('electron')
-const isDev = require('electron-is-dev')
-const menuTemplate = require('./menu-template')
-const AppStateConfigStore = require('../src/common/AppStateConfigStore')
+import { app, BrowserWindow, Menu, ipcMain } from 'electron'
+import isDev from 'electron-is-dev'
+import menuTemplate from './menu-template.js'
+import AppStateConfigStore from '../src/common/AppStateConfigStore.js'
 
-const { getFilesFromUser } = require('./helpers')
-const { USER_CONFIG_FILENAME } = require('../src/common/helpers')
+import { getFilesFromUser } from './helpers.js'
+import { USER_CONFIG_FILENAME } from '../src/common/helpers.js'
+import fileService from './fileService.js'
+const require = createRequire(import.meta.url)
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 const appStateConfig = new AppStateConfigStore()
 
@@ -122,6 +126,43 @@ async function openUserConfig () {
 ipcMain.handle('open-file', openFile)
 ipcMain.handle('open-user-config', openUserConfig)
 
+// File service IPC handlers
+ipcMain.handle('read-csv-file', async (event, filename) => {
+  try {
+    return await fileService.readCSVFile(filename)
+  } catch (error) {
+    console.error('Error reading CSV file:', error)
+    throw error
+  }
+})
+
+ipcMain.handle('read-binary-file', async (event, filename) => {
+  try {
+    return await fileService.readBinaryFile(filename)
+  } catch (error) {
+    console.error('Error reading binary file:', error)
+    throw error
+  }
+})
+
+ipcMain.handle('file-exists', async (event, filename) => {
+  try {
+    return await fileService.fileExists(filename)
+  } catch (error) {
+    console.error('Error checking file existence:', error)
+    return false
+  }
+})
+
+ipcMain.handle('get-file-stats', async (event, filename) => {
+  try {
+    return await fileService.getFileStats(filename)
+  } catch (error) {
+    console.error('Error getting file stats:', error)
+    throw error
+  }
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -142,8 +183,8 @@ app.whenReady().then(() => {
 
   if (isDev) {
     installExtension(REACT_DEVELOPER_TOOLS)
-      .then(name => console.log(`Added Extension:  ${name}`))
-      .catch(error => console.log(`An error occurred: , ${error}`))
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((error) => console.log(`An error occurred: , ${error}`))
   }
 })
 
@@ -167,5 +208,5 @@ app.on('activate', () => {
 //
 // Exports the renderer can use
 
-module.exports.openFile = openFile
-module.exports.openUserConfig = openUserConfig
+export { openFile, openUserConfig }
+export default { openFile, openUserConfig }

@@ -1,6 +1,10 @@
 import path from 'path'
-import ConfigProfile from 'common/ConfigProfile'
-import LogFile, { sortColumnHeaders } from 'src/lib/LogFile'
+import { fileURLToPath } from 'url'
+import ConfigProfile from '../../../src/common/ConfigProfile.js'
+import LogFile, { sortColumnHeaders } from '../../../src/lib/LogFile.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const logfilePathCSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.csv')
 const logfilePathTSV = path.join(__dirname, '..', '..', 'fixtures', 'logfile.tsv')

@@ -1,30 +1,27 @@
-import some from 'lodash/some'
-import last from 'lodash/last'
-import times from 'lodash/times'
-import flatten from 'lodash/flatten'
-import fromPairs from 'lodash/fromPairs'
-import intersection from 'lodash/intersection'
+import some from 'lodash/some.js'
+import last from 'lodash/last.js'
+import times from 'lodash/times.js'
+import flatten from 'lodash/flatten.js'
+import fromPairs from 'lodash/fromPairs.js'
+import intersection from 'lodash/intersection.js'
 
-import req from 'common/req'
 import { round } from 'common/helpers'
 import expressions from 'common/expressions'
-import LogFileCSVReader from './LogFileCSVReader'
-import LogFileLLGXReader from './LogFileLLGXReader'
-
-const path = req('path')
+import LogFileCSVReader from './LogFileCSVReader.js'
+import LogFileLLGXReader from './LogFileLLGXReader.js'
 
 const RELOAD_KEYS = ['fuelMap', 'logFile', 'units']
 const MAX_LINE_RANGE_GAP = 5
-const LINK_LOG_EXTENSION = '.llgx'
 
 export default class LogFile {
   constructor (filename, configProfile, { onChange } = {}) {
     this.filename = filename
     this.configProfile = configProfile
 
-    const filenameExtension = path.extname(filename.toLowerCase())
+    // Extract file extension using browser-compatible approach
+    const filenameExtension = filename.toLowerCase().split('.').pop()
 
-    this.fileReader = filenameExtension === LINK_LOG_EXTENSION
+    this.fileReader = filenameExtension === 'llgx'
       ? new LogFileLLGXReader(filename, configProfile)
       : new LogFileCSVReader(filename, configProfile)
   }

@@ -10,7 +10,7 @@ import IconPlay from 'components/icons/IconPlay'
 import IconPause from 'components/icons/IconPause'
 import IconStop from 'components/icons/IconStop'
 
-import RangeWithTicks from './RangeWithTicks'
+import RangeWithTicks from './RangeWithTicks.js'
 
 const CONTENT_PADDING = 10
 const COLOR_ENABLED = theme.colors.blacks[100]

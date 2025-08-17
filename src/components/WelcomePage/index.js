@@ -1,2 +1,2 @@
-import WelcomePage from './WelcomePage'
+import WelcomePage from './WelcomePage.js'
 export default WelcomePage

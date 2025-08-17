@@ -1,2 +1,2 @@
-import UserConfigPage from './UserConfigPage'
+import UserConfigPage from './UserConfigPage.js'
 export default UserConfigPage

@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import FloatingCell from './FloatingCell'
-import DataGridSheet from './DataGridSheet'
+import FloatingCell from './FloatingCell.js'
+import DataGridSheet from './DataGridSheet.js'
 
 const minCellSize = {
   width: 34,

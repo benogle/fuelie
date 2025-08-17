@@ -1,5 +1,5 @@
-import UserConfig from './UserConfig'
-import CachedStore from './CachedStore'
+import UserConfig from './UserConfig.js'
+import CachedStore from './CachedStore.js'
 
 export default class UserConfigStore extends CachedStore {
   // Can pass any options from https://github.com/sindresorhus/electron-store#api

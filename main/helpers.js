@@ -1,4 +1,4 @@
-const { dialog } = require('electron')
+import { dialog } from 'electron'
 
 async function getFilesFromUser () {
   const result = await dialog.showOpenDialog({
@@ -13,4 +13,4 @@ async function getFilesFromUser () {
   return result.filePaths
 }
 
-module.exports = { getFilesFromUser }
+export { getFilesFromUser }

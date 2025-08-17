@@ -1,2 +1,2 @@
-import DataGrid from './DataGrid'
+import DataGrid from './DataGrid.js'
 export default DataGrid

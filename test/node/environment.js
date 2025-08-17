@@ -1,13 +1,7 @@
-const sinon = require('sinon')
-const chai = require('chai')
-const sinonChai = require('sinon-chai')
-const chaiAsPromised = require('chai-as-promised')
-
-const path = require('path')
-const appModulePath = require('app-module-path')
-
-appModulePath.addPath(path.join(__dirname, '..', '..', 'src'))
-appModulePath.addPath(path.join(__dirname, '..', '..'))
+import sinon from 'sinon'
+import chai from 'chai'
+import sinonChai from 'sinon-chai'
+import chaiAsPromised from 'chai-as-promised'
 
 chai.use(sinonChai)
 chai.use(chaiAsPromised)
