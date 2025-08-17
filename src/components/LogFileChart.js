@@ -268,7 +268,7 @@ class LogFileChart extends React.Component {
     return this.uPlot?.valToPos?.(xValue, 'x', false) || 0
   }
 
-  redrawChart = debounceRequestAnimationFrame(() => { // eslint-disable-line react/sort-comp
+  redrawChart = debounceRequestAnimationFrame(() => {
     const [min, max] = this.getZoomRange()
     this.uPlot.setScale('x', { min, max })
     this.redrawCursor()
@@ -279,7 +279,7 @@ class LogFileChart extends React.Component {
     this.uPlot.setCursor({ top: 10, left: this.getCursorPosition() })
   })
 
-  UNSAFE_componentWillReceiveProps (nextProps) { // eslint-disable-line react/sort-comp
+  UNSAFE_componentWillReceiveProps (nextProps) {
     if (this.props.selectedLineIndex !== nextProps.selectedLineIndex) {
       // Cache them now and it will use them on the next render
       this.cacheOptions(nextProps, this.size)

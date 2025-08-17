@@ -31,7 +31,7 @@ class Resizable extends React.Component {
     window.addEventListener('resize', this.handleResize)
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) { // eslint-disable-line react/sort-comp
+  UNSAFE_componentWillReceiveProps (nextProps) {
     if (this.state.isHidden) this.handleResize()
   }
 

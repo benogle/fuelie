@@ -79,7 +79,7 @@ export default class CachedStore {
     this.watcher = fs.watch(this.fileStore.path, { persistent: false }, this.updateConfig)
   }
 
-  updateConfig = _.debounce(() => { // eslint-disable-line react/sort-comp
+  updateConfig = _.debounce(() => {
     // The .store getter reads from disk
     this.setStore(this.fileStore.store, { writeToDisk: false })
 

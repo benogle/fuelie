@@ -29,7 +29,7 @@ const plugin = {
 const application = {
   setInterface: (api) => { plugin.api = api },
 }
-new Function('application', pluginCode)(application) // eslint-disable-line
+new Function('application', pluginCode)(application)
 
 const expressions = {
   buildEval ({ expressionObj, dataKey = 'condition', injectArgs, booleanOnly }) {

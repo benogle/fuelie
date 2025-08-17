@@ -39,6 +39,8 @@
     "electron": "wait-on tcp:3000 && electron-forge start",
     "package": "vite build && electron-forge package",
     "make": "vite build && electron-forge make",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "test": "vitest",
     "test:node": "vitest run --config ./test/node/vitest.config.js",
     "test:node:watch": "vitest watch --config ./test/node/vitest.config.js"

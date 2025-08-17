@@ -6,7 +6,7 @@ import { vi } from 'vitest'
 // Mock fileService before importing LogFile
 vi.mock('../../../src/lib/fileService.js', () => ({
   default: {
-    async readCSVFile(filename) {
+    async readCSVFile (filename) {
       try {
         // Read the actual fixture files and parse them
         const csvContent = fs.readFileSync(filename, 'utf8')
@@ -31,7 +31,7 @@ vi.mock('../../../src/lib/fileService.js', () => ({
         return {
           data,
           headers,
-          length: data.length
+          length: data.length,
         }
       } catch (error) {
         console.error('Mock fileService error:', error)
@@ -39,11 +39,11 @@ vi.mock('../../../src/lib/fileService.js', () => ({
       }
     },
 
-    async readBinaryFile(filename) {
+    async readBinaryFile (filename) {
       return fs.readFileSync(filename)
     },
 
-    async fileExists(filename) {
+    async fileExists (filename) {
       try {
         fs.accessSync(filename)
         return true
@@ -52,10 +52,10 @@ vi.mock('../../../src/lib/fileService.js', () => ({
       }
     },
 
-    async getFileStats(filename) {
+    async getFileStats (filename) {
       return fs.statSync(filename)
-    }
-  }
+    },
+  },
 }))
 
 import ConfigProfile from '../../../src/common/ConfigProfile.js'

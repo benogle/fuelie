@@ -76,7 +76,7 @@ class ChartStatusPanel extends React.Component {
       // e.g.{ chartIndex: 0, lineIndex: 1 }
     ]
     const charts = pageConfig.charts
-    for (let chartIndex = 0; chartIndex < charts.length; chartIndex++) { // eslint-disable-line react/prop-types
+    for (let chartIndex = 0; chartIndex < charts.length; chartIndex++) {
       const chart = pageConfig.charts[chartIndex]
       for (let lineIndex = 0; lineIndex < chart.lines.length; lineIndex++) {
         const line = chart.lines[lineIndex]

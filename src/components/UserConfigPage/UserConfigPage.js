@@ -108,7 +108,7 @@ class UserConfigPage extends React.Component {
 
 function parseJSON (jsonStr) {
   // HACK: Welll, this is not so safe
-  const func = new Function(`return ((${jsonStr}))`) // eslint-disable-line
+  const func = new Function(`return ((${jsonStr}))`)
   return func()
 }
 

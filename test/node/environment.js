@@ -10,9 +10,8 @@ chai.use(chaiAsPromised)
 // Make vitest globals available
 globalThis.vi = vi
 globalThis.expect = expect
-globalThis.describe = globalThis.describe
-globalThis.it = globalThis.it
-globalThis.test = globalThis.test
+// Vitest globals are already available in the test environment
+// No need to reassign them
 
 // Keep chai and sinon for existing tests
 globalThis.chai = chai
@@ -25,5 +24,5 @@ globalThis.window = {
     invoke: vi.fn(),
     on: vi.fn(),
     removeAllListeners: vi.fn(),
-  }
+  },
 }

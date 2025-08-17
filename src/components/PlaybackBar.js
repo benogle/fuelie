@@ -60,7 +60,7 @@ const StyledSelect = styled.select`
 `
 
 class PlaybackBar extends React.Component {
-  handleClickTick =(tick) => {
+  handleClickTick = (tick) => {
     const { onChangeIndex } = this.props
     onChangeIndex(tick.start)
   }
