@@ -1,6 +1,6 @@
-import { dialog } from 'electron'
+const { dialog } = require('electron')
 
-export async function getFilesFromUser () {
+async function getFilesFromUser () {
   const result = await dialog.showOpenDialog({
     properties: ['openFile', 'multiSelections', 'showHiddenFiles'],
     filters: [
@@ -12,3 +12,5 @@ export async function getFilesFromUser () {
   }
   return result.filePaths
 }
+
+module.exports = { getFilesFromUser }

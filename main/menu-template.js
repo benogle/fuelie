@@ -1,8 +1,8 @@
-import { app } from 'electron'
+const { app } = require('electron')
 
 const isMac = process.platform === 'darwin'
 
-export default ({
+module.exports = ({
   onClickOpenFile,
   onClickOpenUserConfig,
   onClickSave,

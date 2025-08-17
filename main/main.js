@@ -1,12 +1,12 @@
-import path from 'path'
+const path = require('path')
 
-import { app, BrowserWindow, Menu } from 'electron'
-import isDev from 'electron-is-dev'
-import menuTemplate from './menu-template'
-import AppStateConfigStore from '../src/common/AppStateConfigStore'
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const isDev = require('electron-is-dev')
+const menuTemplate = require('./menu-template')
+const AppStateConfigStore = require('../src/common/AppStateConfigStore')
 
-import { getFilesFromUser } from './helpers'
-import { USER_CONFIG_FILENAME } from '../src/common/helpers'
+const { getFilesFromUser } = require('./helpers')
+const { USER_CONFIG_FILENAME } = require('../src/common/helpers')
 
 const appStateConfig = new AppStateConfigStore()
 
@@ -37,7 +37,8 @@ function createWindow ({
     ...appStateConfig.get(sizePrefName),
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true,
+      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'),
     },
   })
 
@@ -81,6 +82,45 @@ function setSaveItemVisibility (isVisible) {
   saveMenuItem.visible = isVisible
   saveMenuItem.enabled = isVisible
 }
+
+// Function declarations
+async function openFile () {
+  const filenames = await getFilesFromUser()
+  if (!filenames) return
+  for (const newWindowFilename of filenames) {
+    createWindow({ filename: newWindowFilename })
+  }
+  if (mainWindow) {
+    mainWindow.destroy()
+    mainWindow = null
+  }
+}
+
+let userConfigWindow
+async function openUserConfig () {
+  if (userConfigWindow) {
+    userConfigWindow.focus()
+  } else {
+    userConfigWindow = createWindow({
+      filename: USER_CONFIG_FILENAME,
+      sizePrefName: 'userConfigWindowSize',
+      onClosed: () => {
+        userConfigWindow = null
+        setSaveItemVisibility(false)
+      },
+      onFocus: () => {
+        setSaveItemVisibility(true)
+      },
+      onBlur: () => {
+        setSaveItemVisibility(false)
+      },
+    })
+  }
+}
+
+// IPC handlers
+ipcMain.handle('open-file', openFile)
+ipcMain.handle('open-user-config', openUserConfig)
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -127,36 +167,5 @@ app.on('activate', () => {
 //
 // Exports the renderer can use
 
-const openFile = exports.openFile = async () => {
-  const filenames = await getFilesFromUser()
-  if (!filenames) return
-  for (const newWindowFilename of filenames) {
-    createWindow({ filename: newWindowFilename })
-  }
-  if (mainWindow) {
-    mainWindow.destroy()
-    mainWindow = null
-  }
-}
-
-let userConfigWindow
-const openUserConfig = exports.openUserConfig = async () => {
-  if (userConfigWindow) {
-    userConfigWindow.focus()
-  } else {
-    userConfigWindow = createWindow({
-      filename: USER_CONFIG_FILENAME,
-      sizePrefName: 'userConfigWindowSize',
-      onClosed: () => {
-        userConfigWindow = null
-        setSaveItemVisibility(false)
-      },
-      onFocus: () => {
-        setSaveItemVisibility(true)
-      },
-      onBlur: () => {
-        setSaveItemVisibility(false)
-      },
-    })
-  }
-}
+module.exports.openFile = openFile
+module.exports.openUserConfig = openUserConfig

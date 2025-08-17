@@ -1,6 +1,6 @@
-import Store from 'electron-store'
+const Store = require('electron-store')
 
-export default class AppStateConfigStore extends Store {
+class AppStateConfigStore extends Store {
   constructor () {
     super({
       name: 'app-state',
@@ -17,3 +17,5 @@ export default class AppStateConfigStore extends Store {
     })
   }
 }
+
+module.exports = AppStateConfigStore

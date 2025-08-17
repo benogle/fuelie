@@ -1,9 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import AceEditor from 'react-ace'
+import ace from 'ace-builds/src-noconflict/ace'
 
 import 'ace-builds/src-noconflict/mode-json'
 import 'ace-builds/src-noconflict/theme-github'
+
+// Disable workers to prevent worker loading errors in Electron
+ace.config.set('useWorker', false)
 
 export default class JSONEditor extends React.Component {
   handleChange = (value) => {
